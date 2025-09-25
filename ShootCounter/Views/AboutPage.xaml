@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:ShootCounter.ViewModels"
+    x:Class="ShootCounter.Views.AboutPage"
+    Title="AboutPage"
+    Shell.NavBarIsVisible="False">
+
+    <ContentPage.BindingContext>
+        <vm:AboutViewModel />
+    </ContentPage.BindingContext>
+    
+    <VerticalStackLayout Margin="10, 0, 10, 0">
+        <Label Style="{StaticResource Legend}" Text="Name" />
+        <Label Style="{StaticResource Info}" Text="{Binding DeviceName}" />
+        
+        <Label Style="{StaticResource Legend}" Text="Platform" />
+        <Label Style="{StaticResource Info}" Text="{Binding Platform}" />
+        
+        <Label Style="{StaticResource Legend}" Text="Version" />
+        <Label Style="{StaticResource Info}" Text="{Binding Version}" />
+
+        <Label Style="{StaticResource Legend}" Text="Device Type" />
+        <Label Style="{StaticResource Info}" Text="{Binding DeviceType}" />
+    </VerticalStackLayout>
+</ContentPage>

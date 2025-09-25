@@ -4,11 +4,14 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:ShootCounter"
-    Title="ShootCounter">
+    xmlns:views="clr-namespace:ShootCounter.Views"
+    Title="ShootCounter"
+    Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+
+    <TabBar>
+        <ShellContent Title="About" ContentTemplate="{DataTemplate views:AboutPage}" />
+        <ShellContent Title="Browse" ContentTemplate="{DataTemplate views:ItemsPage}" />
+    </TabBar>
 
 </Shell>
