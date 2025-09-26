@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShootCounter.Services
 {
-    public class ShootingDataStore : IItemStore<Shooting>
+    public class ShootingDataStore : IDataStore<Shooting>
     {
         readonly List<Shooting> _items;
 

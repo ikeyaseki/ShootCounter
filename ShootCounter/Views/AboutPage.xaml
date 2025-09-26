@@ -20,10 +20,10 @@
         <Label Style="{StaticResource Legend}" Text="Build" />
         <Label Style="{StaticResource Info}" Text="{Binding AppBuild}" />
         <Label Style="{StaticResource Legend}" Text="Developer" />
-        <Label Style="{StaticResource Info}" Text="Thomas Baumgartner\nMontanstrasse 5\n6052 Hergiswil\nthomasbaumgartner@gmx.ch" />
+        <Label Style="{StaticResource Info}" Text="Thomas Baumgartner&#10;Montanstrasse 5&#10;6052 Hergiswil&#10;thomasbaumgartner@gmx.ch" />
 
-
-
+        <Label Margin="0, 20, 0,0" />
+        <Label Style="{StaticResource Info}" Text="Device info" />
         <Label Style="{StaticResource Legend}" Text="Name" />
         <Label Style="{StaticResource Info}" Text="{Binding DeviceName}" />
         
