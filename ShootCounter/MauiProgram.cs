@@ -30,12 +30,14 @@ namespace ShootCounter
             builder.Services.AddSingleton<ShootingsPage>();
             builder.Services.AddTransient<ShootingDetailPage>();
             builder.Services.AddTransient<NewShootingPage>();
+            builder.Services.AddTransient<RunPage>();
 
             // register viewmodels
             builder.Services.AddSingleton<AboutViewModel>();
             builder.Services.AddSingleton<ShootingsViewModel>();
             builder.Services.AddTransient<ShootingDetailViewModel>();
             builder.Services.AddTransient<NewShootingViewModel>();
+            builder.Services.AddTransient<RunViewModel>();
 
             var app = builder.Build();
 

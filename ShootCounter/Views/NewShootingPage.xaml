@@ -5,6 +5,10 @@
              xmlns:converter="clr-namespace:ShootCounter.Converter"
              Title="{Binding Title}">
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" />
+    </Shell.BackButtonBehavior>
+
     <ContentPage.Resources>
         <converter:DistanceTypeToStringConverter x:Key="DistanceTypeConverter" />
     </ContentPage.Resources>
@@ -17,7 +21,7 @@
     <VerticalStackLayout>
         <Label FontSize="Medium" Text="Location" />
         <Entry FontSize="Medium" 
-               Text="{Binding Shooting.Location, Mode=TwoWay}" 
+               Text="{Binding Location, Mode=TwoWay}" 
                Keyboard="Text"/>
         <Label FontSize="Medium" Text="Distance" />
         <Picker Title="Select distance"
@@ -31,11 +35,11 @@
                 SelectedItem="{Binding SelectedTarget}" />
         <Label FontSize="Medium" Text="Weapon" />
         <Entry FontSize="Medium" 
-               Text="{Binding Shooting.Weapon, Mode=TwoWay}"
+               Text="{Binding Weapon, Mode=TwoWay}"
                Keyboard="Default"/>
         <Label FontSize="Medium" Text="Bullets per run" />
         <Entry FontSize="Medium" 
-               Text="{Binding Shooting.BulletsPerRun, Mode=TwoWay}"
+               Text="{Binding BulletsPerRun, Mode=TwoWay}"
                Keyboard="Numeric"/>
     </VerticalStackLayout>
 </ContentPage>

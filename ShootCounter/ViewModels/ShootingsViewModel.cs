@@ -50,7 +50,7 @@ namespace ShootCounter.ViewModels
 
         private async Task ExecuteAddShootingCommand()
         {
-            await Shell.Current.GoToAsync(nameof(NewShootingPage));
+            await Shell.Current.GoToAsync(nameof(NewShootingPage), true);
         }
 
         private async Task ExecuteLoadShootingsCommand()
@@ -68,7 +68,7 @@ namespace ShootCounter.ViewModels
             {
                 Shootings.Clear();
 
-                var shootingStoreItems = await ShootingStore.GetItemsAsync(true);
+                var shootingStoreItems = await DataStore.GetItemsAsync(true);
 
                 foreach (var shooting in shootingStoreItems)
                 {
@@ -97,7 +97,7 @@ namespace ShootCounter.ViewModels
             if (shooting == null)
                 return;
 
-            await Shell.Current.GoToAsync($"{nameof(ShootingDetailPage)}?{nameof(ShootingDetailViewModel.ShootingId)}={shooting.Id.ToString()}");
+            await Shell.Current.GoToAsync($"{nameof(ShootingDetailPage)}?{nameof(ShootingDetailViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }
 
         public void OnAppearing()

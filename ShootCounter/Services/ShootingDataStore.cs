@@ -57,6 +57,7 @@ namespace ShootCounter.Services
                 existingItem.StartTime = item.StartTime;
                 existingItem.EndTime = item.EndTime;
                 existingItem.TargetType = item.TargetType;
+                existingItem.Runs = item.Runs;
             }
             else
             {

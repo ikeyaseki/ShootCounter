@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.RunPage"
+             Title="{Binding Title}">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" />
+    </Shell.BackButtonBehavior>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding AddBulletCommand}" Text="Add bullet" />
+        <ToolbarItem Command="{Binding RemoveBulletCommand}" Text="Remove bullet" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+        <CollectionView x:Name="BulletListView" 
+                    ItemsSource="{Binding Bullets}" 
+                    ItemsLayout="HorizontalList"
+                    Grid.Row="0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="10">
+                        <Label FontSize="16" Text="{Binding BulletNumber}" />
+                        <CollectionView ItemsSource="{Binding Valuations}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton Content="{Binding Value}" IsChecked="{Binding Hit}" CheckedChanged="RadioButton_CheckedChanged"/>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        
+        <Label FontSize="30" Text="{Binding Result}" HorizontalOptions="Center" Grid.Row="1"/>
+        <Label FontSize="30" Text="{Binding Percent}" HorizontalOptions="Center" Grid.Row="2"/>
+        <Button Text="Next run" Command="{Binding SaveCommand}" Grid.Row="3"/>
+        <Button Text="Stop shooting" Command="{Binding StopCommand}" Grid.Row="5"/>
+    </Grid>
+</ContentPage>
