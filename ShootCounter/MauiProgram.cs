@@ -25,17 +25,24 @@ namespace ShootCounter
 
             // register our service
             builder.Services.AddSingleton<IDataStore<Item>, MockDataStore>();
+            builder.Services.AddSingleton<IItemStore<Shooting>, ShootingDataStore>();
 
             // register our pages
             builder.Services.AddSingleton<ItemsPage>();
             builder.Services.AddTransient<NewItemPage>();
             builder.Services.AddTransient<ItemDetailPage>();
 
+            builder.Services.AddSingleton<ShootingsPage>();
+            builder.Services.AddTransient<ShootingDetailPage>();
+
             // register viewmodels
             builder.Services.AddSingleton<AboutViewModel>();
             builder.Services.AddSingleton<ItemsViewModel>();
             builder.Services.AddTransient<NewItemViewModel>();
             builder.Services.AddTransient<ItemDetailViewModel>();
+
+            builder.Services.AddSingleton<ShootingsViewModel>();
+            builder.Services.AddTransient<ShootingDetailViewModel>();
 
             var app = builder.Build();
 

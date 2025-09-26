@@ -11,6 +11,7 @@ namespace ShootCounter.ViewModels
     public class BaseViewModel : INotifyPropertyChanged
     {
         protected readonly IDataStore<Item> DataStore;
+        protected readonly IItemStore<Shooting> ShootingStore;
 
         bool isBusy = false;
         public bool IsBusy
@@ -29,6 +30,7 @@ namespace ShootCounter.ViewModels
         public BaseViewModel()
         {
             DataStore = ServiceHelper.GetService<IDataStore<Item>>();
+            ShootingStore = ServiceHelper.GetService<IItemStore<Shooting>>();
         }
 
         protected bool SetProperty<T>(ref T backingStore, T value,

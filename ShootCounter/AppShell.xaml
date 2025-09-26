@@ -12,6 +12,7 @@
     <TabBar>
         <ShellContent Title="About" ContentTemplate="{DataTemplate views:AboutPage}" />
         <ShellContent Title="Browse" ContentTemplate="{DataTemplate views:ItemsPage}" />
+        <ShellContent Title="Shootings" ContentTemplate="{DataTemplate views:ShootingsPage}" />
     </TabBar>
 
 </Shell>
