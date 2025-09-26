@@ -18,6 +18,7 @@ namespace ShootCounter.ViewModels
         public Command<Shooting> ShootingTapped { get; }
         public Command SelectionChangedCommand { get; }
         public Command DetailsCommand { get; }
+        public Command ReloadShootingsCommand { get; }
 
         public ShootingsViewModel()
         {
@@ -27,6 +28,7 @@ namespace ShootCounter.ViewModels
             ShootingTapped = new Command<Shooting>(OnShootingSelected);
             SelectionChangedCommand = new Command<Shooting>(OnSelectionChangedCommand);
             DetailsCommand = new Command(async () => await ExecuteDetailsCommand(), CanExecuteDetailsCommand);
+            ReloadShootingsCommand = new Command(async () => await LoadShootingsAsync());
         }
 
         private bool CanExecuteDetailsCommand()
@@ -46,9 +48,9 @@ namespace ShootCounter.ViewModels
             SelectedShooting = shooting;
         }
 
-        private Task ExecuteAddShootingCommand()
+        private async Task ExecuteAddShootingCommand()
         {
-            throw new NotImplementedException();
+            await Shell.Current.GoToAsync(nameof(NewShootingPage));
         }
 
         private async Task ExecuteLoadShootingsCommand()

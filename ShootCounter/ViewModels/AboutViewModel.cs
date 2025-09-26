@@ -12,6 +12,9 @@ namespace ShootCounter.ViewModels
         public string Version { get; } = DeviceInfo.Version.ToString();
         public string DeviceName { get; } = DeviceInfo.Name;
         public string DeviceType { get; } = DeviceInfo.DeviceType.ToString();
+        public string AppVersion { get; } = AppInfo.Version.ToString();
+        public string AppBuild { get; } = AppInfo.BuildString;
+        public string AppName { get; } = AppInfo.Name;
 
         public AboutViewModel()
         {

@@ -32,11 +32,11 @@
                         <Label
                             FontSize="13"
                             LineBreakMode="NoWrap"
-                            Text="{Binding Weapon}" />
+                            Text="{Binding DistanceType, Converter={StaticResource DistanceTypeConverter}}" />
                         <Label
                             FontSize="13"
                             LineBreakMode="NoWrap"
-                            Text="{Binding DistanceType, Converter={StaticResource DistanceTypeConverter}}" />
+                            Text="{Binding Weapon}" />
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=ShootingTapped}"

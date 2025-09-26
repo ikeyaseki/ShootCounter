@@ -12,6 +12,18 @@
     </ContentPage.BindingContext>
     
     <VerticalStackLayout Margin="10, 0, 10, 0">
+        <Label Style="{StaticResource Info}" Text="App info" />
+        <Label Style="{StaticResource Legend}" Text="Name" />
+        <Label Style="{StaticResource Info}" Text="{Binding AppName}" />
+        <Label Style="{StaticResource Legend}" Text="Version" />
+        <Label Style="{StaticResource Info}" Text="{Binding AppVersion}" />
+        <Label Style="{StaticResource Legend}" Text="Build" />
+        <Label Style="{StaticResource Info}" Text="{Binding AppBuild}" />
+        <Label Style="{StaticResource Legend}" Text="Developer" />
+        <Label Style="{StaticResource Info}" Text="Thomas Baumgartner\nMontanstrasse 5\n6052 Hergiswil\nthomasbaumgartner@gmx.ch" />
+
+
+
         <Label Style="{StaticResource Legend}" Text="Name" />
         <Label Style="{StaticResource Info}" Text="{Binding DeviceName}" />
         

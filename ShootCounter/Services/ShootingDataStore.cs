@@ -14,9 +14,9 @@ namespace ShootCounter.Services
         {
             _items =
                 [
-                    new Shooting { Id = Guid.NewGuid(), DistanceType = DistanceType.Distance25m, StartTime = DateTime.Now.AddHours(-5), EndTime = DateTime.Now.AddHours(-4), TargetType = TargetType.OrderlyRapidFire, Location = "Teufmoos", Weapon = "CZ TS2" },
-                    new Shooting { Id = Guid.NewGuid(), DistanceType = DistanceType.Distance25m, StartTime = DateTime.Now.AddHours(-4), EndTime = DateTime.Now.AddHours(-3), TargetType = TargetType.OrderlyRapidFire, Location = "Teufmoos", Weapon = "P220" },
-                    new Shooting { Id = Guid.NewGuid(), DistanceType = DistanceType.Distance25m, StartTime = DateTime.Now.AddHours(-3), EndTime = DateTime.Now.AddHours(-2), TargetType = TargetType.OrderlyRapidFire, Location = "Teufmoos", Weapon = ".357" },
+                    new Shooting { DistanceType = DistanceType.Distance25m, StartTime = DateTime.Now.AddHours(-5), EndTime = DateTime.Now.AddHours(-4), TargetType = TargetType.OrderlyRapidFire, Location = "Teufmoos", Weapon = "CZ TS2" },
+                    new Shooting { DistanceType = DistanceType.Distance25m, StartTime = DateTime.Now.AddHours(-4), EndTime = DateTime.Now.AddHours(-3), TargetType = TargetType.OrderlyRapidFire, Location = "Teufmoos", Weapon = "P220" },
+                    new Shooting { DistanceType = DistanceType.Distance25m, StartTime = DateTime.Now.AddHours(-3), EndTime = DateTime.Now.AddHours(-2), TargetType = TargetType.OrderlyRapidFire, Location = "Teufmoos", Weapon = ".357" },
                 ];
         }
 

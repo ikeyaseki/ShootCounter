@@ -10,5 +10,6 @@ namespace ShootCounter.Models
     {
         Unknown = 0,
         OrderlyRapidFire = 1,
+        PrecisionTarget = 2,
     }
 }

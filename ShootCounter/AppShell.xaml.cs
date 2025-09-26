@@ -9,6 +9,7 @@
             Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
 
             Routing.RegisterRoute(nameof(ShootingDetailPage), typeof(ShootingDetailPage));
+            Routing.RegisterRoute(nameof(NewShootingPage), typeof(NewShootingPage));
         }
     }
 }

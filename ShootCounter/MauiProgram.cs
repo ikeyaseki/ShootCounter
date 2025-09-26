@@ -43,6 +43,7 @@ namespace ShootCounter
 
             builder.Services.AddSingleton<ShootingsViewModel>();
             builder.Services.AddTransient<ShootingDetailViewModel>();
+            builder.Services.AddTransient<NewShootingViewModel>();
 
             var app = builder.Build();
 

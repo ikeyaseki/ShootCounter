@@ -8,7 +8,7 @@ namespace ShootCounter.Models
 {
     public class Run
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; } = Guid.NewGuid(); 
         public DateTime Time { get; set; }
         public int RunNumber { get; set; }
         public int BulletNumber { get; set; }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.NewShootingPage"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converter:DistanceTypeToStringConverter x:Key="DistanceTypeConverter" />
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding CancelCommand}" Text="Cancel" />
+        <ToolbarItem Command="{Binding SaveCommand}" Text="Save" />
+    </ContentPage.ToolbarItems>
+    
+    <VerticalStackLayout>
+        <Label FontSize="Medium" Text="Location" />
+        <Entry FontSize="Medium" 
+               Text="{Binding Shooting.Location, Mode=TwoWay}" 
+               Keyboard="Text"/>
+        <Label FontSize="Medium" Text="Distance" />
+        <Picker Title="Select distance"
+                ItemsSource="{Binding Distances}"
+                ItemDisplayBinding="{Binding ., Converter={StaticResource DistanceTypeConverter}}"
+                SelectedItem="{Binding SelectedDistance}" />
+        <Label FontSize="Medium" Text="Target" />
+        <Picker Title="Select target"
+                ItemsSource="{Binding Targets.TargetProperties}"
+                ItemDisplayBinding="{Binding Name}"
+                SelectedItem="{Binding SelectedTarget}" />
+        <Label FontSize="Medium" Text="Weapon" />
+        <Entry FontSize="Medium" 
+               Text="{Binding Shooting.Weapon, Mode=TwoWay}"
+               Keyboard="Default"/>
+        <Label FontSize="Medium" Text="Bullets per run" />
+        <Entry FontSize="Medium" 
+               Text="{Binding Shooting.BulletsPerRun, Mode=TwoWay}"
+               Keyboard="Numeric"/>
+    </VerticalStackLayout>
+</ContentPage>
