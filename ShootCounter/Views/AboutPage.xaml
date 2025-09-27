@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:ShootCounter.ViewModels"
+    x:Class="ShootCounter.Views.AboutPage"
+    Title="AboutPage"
+    Shell.NavBarIsVisible="False">
+
+    <ContentPage.BindingContext>
+        <vm:AboutViewModel />
+    </ContentPage.BindingContext>
+    
+    <VerticalStackLayout Margin="10, 0, 10, 0">
+        <Label Style="{StaticResource Info}" Text="App info" />
+        <Label Style="{StaticResource Legend}" Text="Name" />
+        <Label Style="{StaticResource Info}" Text="{Binding AppName}" />
+        <Label Style="{StaticResource Legend}" Text="Version" />
+        <Label Style="{StaticResource Info}" Text="{Binding AppVersion}" />
+        <Label Style="{StaticResource Legend}" Text="Build" />
+        <Label Style="{StaticResource Info}" Text="{Binding AppBuild}" />
+        <Label Style="{StaticResource Legend}" Text="Developer" />
+        <Label Style="{StaticResource Info}" Text="Thomas Baumgartner&#10;Montanstrasse 5&#10;6052 Hergiswil&#10;thomasbaumgartner@gmx.ch" />
+
+        <Label Margin="0, 20, 0,0" />
+        <Label Style="{StaticResource Info}" Text="Device info" />
+        <Label Style="{StaticResource Legend}" Text="Name" />
+        <Label Style="{StaticResource Info}" Text="{Binding DeviceName}" />
+        
+        <Label Style="{StaticResource Legend}" Text="Platform" />
+        <Label Style="{StaticResource Info}" Text="{Binding Platform}" />
+        
+        <Label Style="{StaticResource Legend}" Text="Version" />
+        <Label Style="{StaticResource Info}" Text="{Binding Version}" />
+
+        <Label Style="{StaticResource Legend}" Text="Device Type" />
+        <Label Style="{StaticResource Info}" Text="{Binding DeviceType}" />
+    </VerticalStackLayout>
+</ContentPage>

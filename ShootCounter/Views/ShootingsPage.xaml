@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.ShootingsPage"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
+             xmlns:model="clr-namespace:ShootCounter.Models"
+             xmlns:vm="clr-namespace:ShootCounter.ViewModels"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converter:DistanceTypeToStringConverter x:Key="DistanceTypeConverter" />
+    </ContentPage.Resources>
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding AddShootingCommand}" Text="Add" />
+        <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView Command="{Binding LoadShootingsCommand}" IsRefreshing="{Binding IsBusy}">
+        <CollectionView x:Name="ShootingListView" ItemsSource="{Binding Shootings}" SelectedItem="{Binding SelectedShooting}" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10" x:DataType="model:Shooting">
+                        <Label
+                            FontSize="16"
+                            LineBreakMode="NoWrap"
+                            Text="{Binding Location}" />
+                        <Label
+                            FontSize="13"
+                            LineBreakMode="NoWrap"
+                            Text="{Binding StartTime}" />
+                        <Label
+                            FontSize="13"
+                            LineBreakMode="NoWrap"
+                            Text="{Binding DistanceType, Converter={StaticResource DistanceTypeConverter}}" />
+                        <Label
+                            FontSize="13"
+                            LineBreakMode="NoWrap"
+                            Text="{Binding Weapon}" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=ShootingTapped}"
+                                CommandParameter="{Binding .}"
+                                NumberOfTapsRequired="2" />
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=SelectionChangedCommand}"
+                                CommandParameter="{Binding .}"
+                                NumberOfTapsRequired="1" />
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <ContentView>
+                    <VerticalStackLayout>
+                        <Label Text="Empty" />
+                    </VerticalStackLayout>
+                </ContentView>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </RefreshView>
+</ContentPage>
