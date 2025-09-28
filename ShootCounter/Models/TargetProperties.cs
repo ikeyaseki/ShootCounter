@@ -11,7 +11,7 @@ namespace ShootCounter.Models
     public class TargetProperties
     {
         [PrimaryKey]
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public TargetType TargetType { get; set; }
         public string? Name { get; set; }
         public string? ValuationsJson { get; set; }

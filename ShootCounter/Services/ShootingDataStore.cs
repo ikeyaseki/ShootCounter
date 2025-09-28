@@ -44,7 +44,7 @@ namespace ShootCounter.Services
 
             if (existingItem != null)
             {
-                await _db.UpdateShootingAsync(existingItem);
+                await _db.UpdateShootingAsync(item);
             }
             else
             {

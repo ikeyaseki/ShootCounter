@@ -30,7 +30,7 @@
                 SelectedItem="{Binding SelectedDistance}" />
         <Label FontSize="Medium" Text="Target" />
         <Picker Title="Select target"
-                ItemsSource="{Binding Targets.TargetProperties}"
+                ItemsSource="{Binding Targets}"
                 ItemDisplayBinding="{Binding Name}"
                 SelectedItem="{Binding SelectedTarget}" />
         <Label FontSize="Medium" Text="Weapon" />

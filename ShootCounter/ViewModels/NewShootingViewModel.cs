@@ -2,7 +2,6 @@
 {
     public class NewShootingViewModel : BaseViewModel
     {
-        private readonly ShootingsViewModel _shootingsViewModel;
         private string _location = string.Empty;
         private TargetProperties? _selectedTarget = null;
         private int? _bulletsPerRun = null;
@@ -11,7 +10,7 @@
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
 
-        public Targets Targets { get; } = new Targets();
+        public IEnumerable<TargetProperties> Targets { get; } = Models.Targets.TargetProperties;
 
         public TargetProperties? SelectedTarget
         {
@@ -58,7 +57,6 @@
 
         public NewShootingViewModel(ShootingsViewModel shootingsViewModel)
         {
-            _shootingsViewModel = shootingsViewModel;
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             Title = "Add new shooting";
@@ -80,15 +78,13 @@
             {
                 StartTime = DateTime.Now,
                 Location = Location,
-                TargetProperties = SelectedTarget,
+                TargetType = SelectedTarget?.TargetType ?? TargetType.Unknown,
                 Weapon = Weapon,
                 DistanceType = SelectedDistance,
                 BulletsPerRun = BulletsPerRun
             };
 
             await DataStore.AddItemAsync(shooting);
-
-            _shootingsViewModel.ReloadShootingsCommand.Execute(null);
 
             await Shell.Current.GoToAsync($"{nameof(RunPage)}?{nameof(RunViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }

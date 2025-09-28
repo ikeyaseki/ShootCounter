@@ -34,7 +34,6 @@ namespace ShootCounter.Services
         {
             await _db.CreateTableAsync<Shooting>();
             await _db.CreateTableAsync<Run>();
-            await _db.CreateTableAsync<TargetProperties>();
         }
 
         public async Task AddShootingAsync(Shooting shooting)
@@ -51,46 +50,44 @@ namespace ShootCounter.Services
             }
         }
 
-        public async Task AddTargetPropertiesAsync(TargetProperties targetProperties)
-        {
-            await _db.InsertAsync(targetProperties);
-        }
-
-
         public async Task<IEnumerable<Shooting>> LoadAllShootingAsync()
         {
+            var shootings = await _db.Table<Shooting>().ToArrayAsync();
+
+            foreach (var shooting in shootings)
+            {
+                shooting.TargetProperties = Targets.TargetProperties.FirstOrDefault(n => n.TargetType == shooting.TargetType);
+            }
+
             return await _db.Table<Shooting>().ToArrayAsync();
         }
 
         public async Task<Shooting?> LoadShootingAsync(Guid id)
         {
-            var shooting = await _db.Table<Shooting>().FirstOrDefaultAsync(s => s.Id == id);
+            var shooting = await _db.Table<Shooting>().FirstOrDefaultAsync(n => n.Id == id);
 
             if (shooting != null)
             {
-                shooting.Runs = await _db.Table<Run>().Where(r => r.ShootingId == id).ToListAsync();
+                shooting.Runs = await _db.Table<Run>().Where(n => n.ShootingId == id).ToListAsync();
             }
 
             if (shooting != null)
             {
-                shooting.TargetProperties = await _db.Table<TargetProperties>().FirstAsync(r => r.TargetType == shooting.TargetType);
+                shooting.TargetProperties = Targets.TargetProperties.FirstOrDefault(n => n.TargetType == shooting.TargetType);
             }
 
             return shooting;
         }
 
-        public async Task<IEnumerable<TargetProperties>> LoadAllTargetPropertiesAsync()
-        {
-            return await _db.Table<TargetProperties>().ToArrayAsync();
-        }
-
-        public async Task<TargetProperties> LoadTargetProperties(TargetType targetType)
-        {
-            return await _db.Table<TargetProperties>().FirstAsync(n => n.TargetType == targetType);
-        }
-
         public async Task DeleteShootingAsync(Guid id)
         {
+            var shooting = await LoadShootingAsync(id);
+
+            if (shooting?.Runs != null)
+            {
+                await _db.Table<Run>().DeleteAsync(n => n.ShootingId == id);
+            }
+
             await _db.Table<Shooting>().DeleteAsync(n => n.Id == id);
         }
 
@@ -100,7 +97,16 @@ namespace ShootCounter.Services
             {
                 foreach (var run in shooting.Runs)
                 {
-                    await _db.UpdateAsync(run);
+                    var existingRun = await _db.Table<Run>().FirstOrDefaultAsync(n => n.Id == run.Id);
+
+                    if (existingRun != null)
+                    {
+                        await _db.UpdateAsync(run);
+                    }
+                    else
+                    {
+                        await _db.InsertAsync(run);
+                    }
                 }
             }
 

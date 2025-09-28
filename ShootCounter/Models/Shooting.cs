@@ -10,7 +10,7 @@ namespace ShootCounter.Models
     public class Shooting
     {
         [PrimaryKey]
-        public Guid Id{ get; } = Guid.NewGuid();
+        public Guid Id{ get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string? Location { get; set; }
@@ -22,5 +22,10 @@ namespace ShootCounter.Models
         public TargetProperties? TargetProperties { get; set; }
         [Ignore]
         public IEnumerable<Run>? Runs { get; set; }
+
+        public Shooting()
+        {
+            Id = Guid.NewGuid();
+        }
     }
 }
