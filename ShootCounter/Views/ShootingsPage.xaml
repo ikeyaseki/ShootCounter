@@ -10,7 +10,11 @@
     <ContentPage.Resources>
         <converter:DistanceTypeToStringConverter x:Key="DistanceTypeConverter" />
     </ContentPage.Resources>
-    
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" />
+    </Shell.BackButtonBehavior>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding AddShootingCommand}" Text="Add" />
         <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />

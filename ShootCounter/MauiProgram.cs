@@ -24,6 +24,7 @@ namespace ShootCounter
 #endif
 
             // register our service
+            builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddSingleton<IDataStore<Shooting>, ShootingDataStore>();
 
             // register our pages

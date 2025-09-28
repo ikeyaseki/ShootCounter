@@ -174,7 +174,7 @@ namespace ShootCounter.ViewModels
         {
             List<Run> runs = new();
 
-            if (_shooting.Runs != null)
+            if (_shooting?.Runs != null)
                 runs = [.. _shooting.Runs];
 
 
