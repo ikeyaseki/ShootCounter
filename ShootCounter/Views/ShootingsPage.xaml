@@ -20,38 +20,48 @@
         <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />
     </ContentPage.ToolbarItems>
 
+    
+
     <RefreshView Command="{Binding LoadShootingsCommand}" IsRefreshing="{Binding IsBusy}">
         <CollectionView x:Name="ShootingListView" ItemsSource="{Binding Shootings}" SelectedItem="{Binding SelectedShooting}" SelectionMode="Single">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout Padding="10" x:DataType="model:Shooting">
-                        <Label
+                    <Border Margin="5 10 5 10" 
+                            Background="Aqua"
+                            Stroke="DarkGray"
+                            StrokeThickness="2">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <StackLayout Padding="10" x:DataType="model:Shooting">
+                            <Label
                             FontSize="16"
                             LineBreakMode="NoWrap"
                             Text="{Binding Location}" />
-                        <Label
+                            <Label
                             FontSize="13"
                             LineBreakMode="NoWrap"
                             Text="{Binding StartTime}" />
-                        <Label
+                            <Label
                             FontSize="13"
                             LineBreakMode="NoWrap"
                             Text="{Binding DistanceType, Converter={StaticResource DistanceTypeConverter}}" />
-                        <Label
+                            <Label
                             FontSize="13"
                             LineBreakMode="NoWrap"
                             Text="{Binding Weapon}" />
-                        <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=ShootingTapped}"
                                 CommandParameter="{Binding .}"
                                 NumberOfTapsRequired="2" />
-                            <TapGestureRecognizer
+                                <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=SelectionChangedCommand}"
                                 CommandParameter="{Binding .}"
                                 NumberOfTapsRequired="1" />
-                        </StackLayout.GestureRecognizers>
-                    </StackLayout>
+                            </StackLayout.GestureRecognizers>
+                        </StackLayout>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
             <CollectionView.EmptyView>
