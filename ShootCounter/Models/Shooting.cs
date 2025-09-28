@@ -13,6 +13,12 @@ namespace ShootCounter.Models
         public Guid Id{ get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        [Ignore]
+        public TimeSpan Duration
+        {
+            get => EndTime - StartTime;
+        }
+
         public string? Location { get; set; }
         public DistanceType DistanceType {  get; set; }
         public TargetType TargetType { get; set; }

@@ -5,10 +5,12 @@
              xmlns:converter="clr-namespace:ShootCounter.Converter"
              xmlns:model="clr-namespace:ShootCounter.Models"
              xmlns:vm="clr-namespace:ShootCounter.ViewModels"
+             xmlns:icons="clr-namespace:ShootCounter.Services"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
         <converter:DistanceTypeToStringConverter x:Key="DistanceTypeConverter" />
+        <converter:DurationToStringConverter x:Key="DurationConverter" />
     </ContentPage.Resources>
 
     <Shell.BackButtonBehavior>
@@ -20,46 +22,71 @@
         <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />
     </ContentPage.ToolbarItems>
 
-    
+
 
     <RefreshView Command="{Binding LoadShootingsCommand}" IsRefreshing="{Binding IsBusy}">
         <CollectionView x:Name="ShootingListView" ItemsSource="{Binding Shootings}" SelectedItem="{Binding SelectedShooting}" SelectionMode="Single">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="5 10 5 10" 
-                            Background="Aqua"
+                    <Border Margin="5,10,5,10" 
+                            Background="Wheat"
                             Stroke="DarkGray"
                             StrokeThickness="2">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="10" />
                         </Border.StrokeShape>
                         <StackLayout Padding="10" x:DataType="model:Shooting">
-                            <Label
-                            FontSize="16"
-                            LineBreakMode="NoWrap"
-                            Text="{Binding Location}" />
-                            <Label
-                            FontSize="13"
-                            LineBreakMode="NoWrap"
-                            Text="{Binding StartTime}" />
-                            <Label
-                            FontSize="13"
-                            LineBreakMode="NoWrap"
-                            Text="{Binding DistanceType, Converter={StaticResource DistanceTypeConverter}}" />
-                            <Label
-                            FontSize="13"
-                            LineBreakMode="NoWrap"
-                            Text="{Binding Weapon}" />
+                            <Label FontSize="16"
+                                   LineBreakMode="NoWrap"
+                                   Text="{Binding Location}" />
+                            <HorizontalStackLayout>
+                                <Label FontSize="13"
+                                       LineBreakMode="NoWrap"
+                                       Text="{Binding StartTime}" />
+                                <Label FontFamily="IconFont"
+                                       FontSize="16"
+                                       Text="{x:Static icons:IconFont.ClockTimeNineOutline}" 
+                                       Margin="30,0,0,0"/>
+                                <Label FontSize="13"
+                                       LineBreakMode="NoWrap"
+                                       Margin="5,0,0,0"
+                                       Text="{Binding Duration, Converter={StaticResource DurationConverter}}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout>
+                                <Label FontFamily="IconFont"
+                                       FontSize="16"
+                                       Text="{x:Static icons:IconFont.MapMarkerDistance}" />
+                                <Label FontSize="13"
+                                       LineBreakMode="NoWrap"
+                                       Text="{Binding DistanceType, Converter={StaticResource DistanceTypeConverter}}" 
+                                       Margin="5,0,0,0"/>
+                                <Label FontFamily="IconFont"
+                                       FontSize="16"
+                                       Text="{x:Static icons:IconFont.Bullseye}" 
+                                       Margin="30,0,0,0"/>
+                                <Label FontSize="13"
+                                       Text="{Binding TargetProperties.Name}"
+                                       Margin="5,0,0,0" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout>
+                                <Label FontFamily="IconFont"
+                                       FontSize="16"
+                                       Text="{x:Static icons:IconFont.Pistol}" />
+                                <Label FontSize="13"
+                                       LineBreakMode="NoWrap"
+                                       Text="{Binding Weapon}" 
+                                       Margin="5,0,0,0"/>
+                            </HorizontalStackLayout>
                             <StackLayout.GestureRecognizers>
-                                <TapGestureRecognizer
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=ShootingTapped}"
-                                CommandParameter="{Binding .}"
-                                NumberOfTapsRequired="2" />
-                                <TapGestureRecognizer
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=SelectionChangedCommand}"
-                                CommandParameter="{Binding .}"
-                                NumberOfTapsRequired="1" />
-                            </StackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=ShootingTapped}"
+                                            CommandParameter="{Binding .}"
+                                            NumberOfTapsRequired="2" />
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=SelectionChangedCommand}"
+                                            CommandParameter="{Binding .}"
+                                            NumberOfTapsRequired="1" />
+                                    </StackLayout.GestureRecognizers>
                         </StackLayout>
                     </Border>
                 </DataTemplate>

@@ -21,6 +21,14 @@
         <Label Style="{StaticResource Info}" Text="{Binding AppBuild}" />
         <Label Style="{StaticResource Legend}" Text="Developer" />
         <Label Style="{StaticResource Info}" Text="Thomas Baumgartner&#10;Montanstrasse 5&#10;6052 Hergiswil&#10;thomasbaumgartner@gmx.ch" />
+        <Label Style="{StaticResource Legend}" Text="Git" />
+        <Label Style="{StaticResource Info}" Text="https://github.com/ikeyaseki/ShootCounter.git" >
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding OpenLinkCommand}"
+                    CommandParameter="https://github.com/ikeyaseki/ShootCounter.git" />
+            </Label.GestureRecognizers>
+        </Label>
 
         <Label Margin="0, 20, 0,0" />
         <Label Style="{StaticResource Info}" Text="Device info" />

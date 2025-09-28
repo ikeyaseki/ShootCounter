@@ -5,13 +5,30 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:ShootCounter"
     xmlns:views="clr-namespace:ShootCounter.Views"
+    xmlns:icons="clr-namespace:ShootCounter.Services"
     Title="ShootCounter"
     Shell.FlyoutBehavior="Disabled">
 
 
     <TabBar>
-        <ShellContent Title="About" ContentTemplate="{DataTemplate views:AboutPage}" />
-        <ShellContent Title="Shootings" ContentTemplate="{DataTemplate views:ShootingsPage}" />
+        <ShellContent Title="About" ContentTemplate="{DataTemplate views:AboutPage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                    Glyph="{x:Static icons:IconFont.InformationOutline}"
+                    FontFamily="IconFont"
+                    Size="24"
+                    Color="DarkSlateGray" />
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Shootings" ContentTemplate="{DataTemplate views:ShootingsPage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                    Glyph="{x:Static icons:IconFont.Pistol}"
+                    FontFamily="IconFont"
+                    Size="24"
+                    Color="DarkSlateGray" />
+            </ShellContent.Icon>
+        </ShellContent>
     </TabBar>
 
 </Shell>

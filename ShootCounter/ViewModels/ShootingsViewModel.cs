@@ -103,7 +103,7 @@ namespace ShootCounter.ViewModels
         public void OnAppearing()
         {
             IsBusy = true;
-            _selectedShoting = null;
+            SelectedShooting = null;
         }
     }
 }

@@ -20,7 +20,6 @@ namespace ShootCounter.Services
             _ = await _db.CreateTableAsync<Shooting>();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
             _ = await _db.CreateTableAsync<Run>();
-            _ = await _db.CreateTableAsync<TargetProperties>();
 
             return instance;
         });
@@ -59,7 +58,7 @@ namespace ShootCounter.Services
                 shooting.TargetProperties = Targets.TargetProperties.FirstOrDefault(n => n.TargetType == shooting.TargetType);
             }
 
-            return await _db.Table<Shooting>().ToArrayAsync();
+            return shootings;
         }
 
         public async Task<Shooting?> LoadShootingAsync(Guid id)
