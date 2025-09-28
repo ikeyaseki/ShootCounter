@@ -174,7 +174,7 @@ namespace ShootCounter.ViewModels
         {
             List<Run> runs = new();
 
-            if (_shooting.Runs != null)
+            if (_shooting?.Runs != null)
                 runs = [.. _shooting.Runs];
 
 
@@ -182,7 +182,8 @@ namespace ShootCounter.ViewModels
             {
                 RunNumber = RunNumber,
                 BulletNumber = Bullets.Count(),
-                Time = DateTime.Now
+                Time = DateTime.Now,
+                ShootingId = _shooting?.Id ?? Guid.Empty,
             };
 
             List<int> valuations = [];
@@ -197,6 +198,9 @@ namespace ShootCounter.ViewModels
 
             run.Results = valuations;
             runs.Add(run);
+
+            if (_shooting == null)
+                throw new Exception("Shooting not allowed to be null here");
 
             _shooting.Runs = runs;
 
