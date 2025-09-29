@@ -1,6 +1,4 @@
-﻿using AndroidX.Activity;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace ShootCounter.ViewModels
 {
