@@ -4,25 +4,11 @@ namespace ShootCounter.Services
 {
     public class DatabaseService : IDatabaseService
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-        private static SQLiteAsyncConnection _db;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+        private readonly SQLiteAsyncConnection _db;
         public const string DatabaseFilename = "ShootingSQLite.db3";
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
         public static string DatabasePath => Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
-
-        public static readonly AsyncLazy<DatabaseService> Instance = new(async () =>
-        {
-            var instance = new DatabaseService();
-
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            _ = await _db.CreateTableAsync<Shooting>();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-            _ = await _db.CreateTableAsync<Run>();
-
-            return instance;
-        });
 
         public DatabaseService()
         {
