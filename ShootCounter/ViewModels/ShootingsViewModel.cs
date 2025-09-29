@@ -72,7 +72,7 @@ namespace ShootCounter.ViewModels
 
                 foreach (var shooting in shootingStoreItems)
                 {
-                    Shootings.Add(shooting);
+                    Shootings.Add(await CalculateResults(shooting));
                 }
 
             }
@@ -80,6 +80,15 @@ namespace ShootCounter.ViewModels
             {
                 Debug.WriteLine(ex);
             }
+        }
+
+        private async Task<Shooting> CalculateResults(Shooting shooting)
+        {
+            CalculateShooting calculate = new();
+
+            shooting = await calculate.Calculate(shooting);
+
+            return shooting;
         }
 
         public Shooting? SelectedShooting

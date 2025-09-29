@@ -42,6 +42,7 @@ namespace ShootCounter.Services
             foreach (var shooting in shootings)
             {
                 shooting.TargetProperties = Targets.TargetProperties.FirstOrDefault(n => n.TargetType == shooting.TargetType);
+                shooting.Runs = await _db.Table<Run>().Where(n => n.ShootingId == shooting.Id).ToListAsync();
             }
 
             return shootings;
