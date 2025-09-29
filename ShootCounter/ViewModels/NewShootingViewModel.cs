@@ -55,7 +55,7 @@
             }
         }
 
-        public NewShootingViewModel(ShootingsViewModel shootingsViewModel)
+        public NewShootingViewModel()
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);

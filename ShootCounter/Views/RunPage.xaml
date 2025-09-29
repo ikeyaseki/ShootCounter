@@ -5,7 +5,7 @@
              Title="{Binding Title}">
 
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IsVisible="False" />
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
 
     <ContentPage.ToolbarItems>
@@ -36,7 +36,7 @@
         
         <Label FontSize="30" Text="{Binding Result}" HorizontalOptions="Center" Grid.Row="1"/>
         <Label FontSize="30" Text="{Binding Percent}" HorizontalOptions="Center" Grid.Row="2"/>
-        <Button Text="Next run" Command="{Binding SaveCommand}" Grid.Row="3"/>
-        <Button Text="Stop shooting" Command="{Binding StopCommand}" Grid.Row="5"/>
+        <Button Text="Next run" Command="{Binding SaveCommand}" Grid.Row="3" Margin="5"/>
+        <Button Text="Stop shooting" Command="{Binding StopCommand}" Grid.Row="5" Margin="5"/>
     </Grid>
 </ContentPage>

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using AndroidX.Activity;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace ShootCounter.ViewModels
@@ -63,6 +64,17 @@ namespace ShootCounter.ViewModels
             AddBulletCommand = new Command(OnAddBullet);
             RemoveBulletCommand = new Command(OnRemoveBullet, CanExecuteRemove);
             StopCommand = new Command(OnStop, CanExecuteStop);
+
+            Shell.Current.Navigating += (s, e) =>
+            {
+                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
+                {
+                    if (Shell.Current.CurrentPage is RunPage)
+                    {
+                        e.Cancel();
+                    }
+                }
+            };
         }
 
         private bool CanExecuteStop(object arg)
@@ -72,11 +84,20 @@ namespace ShootCounter.ViewModels
 
         private async void OnStop(object obj)
         {
-            _shooting.EndTime = DateTime.Now;
+            bool confirm = await Shell.Current.DisplayAlert(
+                "Stop shooting",
+                "Are you shure to stop shooting?",
+                "Yes",
+                "No");
 
-            await DataStore.UpdateItemAsync(_shooting);
+            if (confirm)
+            {
+                _shooting.EndTime = DateTime.Now;
 
-            await Shell.Current.GoToAsync($"{nameof(ShootingsPage)}", true);
+                await DataStore.UpdateItemAsync(_shooting);
+
+                await Shell.Current.GoToAsync($"{nameof(ShootingsPage)}", true);
+            }
         }
 
         private bool CanExecuteRemove(object arg)
@@ -156,7 +177,7 @@ namespace ShootCounter.ViewModels
         private bool CheckNoValuationsDone()
         {
             if (Bullets.Count() == 0)
-                return false;
+                return true;
 
             foreach (var bullet in Bullets)
             {
