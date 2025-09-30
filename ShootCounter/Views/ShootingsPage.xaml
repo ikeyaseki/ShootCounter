@@ -18,7 +18,7 @@
     </Shell.BackButtonBehavior>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding AddShootingCommand}" Text="Add" />
+        <ToolbarItem Command="{Binding AddShootingCommand}" Text="New" />
         <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />
     </ContentPage.ToolbarItems>
 

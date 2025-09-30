@@ -15,7 +15,7 @@
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding CancelCommand}" Text="Cancel" />
-        <ToolbarItem Command="{Binding SaveCommand}" Text="Save" />
+        <ToolbarItem Command="{Binding SaveCommand}" Text="Continue" />
     </ContentPage.ToolbarItems>
     
     <VerticalStackLayout>
