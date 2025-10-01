@@ -132,7 +132,7 @@
             </StackLayout>
         </Border>
 
-        <ScrollView Orientation="Horizontal" Padding="0,0,0,50">
+        <ScrollView Orientation="Horizontal" Padding="25,0,25,50">
             <GraphicsView
                   Drawable="{Binding Drawable}"
                   HeightRequest="400"
