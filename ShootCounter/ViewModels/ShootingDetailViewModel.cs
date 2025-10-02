@@ -1,5 +1,8 @@
-﻿using Kotlin;
+﻿using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Maui.Graphics;
+using SkiaSharp;
 using SQLitePCL;
 using System;
 using System.Collections.Generic;
@@ -14,6 +17,15 @@ namespace ShootCounter.ViewModels
     [QueryProperty(nameof(ShootingId), nameof(ShootingId))]
     public class ShootingDetailViewModel : BaseViewModel
     {
+        public IEnumerable<ISeries> RunSeries 
+        { 
+            get => _runSeries; 
+            set
+            {
+                SetProperty(ref _runSeries, value);
+            }
+        }
+
         public IDrawable Drawable 
         { 
             get => _drawable; 
@@ -34,6 +46,7 @@ namespace ShootCounter.ViewModels
         private string _shootingId = string.Empty;
         private Shooting _shooting = new();
         private IDrawable _drawable;
+        private IEnumerable<ISeries> _runSeries;
         private readonly ShootingsViewModel _shootingsViewModel;
         public Command DeleteCommand { get; private set; }
 
@@ -99,7 +112,32 @@ namespace ShootCounter.ViewModels
 
                 Drawable = new BarChartDrawable(punkte, shooting.TargetProperties.Valuations.Max());
 
-                    IsBusy = false;
+                var maxLength = Shooting.Runs.Max(n => n.Results.Count());       
+
+                RunSeries = Enumerable.Range(0, maxLength + 1)
+                    .Select(i => new ColumnSeries<int>
+                    {
+                        Name = $"Round {i + 1}",
+                        Values = Shooting.Runs.Select(run =>
+                            i < run.Results.Count() ? run.Results.ElementAt(i) : 0).ToList(),
+                        Fill = new SolidColorPaint(SKColors.CadetBlue),
+                    }).ToList();
+
+
+
+
+
+
+                //foreach (var run in Shooting.Runs)
+                //{
+                //    var serie = new ColumnSeries<int> { Values = run.Results.ToList() };
+                //    runSeries.Add(serie);
+
+
+                //}
+
+
+                IsBusy = false;
             }
             catch (Exception ex)
             {

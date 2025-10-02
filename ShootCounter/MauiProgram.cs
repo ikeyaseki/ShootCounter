@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using LiveChartsCore.SkiaSharpView.Maui;
+using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace ShootCounter
 {
@@ -8,6 +10,8 @@ namespace ShootCounter
         {
             var builder = MauiApp.CreateBuilder();
             builder
+                .UseSkiaSharp()
+                .UseLiveCharts()
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {

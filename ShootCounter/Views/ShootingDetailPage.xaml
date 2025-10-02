@@ -5,6 +5,7 @@
              xmlns:model="clr-namespace:ShootCounter.Models"
              xmlns:icons="clr-namespace:ShootCounter.Services"
              xmlns:converter="clr-namespace:ShootCounter.Converter"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
@@ -132,13 +133,20 @@
             </StackLayout>
         </Border>
 
-        <ScrollView Orientation="Horizontal" Padding="25,0,25,50">
+        <!--<ScrollView Orientation="Horizontal" Padding="25,0,25,50">
             <GraphicsView
                   Drawable="{Binding Drawable}"
                   HeightRequest="400"
                   WidthRequest="1200" />
-        </ScrollView>
-        
+        </ScrollView>-->
+
+        <lvc:CartesianChart
+            LegendPosition="Right"
+            HeightRequest="500"
+            WidthRequest="400">
+            <lvc:CartesianChart Series="{Binding RunSeries}" />
+        </lvc:CartesianChart>
+
 
     </VerticalStackLayout>
 </ContentPage>
