@@ -10,15 +10,15 @@ namespace ShootCounter.Services
     {
         public Task<Shooting> Calculate(Shooting shooting)
         {
-            if (shooting.Runs == null)
-                throw new Exception("Shooting can not be null here");
-
             shooting.TotalBullets = 0;
             shooting.MaxPoints = 0;
             shooting.TotalPoints = 0;
             shooting.TotalPercentage = 0;
             shooting.BulletsMaxPoints = 0;
             shooting.BulletsZeroPoints = 0;
+
+            if (shooting.Runs == null)
+                return Task.FromResult(shooting);
 
             if (shooting?.TargetProperties?.Valuations == null)
                 throw new Exception("Target valuations can not be null here");

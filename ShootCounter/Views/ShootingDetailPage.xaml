@@ -17,136 +17,131 @@
         <ToolbarItem Command="{Binding DeleteCommand}" Text="Delete" />
     </ContentPage.ToolbarItems>
 
-    <VerticalStackLayout>
-        <Border Margin="5,10,5,10" 
-        Stroke="DarkGray"
-        StrokeThickness="2">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="10" />
-            </Border.StrokeShape>
-            <StackLayout Padding="10">
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+    <ScrollView Orientation="Vertical">
+        <Grid RowDefinitions="Auto,*">
+
+            <Border Margin="5,10,5,10" 
+                Stroke="DarkGray"
+                StrokeThickness="2"
+                Grid.Row="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <StackLayout Padding="10">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
               ColumnDefinitions="0.5*,0.5*">
-                    <Label Style="{StaticResource TableHeader}" 
+                        <Label Style="{StaticResource TableHeader}" 
                    Text="{Binding Shooting.Location}"
                    Grid.Row="0"
                    Grid.ColumnSpan="2" />
-                    <Label Style="{StaticResource TableContent}"
+                        <Label Style="{StaticResource TableContent}"
                    Text="{Binding Shooting.StartTime}"
                    Grid.Row="1"
                    Grid.Column="0" />
-                    <HorizontalStackLayout Grid.Row="1"
+                        <HorizontalStackLayout Grid.Row="1"
                                    Grid.Column="1">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.ClockTimeNineOutline}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.Duration, Converter={StaticResource DurationConverter}}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="2"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="2"
                                    Grid.Column="0">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.MapMarkerDistance}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.DistanceType, Converter={StaticResource DistanceTypeConverter}}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="2"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="2"
                                    Grid.Column="1">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Bullseye}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.TargetProperties.Name}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="3"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="3"
                                    Grid.Column="0">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Pistol}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.Weapon}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="3"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="3"
                                    Grid.Column="1">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Ammunition}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.BulletsPerRun}" />
-                    </HorizontalStackLayout>
-                    <BoxView HeightRequest="1"                                  
+                        </HorizontalStackLayout>
+                        <BoxView HeightRequest="1"                                  
                      Color="DarkGray"
                      Margin="0,10"
                      Grid.Row="4"
                      Grid.ColumnSpan="2"/>
-                    <HorizontalStackLayout Grid.Row="5"
+                        <HorizontalStackLayout Grid.Row="5"
                                    Grid.Column="0">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.ArrowAll}" />
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Ammunition}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.TotalBullets}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="5"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="5"
                                    Grid.Column="1">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.ArrowAll}" />
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.GiftOutline}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.MaxPoints}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="6"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="6"
                                    Grid.Column="0">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Account}" />
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.PercentBoxOutline}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.TotalPercentage}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="6"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="6"
                                    Grid.Column="1">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Account}" />
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.GiftOutline}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.TotalPoints}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="7"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="7"
                                    Grid.Column="0">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.ArrowDownBoldOutline}" />
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Ammunition}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.BulletsZeroPoints}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Row="7"
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="7"
                                    Grid.Column="1">
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.ArrowUpBoldOutline}" />
-                        <Label Style="{StaticResource TableContentIcon}"
+                            <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Ammunition}" />
-                        <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.BulletsMaxPoints}" />
-                    </HorizontalStackLayout>
-                </Grid>
-            </StackLayout>
-        </Border>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </StackLayout>
+            </Border>
 
-        <!--<ScrollView Orientation="Horizontal" Padding="25,0,25,50">
-            <GraphicsView
-                  Drawable="{Binding Drawable}"
-                  HeightRequest="400"
-                  WidthRequest="1200" />
-        </ScrollView>-->
-
-        <lvc:CartesianChart
-            LegendPosition="Right"
-            HeightRequest="500"
-            WidthRequest="400">
-            <lvc:CartesianChart Series="{Binding RunSeries}" />
-        </lvc:CartesianChart>
-
-
-    </VerticalStackLayout>
+            <lvc:CartesianChart
+                ZoomMode="X"
+                MinimumHeightRequest="400"
+                Grid.Row="1">
+                <lvc:CartesianChart Series="{Binding RunSeries}" XAxes="{Binding XAxes}"/>
+            </lvc:CartesianChart>
+        </Grid>
+    </ScrollView>
 </ContentPage>

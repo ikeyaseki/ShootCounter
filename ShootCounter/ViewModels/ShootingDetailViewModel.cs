@@ -26,14 +26,15 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public IDrawable Drawable 
+        public Axis[] XAxes 
         { 
-            get => _drawable; 
+            get => _xAxes; 
             set
             {
-                SetProperty(ref _drawable, value);
+                SetProperty(ref _xAxes, value);
             }
         }
+
         public Shooting Shooting 
         { 
             get => _shooting; 
@@ -45,9 +46,10 @@ namespace ShootCounter.ViewModels
 
         private string _shootingId = string.Empty;
         private Shooting _shooting = new();
-        private IDrawable _drawable;
-        private IEnumerable<ISeries> _runSeries;
+        private IEnumerable<ISeries> _runSeries = new List<ISeries>();
+        private Axis[] _xAxes;
         private readonly ShootingsViewModel _shootingsViewModel;
+
         public Command DeleteCommand { get; private set; }
 
         public string Text { get; set; } = "Shooting details";
@@ -97,45 +99,47 @@ namespace ShootCounter.ViewModels
                 IsBusy = true;
 
                 var shooting = await DataStore.GetItemAsync(Guid.Parse(id));
+
+                if (shooting == null)
+                {
+                    IsBusy = false;
+                    return;
+                }
+
                 CalculateShooting calculate = new();
                 Shooting = await calculate.Calculate(shooting);
 
-                var punkte = Shooting.Runs
-                    .Where(r => r.Results != null)
-                    .SelectMany(r => r.Results!.Select((wert, index) => new ChartDataPoint
-                    {
-                        RunNumber = r.RunNumber,
-                        HitIndex = index,
-                        Valuation = wert
-                    }))
-                    .ToList();
+                if (Shooting.Runs == null)
+                {
+                    IsBusy = false;
+                    return;
+                }
 
-                Drawable = new BarChartDrawable(punkte, shooting.TargetProperties.Valuations.Max());
+                List<string> xAxisLabels = new List<string>();
+                for (int x = 1; x <= Shooting.Runs.Count(); x++ )
+                {
+                   xAxisLabels.Add(x.ToString());
+                }
+
+                XAxes = new List<Axis>
+                {
+                    new Axis
+                    {
+                        Name = "Runs",
+                        Labels = xAxisLabels.ToList(),
+                    }
+                }.ToArray();
 
                 var maxLength = Shooting.Runs.Max(n => n.Results.Count());       
 
                 RunSeries = Enumerable.Range(0, maxLength + 1)
                     .Select(i => new ColumnSeries<int>
                     {
-                        Name = $"Round {i + 1}",
+                        Name = i >= maxLength ? "Placeholder" : $"Bullet {i + 1}",
                         Values = Shooting.Runs.Select(run =>
                             i < run.Results.Count() ? run.Results.ElementAt(i) : 0).ToList(),
-                        Fill = new SolidColorPaint(SKColors.CadetBlue),
+                        Fill = new SolidColorPaint(SKColors.BlueViolet),
                     }).ToList();
-
-
-
-
-
-
-                //foreach (var run in Shooting.Runs)
-                //{
-                //    var serie = new ColumnSeries<int> { Values = run.Results.ToList() };
-                //    runSeries.Add(serie);
-
-
-                //}
-
 
                 IsBusy = false;
             }
@@ -145,84 +149,6 @@ namespace ShootCounter.ViewModels
             }
 
             DeleteCommand.ChangeCanExecute();
-        }
-    }
-    public class ChartDataPoint
-    {
-        public int RunNumber { get; set; }
-        public int HitIndex { get; set; }
-        public int Valuation { get; set; }
-    }
-
-    public class BarChartDrawable : IDrawable
-    {
-        private List<ChartDataPoint> _punkte;
-        private readonly float _maxValue;
-
-        public BarChartDrawable(List<ChartDataPoint> punkte, float maxValue)
-        {
-            _punkte = punkte;
-            _maxValue = maxValue;
-        }
-
-        public void Draw(ICanvas canvas, RectF dirtyRect)
-        {
-            var gruppiert = _punkte.GroupBy(p => p.RunNumber).ToList();
-            float chartWidth = dirtyRect.Width;
-            float chartHeight = dirtyRect.Height - 100;
-            float spacing = 10;
-            float groupSpacing = 40;
-            float maxValue = _punkte.Max(p => p.Valuation);
-
-            float offset = 40;
-            float totalBars = gruppiert.Sum(g => g.Count());
-            float totalSpacing = (totalBars - 1) * spacing + (gruppiert.Count - 1) * groupSpacing;
-            float barWidth = (chartWidth - totalSpacing - offset - 20) / totalBars;
-
-
-            float x = spacing + offset;
-
-            foreach (var gruppe in gruppiert)
-            {
-                var totalValuation = 0;
-                var numberOfHits = 0;
-                var runNumber = 0;
-
-                foreach (var punkt in gruppe)
-                {
-                    float barHeight = (float)(punkt.Valuation / _maxValue) * (chartHeight - 20);
-                    canvas.FillColor = Colors.Blue;
-                    canvas.FillRectangle(x, chartHeight - barHeight, barWidth, barHeight);
-
-                    totalValuation += punkt.Valuation;
-                    numberOfHits++;
-                    runNumber = punkt.RunNumber;
-
-                    x += barWidth + spacing;
-                }
-
-                var percentage = Math.Round(totalValuation / (numberOfHits * _maxValue) * 100);
-                canvas.FontSize = 16;
-                canvas.DrawString(
-                        $"{runNumber}: {percentage}%",
-                        x - (numberOfHits * (barWidth + spacing)), chartHeight + 20, 60, 30,
-                        HorizontalAlignment.Center,
-                        VerticalAlignment.Top,
-                        TextFlow.OverflowBounds);
-
-                x += groupSpacing;
-            }
-
-
-            for (int i = 0; i <= 5; i++)
-            {
-                float value = _maxValue * i / 5;
-
-                float y = chartHeight - (i / 5f) * (chartHeight - 20);
-                canvas.FontSize = 16;
-                canvas.DrawString($"{value:0}", 0, y - 10, 40, 20, HorizontalAlignment.Left, VerticalAlignment.Top, TextFlow.OverflowBounds);
-                canvas.DrawLine(40, y, chartWidth, y);
-            }
         }
     }
 }
