@@ -8,6 +8,40 @@
         <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
 
+    <ContentPage.Resources>
+        <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
+            <Setter Property="BackgroundColor" Value="LightGray" />
+            <Setter Property="TextColor" Value="Black" />
+            <Setter Property="Padding" Value="15" />
+            <Setter Property="Margin" Value="0,5,0,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderColor" Value="Gray" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{x:StaticResource Primary}" />
+                                <Setter Property="TextColor" Value="White" />
+                                <Setter Property="BorderColor" Value="DarkBlue" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGray" />
+                                <Setter Property="TextColor" Value="Black" />
+                                <Setter Property="BorderColor" Value="Gray" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+    </ContentPage.Resources>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding AddBulletCommand}" Text="Add bullet" />
         <ToolbarItem Command="{Binding RemoveBulletCommand}" Text="Remove bullet" />
@@ -25,7 +59,7 @@
                         <CollectionView ItemsSource="{Binding Valuations}">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <RadioButton Content="{Binding Value}" IsChecked="{Binding Hit}" CheckedChanged="RadioButton_CheckedChanged"/>
+                                    <RadioButton Content="{Binding Value}" Value="{Binding Value}" IsChecked="{Binding Hit}" CheckedChanged="RadioButton_CheckedChanged" Style="{StaticResource ToggleRadioStyle}" WidthRequest="60" Padding="5"/>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
