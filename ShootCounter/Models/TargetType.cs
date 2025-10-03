@@ -11,5 +11,8 @@ namespace ShootCounter.Models
         Unknown = 0,
         OrderlyRapidFire = 1,
         PrecisionTarget = 2,
+        CombinationTargetB5 = 3,
+        CombinationTargetB10 = 4,
+        Morgarten = 5,
     }
 }
