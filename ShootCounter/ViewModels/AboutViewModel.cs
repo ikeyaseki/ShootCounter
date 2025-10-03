@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ShootCounter.ViewModels
 {
@@ -16,9 +17,26 @@ namespace ShootCounter.ViewModels
         public string AppBuild { get; } = AppInfo.BuildString;
         public string AppName { get; } = AppInfo.Name;
 
+        public ICommand OpenLinkCommand => new Command<string>(async (url) =>
+        {
+            if (!string.IsNullOrEmpty(url))
+                await Launcher.Default.OpenAsync(url);
+        });
+
         public AboutViewModel()
         {
             Title = "About";
+
+            Shell.Current.Navigating += (s, e) =>
+            {
+                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
+                {
+                    if (Shell.Current.CurrentPage is RunPage)
+                    {
+                        e.Cancel();
+                    }
+                }
+            };
         }
     }
 }

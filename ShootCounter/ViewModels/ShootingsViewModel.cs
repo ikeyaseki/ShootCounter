@@ -29,6 +29,17 @@ namespace ShootCounter.ViewModels
             SelectionChangedCommand = new Command<Shooting>(OnSelectionChangedCommand);
             DetailsCommand = new Command(async () => await ExecuteDetailsCommand(), CanExecuteDetailsCommand);
             ReloadShootingsCommand = new Command(async () => await LoadShootingsAsync());
+
+            Shell.Current.Navigating += (s, e) =>
+            {
+                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
+                {
+                    if (Shell.Current.CurrentPage is RunPage)
+                    {
+                        e.Cancel();
+                    }
+                }
+            };
         }
 
         private bool CanExecuteDetailsCommand()
@@ -72,7 +83,7 @@ namespace ShootCounter.ViewModels
 
                 foreach (var shooting in shootingStoreItems)
                 {
-                    Shootings.Add(shooting);
+                    Shootings.Add(await CalculateResults(shooting));
                 }
 
             }
@@ -80,6 +91,15 @@ namespace ShootCounter.ViewModels
             {
                 Debug.WriteLine(ex);
             }
+        }
+
+        private async Task<Shooting> CalculateResults(Shooting shooting)
+        {
+            CalculateShooting calculate = new();
+
+            shooting = await calculate.Calculate(shooting);
+
+            return shooting;
         }
 
         public Shooting? SelectedShooting
@@ -103,7 +123,7 @@ namespace ShootCounter.ViewModels
         public void OnAppearing()
         {
             IsBusy = true;
-            _selectedShoting = null;
+            SelectedShooting = null;
         }
     }
 }
