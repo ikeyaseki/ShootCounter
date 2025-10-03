@@ -60,6 +60,17 @@
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             Title = "Add new shooting";
+
+            Shell.Current.Navigating += (s, e) =>
+            {
+                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
+                {
+                    if (Shell.Current.CurrentPage is RunPage)
+                    {
+                        e.Cancel();
+                    }
+                }
+            };
         }
 
         private async void OnCancel()
