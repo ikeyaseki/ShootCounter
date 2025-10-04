@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ShootCounter.ViewModels
 {
-    public class ShootingsViewModel : BaseViewModel
+    public class TrainingsViewModel : BaseViewModel
     {
         private Shooting? _selectedShoting;
 
@@ -20,9 +20,9 @@ namespace ShootCounter.ViewModels
         public Command DetailsCommand { get; }
         public Command ReloadShootingsCommand { get; }
 
-        public ShootingsViewModel()
+        public TrainingsViewModel()
         {
-            Title = "Shootings";
+            Title = "Trainings";
             LoadShootingsCommand = new Command(async () => await ExecuteLoadShootingsCommand());
             AddShootingCommand = new Command(async () => await ExecuteAddShootingCommand());
             ShootingTapped = new Command<Shooting>(OnShootingSelected);
@@ -61,7 +61,7 @@ namespace ShootCounter.ViewModels
 
         private async Task ExecuteAddShootingCommand()
         {
-            await Shell.Current.GoToAsync(nameof(NewShootingPage), true);
+            await Shell.Current.GoToAsync(nameof(NewTrainingPage), true);
         }
 
         private async Task ExecuteLoadShootingsCommand()
@@ -117,7 +117,7 @@ namespace ShootCounter.ViewModels
             if (shooting == null)
                 return;
 
-            await Shell.Current.GoToAsync($"{nameof(ShootingDetailPage)}?{nameof(ShootingDetailViewModel.ShootingId)}={shooting.Id.ToString()}", true);
+            await Shell.Current.GoToAsync($"{nameof(TrainingDetailPage)}?{nameof(TrainingDetailViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }
 
         public void OnAppearing()

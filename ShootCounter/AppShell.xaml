@@ -20,7 +20,7 @@
                     Color="DarkSlateGray" />
             </ShellContent.Icon>
         </ShellContent>
-        <ShellContent Title="Shootings" ContentTemplate="{DataTemplate views:ShootingsPage}">
+        <ShellContent Title="Trainings" ContentTemplate="{DataTemplate views:TrainingsPage }">
             <ShellContent.Icon>
                 <FontImageSource
                     Glyph="{x:Static icons:IconFont.Pistol}"

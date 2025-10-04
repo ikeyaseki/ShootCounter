@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace ShootCounter.ViewModels
 {
     [QueryProperty(nameof(ShootingId), nameof(ShootingId))]
-    public class ShootingDetailViewModel : BaseViewModel
+    public class TrainingDetailViewModel : BaseViewModel
     {
         public IEnumerable<ISeries> RunSeries 
         { 
@@ -48,11 +48,9 @@ namespace ShootCounter.ViewModels
         private Shooting _shooting = new();
         private IEnumerable<ISeries> _runSeries = new List<ISeries>();
         private Axis[] _xAxes;
-        private readonly ShootingsViewModel _shootingsViewModel;
+        private readonly TrainingsViewModel _shootingsViewModel;
 
         public Command DeleteCommand { get; private set; }
-
-        public string Text { get; set; } = "Shooting details";
 
         public string ShootingId
         {
@@ -64,10 +62,10 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public ShootingDetailViewModel(ShootingsViewModel shootingsViewModel)
+        public TrainingDetailViewModel(TrainingsViewModel shootingsViewModel)
         {
             _shootingsViewModel = shootingsViewModel;
-            Title = "Shooting Detail";
+            Title = "Training detail";
             DeleteCommand = new Command(async () => await ExecuteDelete(), CanExecuteSave);
         }
 
@@ -88,7 +86,7 @@ namespace ShootCounter.ViewModels
             {
                 await DataStore.DeleteItemAsync(Shooting.Id);
 
-                await Shell.Current.GoToAsync($"{nameof(ShootingsPage)}", true);
+                await Shell.Current.GoToAsync($"{nameof(TrainingsPage)}", true);
             }
         }
 

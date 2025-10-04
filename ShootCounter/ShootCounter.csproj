@@ -67,22 +67,34 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\NewTrainingPage.xaml.cs">
+	    <DependentUpon>NewTrainingPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\TrainingsDetailPage.xaml.cs">
+	    <DependentUpon>TrainingsDetailPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\TrainingsPage.xaml.cs">
+	    <DependentUpon>TrainingsPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="Resources\Styles\CounterStyle.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\AboutPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\NewShootingPage.xaml">
+	  <MauiXaml Update="Views\NewTrainingPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\RunPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\ShootingDetailPage.xaml">
+	  <MauiXaml Update="Views\TrainingsDetailPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\ShootingsPage.xaml">
+	  <MauiXaml Update="Views\TrainingsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

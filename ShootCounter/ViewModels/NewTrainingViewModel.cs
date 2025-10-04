@@ -1,6 +1,6 @@
 ﻿namespace ShootCounter.ViewModels
 {
-    public class NewShootingViewModel : BaseViewModel
+    public class NewTrainingViewModel : BaseViewModel
     {
         private string _location = string.Empty;
         private TargetProperties? _selectedTarget = null;
@@ -55,11 +55,11 @@
             }
         }
 
-        public NewShootingViewModel()
+        public NewTrainingViewModel()
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
-            Title = "Add new shooting";
+            Title = "Add new training";
 
             Shell.Current.Navigating += (s, e) =>
             {

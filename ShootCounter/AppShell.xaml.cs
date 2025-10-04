@@ -5,10 +5,10 @@
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(ShootingDetailPage), typeof(ShootingDetailPage));
-            Routing.RegisterRoute(nameof(NewShootingPage), typeof(NewShootingPage));
+            Routing.RegisterRoute(nameof(TrainingDetailPage), typeof(TrainingDetailPage));
+            Routing.RegisterRoute(nameof(NewTrainingPage), typeof(NewTrainingPage));
             Routing.RegisterRoute(nameof(RunPage), typeof(RunPage));
-            Routing.RegisterRoute(nameof(ShootingsPage), typeof(ShootingsPage));
+            Routing.RegisterRoute(nameof(TrainingsPage), typeof(TrainingsPage));
         }
     }
 }
