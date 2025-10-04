@@ -17,12 +17,12 @@ namespace ShootCounter.Converter
                 if (minutes == 0)
                     minutes = 1;
                 if (minutes == 1)
-                    return $"{minutes} minute";
+                    return $"{minutes} Minute";
 
-                return $"{minutes} minutes";
+                return $"{minutes} Minuten";
             }
 
-            return "unknown";
+            return "unbekannt";
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

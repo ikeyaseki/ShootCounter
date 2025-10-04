@@ -1,14 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace ShootCounter.Services
 {
     class CalculateShooting
     {
-        public Task<Shooting> Calculate(Shooting shooting)
+        public Task<ShootingCompetition> CalculateCompetition(ShootingCompetition competition)
+        {
+            competition.Result = 0;
+
+            if (competition.Runs == null)
+                return Task.FromResult(competition);
+
+            foreach (var run in competition.Runs)
+            {
+                if (run.Results == null)
+                    throw new Exception("Run results can not be null here");
+
+                competition.Result += run.Results.Sum();
+            }
+
+            return Task.FromResult(competition);
+        }
+
+        public Task<Shooting> CalculateTraining(Shooting shooting)
         {
             shooting.TotalBullets = 0;
             shooting.MaxPoints = 0;

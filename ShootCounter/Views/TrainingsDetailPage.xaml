@@ -14,7 +14,7 @@
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding DeleteCommand}" Text="Delete" />
+        <ToolbarItem Command="{Binding DeleteCommand}" Text="Löschen" />
     </ContentPage.ToolbarItems>
 
     <ScrollView Orientation="Vertical">

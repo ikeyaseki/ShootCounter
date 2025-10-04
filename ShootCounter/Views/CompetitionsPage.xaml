@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.CompetitionsPage"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
+             xmlns:model="clr-namespace:ShootCounter.Models"
+             xmlns:vm="clr-namespace:ShootCounter.ViewModels"
+             xmlns:icons="clr-namespace:ShootCounter.Services"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converter:DurationToStringConverter x:Key="DurationConverter" />
+    </ContentPage.Resources>
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
+    </Shell.BackButtonBehavior>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding AddShootingCommand}" Text="Neu" />
+        <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView Command="{Binding LoadShootingsCommand}" IsRefreshing="{Binding IsBusy}">
+        <CollectionView x:Name="ShootingListView" ItemsSource="{Binding ShootingCompetitions}" SelectedItem="{Binding SelectedShootingCompetition}" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="5,10,5,10" 
+                        Stroke="DarkGray"
+                        StrokeThickness="2">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <StackLayout Padding="10" x:DataType="model:Shooting">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                              ColumnDefinitions="0.5*,0.5*">
+                                <Label Style="{StaticResource TableHeader}" 
+                                   Text="{Binding CompetitionProperties.Name}"
+                                   Grid.Row="0"
+                                   Grid.ColumnSpan="2" />
+                                <Label Style="{StaticResource TableContent}" 
+                                   Text="{Binding Location}"
+                                   Grid.Row="1"
+                                   Grid.ColumnSpan="2" />
+                                <Label Style="{StaticResource TableContent}"
+                                   Text="{Binding StartTime}"
+                                   Grid.Row="2"
+                                   Grid.Column="0" />
+                                <HorizontalStackLayout Grid.Row="2"
+                                                   Grid.Column="1">
+                                    <Label Style="{StaticResource TableContentIcon}"
+                                       Text="{x:Static icons:IconFont.ClockTimeNineOutline}" />
+                                    <Label Style="{StaticResource TableContent}"
+                                       Text="{Binding Duration, Converter={StaticResource DurationConverter}}" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Row="3"
+                                                   Grid.Column="0">
+                                    <Label Style="{StaticResource TableContentIcon}"
+                                       Text="{x:Static icons:IconFont.Pistol}" />
+                                    <Label Style="{StaticResource TableContent}"
+                                       Text="{Binding Weapon}" />
+                                </HorizontalStackLayout>
+                                <BoxView HeightRequest="1"                                  
+                                     Color="DarkGray"
+                                     Margin="0,10"
+                                     Grid.Row="4"
+                                     Grid.ColumnSpan="2"/>
+                                <HorizontalStackLayout Grid.Row="5"
+                                                   Grid.Column="0">
+                                    <Label Style="{StaticResource TableContentIcon}"
+                                       Text="{x:Static icons:IconFont.ArrowAll}" />
+                                    <Label Style="{StaticResource TableContentIcon}"
+                                       Text="{x:Static icons:IconFont.GiftOutline}" />
+                                    <Label Style="{StaticResource TableContent}"
+                                       Text="{Binding MaxPoints}" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Grid.Row="5"
+                                                   Grid.Column="1">
+                                    <Label Style="{StaticResource TableContentIcon}"
+                                       Text="{x:Static icons:IconFont.Account}" />
+                                    <Label Style="{StaticResource TableContentIcon}"
+                                       Text="{x:Static icons:IconFont.GiftOutline}" />
+                                    <Label Style="{StaticResource TableContent}"
+                                       Text="{Binding TotalPoints}" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CompetitionsViewModel}}, Path=ShootingTapped}"
+                                        CommandParameter="{Binding .}"
+                                        NumberOfTapsRequired="2" />
+                                <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CompetitionsViewModel}}, Path=SelectionChangedCommand}"
+                                        CommandParameter="{Binding .}"
+                                        NumberOfTapsRequired="1" />
+                            </StackLayout.GestureRecognizers>
+                        </StackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <ContentView>
+                    <VerticalStackLayout>
+                        <Label Text="Empty" />
+                    </VerticalStackLayout>
+                </ContentView>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </RefreshView>
+
+</ContentPage>

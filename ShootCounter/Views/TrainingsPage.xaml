@@ -14,15 +14,13 @@
     </ContentPage.Resources>
 
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IsVisible="False" />
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding AddShootingCommand}" Text="New" />
+        <ToolbarItem Command="{Binding AddShootingCommand}" Text="Neu" />
         <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />
     </ContentPage.ToolbarItems>
-
-
 
     <RefreshView Command="{Binding LoadShootingsCommand}" IsRefreshing="{Binding IsBusy}">
         <CollectionView x:Name="ShootingListView" ItemsSource="{Binding Shootings}" SelectedItem="{Binding SelectedShooting}" SelectionMode="Single">

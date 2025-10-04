@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.NewCompetitionPage"
+             Title="{Binding Title}">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
+    </Shell.BackButtonBehavior>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding CancelCommand}" Text="Abbruch" />
+        <ToolbarItem Command="{Binding SaveCommand}" Text="Weiter" />
+    </ContentPage.ToolbarItems>
+
+    <VerticalStackLayout>
+        <Border Margin="5,10,5,10" 
+                Stroke="DarkGray"
+                StrokeThickness="2">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+
+            <StackLayout Padding="5">
+                <Label FontSize="Medium" Text="Ort" />
+                <Entry FontSize="Medium" 
+                       Text="{Binding Location, Mode=TwoWay}" 
+                       Keyboard="Text"/>
+                <Label FontSize="Medium" Text="Wettkampf" />
+                <Picker Title="Select competition"
+                        ItemsSource="{Binding Competitions}"
+                        ItemDisplayBinding="{Binding Name}"
+                        SelectedItem="{Binding SelectedCompetition}" />
+                <Label FontSize="Medium" Text="Waffe" />
+                <Entry FontSize="Medium" 
+                       Text="{Binding Weapon, Mode=TwoWay}"
+                       Keyboard="Default"/>
+            </StackLayout>
+        </Border>
+
+
+        <CollectionView ItemsSource="{Binding CompetitionInfos}" Margin="10,20,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Label Text="{Binding .}" FontSize="Medium" Padding="5"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+    
+    
+</ContentPage>

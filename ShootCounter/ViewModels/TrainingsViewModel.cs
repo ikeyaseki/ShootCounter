@@ -79,7 +79,7 @@ namespace ShootCounter.ViewModels
             {
                 Shootings.Clear();
 
-                var shootingStoreItems = await DataStore.GetItemsAsync(true);
+                var shootingStoreItems = await TrainingDataStore.GetItemsAsync(true);
 
                 foreach (var shooting in shootingStoreItems)
                 {
@@ -97,7 +97,7 @@ namespace ShootCounter.ViewModels
         {
             CalculateShooting calculate = new();
 
-            shooting = await calculate.Calculate(shooting);
+            shooting = await calculate.CalculateTraining(shooting);
 
             return shooting;
         }

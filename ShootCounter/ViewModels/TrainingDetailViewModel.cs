@@ -65,7 +65,7 @@ namespace ShootCounter.ViewModels
         public TrainingDetailViewModel(TrainingsViewModel shootingsViewModel)
         {
             _shootingsViewModel = shootingsViewModel;
-            Title = "Training detail";
+            Title = "Training Details";
             DeleteCommand = new Command(async () => await ExecuteDelete(), CanExecuteSave);
         }
 
@@ -77,14 +77,14 @@ namespace ShootCounter.ViewModels
         private async Task ExecuteDelete()
         {
             bool confirm = await Shell.Current.DisplayAlert(
-                "Stop shooting",
-                "Are you shure to delete shooting?",
-                "Yes",
-                "No");
+                "Training löschen",
+                "Willst du das Training wirklich löschen?",
+                "Ja",
+                "Nein");
 
             if (confirm)
             {
-                await DataStore.DeleteItemAsync(Shooting.Id);
+                await TrainingDataStore.DeleteItemAsync(Shooting.Id);
 
                 await Shell.Current.GoToAsync($"{nameof(TrainingsPage)}", true);
             }
@@ -96,7 +96,7 @@ namespace ShootCounter.ViewModels
             {
                 IsBusy = true;
 
-                var shooting = await DataStore.GetItemAsync(Guid.Parse(id));
+                var shooting = await TrainingDataStore.GetItemAsync(Guid.Parse(id));
 
                 if (shooting == null)
                 {
@@ -105,7 +105,7 @@ namespace ShootCounter.ViewModels
                 }
 
                 CalculateShooting calculate = new();
-                Shooting = await calculate.Calculate(shooting);
+                Shooting = await calculate.CalculateTraining(shooting);
 
                 if (Shooting.Runs == null)
                 {
@@ -123,7 +123,7 @@ namespace ShootCounter.ViewModels
                 {
                     new Axis
                     {
-                        Name = "Runs",
+                        Name = "Passen",
                         Labels = xAxisLabels.ToList(),
                     }
                 }.ToArray();
@@ -133,7 +133,7 @@ namespace ShootCounter.ViewModels
                 RunSeries = Enumerable.Range(0, maxLength + 1)
                     .Select(i => new ColumnSeries<int>
                     {
-                        Name = i >= maxLength ? "Placeholder" : $"Bullet {i + 1}",
+                        Name = i >= maxLength ? "Platzhalter" : $"Schuss {i + 1}",
                         Values = Shooting.Runs.Select(run =>
                             i < run.Results.Count() ? run.Results.ElementAt(i) : 0).ToList(),
                         Fill = new SolidColorPaint(SKColors.BlueViolet),

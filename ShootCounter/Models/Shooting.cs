@@ -25,10 +25,15 @@ namespace ShootCounter.Models
         public IEnumerable<Run>? Runs { get; set; }
         [Ignore]
         public int TotalBullets { get; set; }
+        [Ignore]
         public int MaxPoints { get; set; }
+        [Ignore]
         public int TotalPoints { get; set; }
+        [Ignore]
         public double TotalPercentage { get; set; }
+        [Ignore]
         public int BulletsMaxPoints { get; set; }
+        [Ignore]
         public int BulletsZeroPoints { get; set; }
 
         public Shooting()

@@ -9,6 +9,9 @@
             Routing.RegisterRoute(nameof(NewTrainingPage), typeof(NewTrainingPage));
             Routing.RegisterRoute(nameof(RunPage), typeof(RunPage));
             Routing.RegisterRoute(nameof(TrainingsPage), typeof(TrainingsPage));
+            Routing.RegisterRoute(nameof(CompetitionsPage), typeof(CompetitionsPage));
+            Routing.RegisterRoute(nameof(NewCompetitionPage), typeof(NewCompetitionPage));
+            Routing.RegisterRoute(nameof(CompetitionDetailPage), typeof(CompetitionDetailPage));
         }
     }
 }

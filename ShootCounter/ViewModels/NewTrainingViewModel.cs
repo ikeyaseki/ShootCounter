@@ -59,7 +59,7 @@
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
-            Title = "Add new training";
+            Title = "Neues Training";
 
             Shell.Current.Navigating += (s, e) =>
             {
@@ -95,7 +95,7 @@
                 BulletsPerRun = BulletsPerRun
             };
 
-            await DataStore.AddItemAsync(shooting);
+            await TrainingDataStore.AddItemAsync(shooting);
 
             await Shell.Current.GoToAsync($"{nameof(RunPage)}?{nameof(RunViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }

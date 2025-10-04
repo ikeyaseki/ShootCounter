@@ -11,7 +11,7 @@
 
 
     <TabBar>
-        <ShellContent Title="About" ContentTemplate="{DataTemplate views:AboutPage}">
+        <ShellContent Title="Info" ContentTemplate="{DataTemplate views:AboutPage}">
             <ShellContent.Icon>
                 <FontImageSource
                     Glyph="{x:Static icons:IconFont.InformationOutline}"
@@ -27,6 +27,15 @@
                     FontFamily="IconFont"
                     Size="24"
                     Color="DarkSlateGray" />
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Wettkämpfe" ContentTemplate="{DataTemplate views:CompetitionsPage }">
+            <ShellContent.Icon>
+                <FontImageSource
+            Glyph="{x:Static icons:IconFont.Bullseye}"
+            FontFamily="IconFont"
+            Size="24"
+            Color="DarkSlateGray" />
             </ShellContent.Icon>
         </ShellContent>
     </TabBar>

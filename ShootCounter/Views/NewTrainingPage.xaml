@@ -6,7 +6,7 @@
              Title="{Binding Title}">
 
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IsVisible="False" />
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
 
     <ContentPage.Resources>
@@ -14,32 +14,42 @@
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding CancelCommand}" Text="Cancel" />
-        <ToolbarItem Command="{Binding SaveCommand}" Text="Continue" />
+        <ToolbarItem Command="{Binding CancelCommand}" Text="Abbruch" />
+        <ToolbarItem Command="{Binding SaveCommand}" Text="Weiter" />
     </ContentPage.ToolbarItems>
     
     <VerticalStackLayout>
-        <Label FontSize="Medium" Text="Location" />
-        <Entry FontSize="Medium" 
+        <Border Margin="5,10,5,10" 
+        Stroke="DarkGray"
+        StrokeThickness="2">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+
+            <StackLayout Padding="5">
+                <Label FontSize="Medium" Text="Ort" />
+                <Entry FontSize="Medium" 
                Text="{Binding Location, Mode=TwoWay}" 
                Keyboard="Text"/>
-        <Label FontSize="Medium" Text="Distance" />
-        <Picker Title="Select distance"
+                <Label FontSize="Medium" Text="Distanz" />
+                <Picker Title="Select distance"
                 ItemsSource="{Binding Distances}"
                 ItemDisplayBinding="{Binding ., Converter={StaticResource DistanceTypeConverter}}"
                 SelectedItem="{Binding SelectedDistance}" />
-        <Label FontSize="Medium" Text="Target" />
-        <Picker Title="Select target"
+                <Label FontSize="Medium" Text="Scheibe" />
+                <Picker Title="Select target"
                 ItemsSource="{Binding Targets}"
                 ItemDisplayBinding="{Binding Name}"
                 SelectedItem="{Binding SelectedTarget}" />
-        <Label FontSize="Medium" Text="Weapon" />
-        <Entry FontSize="Medium" 
+                <Label FontSize="Medium" Text="Waffe" />
+                <Entry FontSize="Medium" 
                Text="{Binding Weapon, Mode=TwoWay}"
                Keyboard="Default"/>
-        <Label FontSize="Medium" Text="Bullets per run" />
-        <Entry FontSize="Medium" 
+                <Label FontSize="Medium" Text="Schüsse pro Passe" />
+                <Entry FontSize="Medium" 
                Text="{Binding BulletsPerRun, Mode=TwoWay}"
                Keyboard="Numeric"/>
+            </StackLayout>
+        </Border>
     </VerticalStackLayout>
 </ContentPage>
