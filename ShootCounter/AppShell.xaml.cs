@@ -12,6 +12,7 @@
             Routing.RegisterRoute(nameof(CompetitionsPage), typeof(CompetitionsPage));
             Routing.RegisterRoute(nameof(NewCompetitionPage), typeof(NewCompetitionPage));
             Routing.RegisterRoute(nameof(CompetitionDetailPage), typeof(CompetitionDetailPage));
+            Routing.RegisterRoute(nameof(CompetitionRunPage), typeof(CompetitionRunPage));
         }
     }
 }

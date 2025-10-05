@@ -48,6 +48,7 @@ namespace ShootCounter
             builder.Services.AddTransient<CompetitionsViewModel>();
             builder.Services.AddTransient<NewCompetitionViewModel>();
             builder.Services.AddTransient<CompetitionDetailViewModel>();
+            builder.Services.AddTransient<CompetitionRunViewModel>();
 
             var app = builder.Build();
 

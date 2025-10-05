@@ -80,7 +80,7 @@
 
         private bool ValidateSave()
         {
-            return Location != string.Empty && SelectedTarget != null && BulletsPerRun != null;
+            return Location != string.Empty && SelectedTarget != null && BulletsPerRun != null && Weapon != string.Empty;
         }
 
         private async void OnSave()

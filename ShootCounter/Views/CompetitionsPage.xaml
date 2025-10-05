@@ -31,7 +31,7 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="10" />
                         </Border.StrokeShape>
-                        <StackLayout Padding="10" x:DataType="model:Shooting">
+                        <StackLayout Padding="10" x:DataType="model:ShootingCompetition">
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
                               ColumnDefinitions="0.5*,0.5*">
                                 <Label Style="{StaticResource TableHeader}" 
@@ -72,7 +72,7 @@
                                     <Label Style="{StaticResource TableContentIcon}"
                                        Text="{x:Static icons:IconFont.GiftOutline}" />
                                     <Label Style="{StaticResource TableContent}"
-                                       Text="{Binding MaxPoints}" />
+                                       Text="{Binding CompetitionProperties.MaxPoints}" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Grid.Row="5"
                                                    Grid.Column="1">
@@ -81,7 +81,7 @@
                                     <Label Style="{StaticResource TableContentIcon}"
                                        Text="{x:Static icons:IconFont.GiftOutline}" />
                                     <Label Style="{StaticResource TableContent}"
-                                       Text="{Binding TotalPoints}" />
+                                       Text="{Binding Result}" />
                                 </HorizontalStackLayout>
                             </Grid>
                             <StackLayout.GestureRecognizers>

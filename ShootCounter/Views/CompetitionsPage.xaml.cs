@@ -7,4 +7,10 @@ public partial class CompetitionsPage : ContentPage
 		InitializeComponent();
 		BindingContext = competitionsViewModel;
 	}
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        (BindingContext as CompetitionsViewModel)?.OnAppearing();
+    }
 }

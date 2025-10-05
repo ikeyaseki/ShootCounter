@@ -85,7 +85,7 @@ namespace ShootCounter.ViewModels
 
         private bool ValidateSave()
         {
-            return Location != string.Empty && SelectedCompetition != null;
+            return Location != string.Empty && SelectedCompetition != null && Weapon != string.Empty;
         }
 
         private async void OnSave()
@@ -100,7 +100,7 @@ namespace ShootCounter.ViewModels
 
             await CompetitionDataStore.AddItemAsync(competition);
 
-
+            await Shell.Current.GoToAsync($"{nameof(CompetitionRunPage)}?{nameof(CompetitionRunViewModel.ShootingId)}={competition.Id.ToString()}", true);
         }
 
         private void GetCompetitionInfos()
