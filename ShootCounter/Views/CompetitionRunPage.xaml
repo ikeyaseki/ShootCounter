@@ -11,7 +11,8 @@
 
     <ContentPage.Resources>
         <converter:CompetitionStateToStringConverter x:Key="CompetitionStateConverter" />
-        
+        <converter:WarningStateToBackgroundColorConverter x:Key="WarningStateConverter" />
+
         <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
             <Setter Property="BackgroundColor" Value="LightGray" />
             <Setter Property="TextColor" Value="Black" />
@@ -67,26 +68,38 @@
                 </HorizontalStackLayout>
                 <Label Text="{Binding CompetitionState, Converter={StaticResource CompetitionStateConverter}}"
                        FontSize="Medium"
-                       Margin="15,0,0,0" />
+                       Margin="15,15,0,0" 
+                       FontAttributes="Bold"/>
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="True">
+            <VerticalStackLayout IsVisible="{Binding IsEnabledInfo}">
                 <Label Text="Info"
                        FontSize="Medium"
                        FontAttributes="Bold"
                        Margin="15,20,0,0" />
-                <Label Text="Dieser Wettkampf erlaubt Probeschüsse. Schiesse diese selbständig bevor du die erste Passe startest."
-                       FontSize="Medium"
-                       Margin="15,10,0,0" />
-                <Label Text="Die Schüsse dieser Passe werden einzeln gezeigt."
-                       FontSize="Medium"
-                       Margin="15,10,0,0" />
-                <Label Text="Lade 1 Patrone und starte die Passe."
-                       FontSize="Medium"
-                       Margin="15,10,0,0"/>
             </VerticalStackLayout>
-            
-            <VerticalStackLayout IsVisible="{Binding ShowTargetValuations}">
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledPrepare}">
+                <Label Text="Prepare"
+                       FontSize="Medium"
+                       FontAttributes="Bold"
+                       Margin="15,20,0,0" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledShooting}">
+                <Border  Margin="5,10,5,10"
+                         BackgroundColor="{Binding WarningState, Converter={StaticResource WarningStateConverter}}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding SecondsTimer}"
+                           FontSize="200"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}">
                 <CollectionView x:Name="BulletListView" 
                 ItemsSource="{Binding Bullets}" 
                 ItemsLayout="HorizontalList">
@@ -105,6 +118,13 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledResult}">
+                <Label Text="Resultat"
+                       FontSize="Medium"
+                       FontAttributes="Bold"
+                       Margin="15,20,0,0" />
             </VerticalStackLayout>
 
             <Button Text="Weiter" Command="{Binding ContinueCommand}" Margin="5" />

@@ -1,11 +1,5 @@
 ﻿using ShootCounter.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ShootCounter.ViewModels
 {
@@ -17,14 +11,85 @@ namespace ShootCounter.ViewModels
         private IEnumerable<BulletTemplate> _bullets = [];
         private int _runNumber;
         private string _passeString = string.Empty;
-        private bool _showTargetValuations;
         private CompetitionState _competitionState;
         private int _singleShoot = 0;
         private string _singleShootString = string.Empty;
+        private bool _isEnabledInfo;
+        private bool _isEnabledPrepare;
+        private bool _isEnabledShooting;
+        private bool _isEnabledCountPoints;
+        private bool _isEnabledResult;
+        private int _secondsTimer = 0;
+        private int _timerDuration;
+        private WarningState _warningState;
+        private Timer _timer;
 
         public Command SaveCommand { get; }
         public Command StopCommand { get; }
         public Command ContinueCommand { get; }
+
+        public WarningState WarningState 
+        {
+            get => _warningState;
+            set
+            {
+                SetProperty(ref _warningState, value);
+            }
+        }
+
+        public int SecondsTimer
+        {
+            get => _secondsTimer;
+            set
+            {
+                SetProperty(ref _secondsTimer, value);
+            }
+        }
+
+        public bool IsEnabledInfo
+        {
+            get => _isEnabledInfo;
+            set
+            {
+                SetProperty(ref _isEnabledInfo, value);
+            }
+        }
+
+        public bool IsEnabledPrepare
+        {
+            get => _isEnabledPrepare;
+            set
+            {
+                SetProperty(ref _isEnabledPrepare, value);
+            }
+        }
+
+        public bool IsEnabledShooting
+        {
+            get => _isEnabledShooting;
+            set
+            {
+                SetProperty(ref _isEnabledShooting, value);
+            }
+        }
+
+        public bool IsEnabledCountPoints
+        {
+            get => _isEnabledCountPoints;
+            set
+            {
+                SetProperty(ref _isEnabledCountPoints, value);
+            }
+        }
+
+        public bool IsEnabledResult
+        {
+            get => _isEnabledResult;
+            set
+            {
+                SetProperty(ref _isEnabledResult, value);
+            }
+        }
 
         public int SingleShoot
         {
@@ -51,15 +116,6 @@ namespace ShootCounter.ViewModels
             set
             {
                 SetProperty(ref _competitionState, value);
-            }
-        }
-
-        public bool ShowTargetValuations
-        {
-            get => _showTargetValuations;
-            set
-            {
-                SetProperty(ref _showTargetValuations, value);
             }
         }
 
@@ -114,6 +170,7 @@ namespace ShootCounter.ViewModels
         {
             Title = "Wettkampf";
             CompetitionState = CompetitionState.Info;
+            IsEnabledChange();
             SaveCommand = new Command(OnSave, CanExecuteSave);
             StopCommand = new Command(OnStop, CanExecuteStop);
             ContinueCommand = new Command(OnContinue, CanExecuteContinue);
@@ -142,6 +199,49 @@ namespace ShootCounter.ViewModels
               
 
             StateChange();
+            IsEnabledChange();
+        }
+
+        private void IsEnabledChange()
+        {
+            switch (CompetitionState)
+            {
+                case CompetitionState.Info:
+                    IsEnabledInfo = true;
+                    IsEnabledPrepare = false;
+                    IsEnabledShooting = false;
+                    IsEnabledCountPoints = false;
+                    IsEnabledResult = false;
+                    break;
+                case CompetitionState.Prepare:
+                    IsEnabledInfo = false;
+                    IsEnabledPrepare = true;
+                    IsEnabledShooting = false;
+                    IsEnabledCountPoints = false;
+                    IsEnabledResult = false;
+                    break;
+                case CompetitionState.Shooting:
+                    IsEnabledInfo = false;
+                    IsEnabledPrepare = false;
+                    IsEnabledShooting = true;
+                    IsEnabledCountPoints = false;
+                    IsEnabledResult = false;
+                    break;
+                case CompetitionState.CountPoints:
+                    IsEnabledInfo = false;
+                    IsEnabledPrepare = false;
+                    IsEnabledShooting = false;
+                    IsEnabledCountPoints = true;
+                    IsEnabledResult = false;
+                    break;
+                case CompetitionState.Result:
+                    IsEnabledInfo = false;
+                    IsEnabledPrepare = false;
+                    IsEnabledShooting = false;
+                    IsEnabledCountPoints = false;
+                    IsEnabledResult = true;
+                    break;
+            }
         }
 
         private void StateChange()
@@ -157,9 +257,16 @@ namespace ShootCounter.ViewModels
                     CompetitionState = CompetitionState.Prepare;
                     break;
                 case CompetitionState.Prepare:
+                    int? duration = Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Duration;
+
+                    if (duration.HasValue)
+                        StartTimer(duration.Value);
+
                     CompetitionState = CompetitionState.Shooting;
                     break;
                 case CompetitionState.Shooting:
+                    _timer?.Dispose();
+                    SecondsTimer = 0;
                     CompetitionState = CompetitionState.CountPoints;
                     break;
                 case CompetitionState.CountPoints:
@@ -201,6 +308,23 @@ namespace ShootCounter.ViewModels
                     }
                     break;
             }
+        }
+
+        private void StartTimer(int value)
+        {
+            _timerDuration = value;
+            WarningState = WarningState.Ok;
+            _timer = new Timer(OnTimerTick, null, 0, 1000);
+        }
+
+        private void OnTimerTick(object? state)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                SecondsTimer++;
+                if (SecondsTimer > _timerDuration)
+                    WarningState = WarningState.Warning;
+            });
         }
 
         private async void LoadItemId(string itemId)

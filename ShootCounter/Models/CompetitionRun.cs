@@ -8,5 +8,6 @@ namespace ShootCounter.Models
         public int NumberOfBullets { get; set; }
         public int? Duration { get; set; }
         public bool Einzelgezeigt { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
