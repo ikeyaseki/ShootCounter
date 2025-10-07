@@ -19,7 +19,7 @@ namespace ShootCounter.Models
                 TrialShots = true,
                 CompetitionRuns = new List<CompetitionRun>
                 {
-                    new CompetitionRun() { RunNumber = 1, Duration = null, NumberOfBullets = 5, Einzelgezeigt = true },
+                    new CompetitionRun() { RunNumber = 1, Duration = 60, NumberOfBullets = 5, Einzelgezeigt = true },
                     new CompetitionRun() { RunNumber = 2, Duration = 50, NumberOfBullets = 5, Einzelgezeigt = false },
                     new CompetitionRun() { RunNumber = 3, Duration = 40, NumberOfBullets = 5, Einzelgezeigt = false },
                     new CompetitionRun() { RunNumber = 4, Duration = 30, NumberOfBullets = 5, Einzelgezeigt = false },
@@ -39,7 +39,7 @@ namespace ShootCounter.Models
                 TrialShots = false,
                 CompetitionRuns = new List<CompetitionRun>
                 {
-                    new CompetitionRun() { RunNumber = 1, Duration = null, NumberOfBullets = 3, Einzelgezeigt = true },
+                    new CompetitionRun() { RunNumber = 1, Duration = 20, NumberOfBullets = 3, Einzelgezeigt = true },
                     new CompetitionRun() { RunNumber = 2, Duration = 50, NumberOfBullets = 5, Einzelgezeigt = false },
                     new CompetitionRun() { RunNumber = 3, Duration = 40, NumberOfBullets = 5, Einzelgezeigt = false },
                     new CompetitionRun() { RunNumber = 4, Duration = 30, NumberOfBullets = 5, Einzelgezeigt = false },
@@ -59,7 +59,7 @@ namespace ShootCounter.Models
                 TrialShots = false,
                 CompetitionRuns = new List<CompetitionRun>
                 {
-                    new CompetitionRun() { RunNumber = 1, Duration = null, NumberOfBullets = 6, Einzelgezeigt = true },
+                    new CompetitionRun() { RunNumber = 1, Duration = 60, NumberOfBullets = 6, Einzelgezeigt = true },
                     new CompetitionRun() { RunNumber = 2, Duration = 60, NumberOfBullets = 3, Einzelgezeigt = false },
                     new CompetitionRun() { RunNumber = 3, Duration = 60, NumberOfBullets = 3, Einzelgezeigt = false },
                     new CompetitionRun() { RunNumber = 4, Duration = 60, NumberOfBullets = 6, Einzelgezeigt = false },

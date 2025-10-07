@@ -124,11 +124,22 @@ namespace ShootCounter.ViewModels
             {
                 var text = $"- {run.NumberOfBullets} Schuss";
 
-                if (run.Duration != null)
-                    text = $"{text} in {run.Duration}s";
-
                 if (run.Einzelgezeigt)
-                    text = $"{text} einzeln gezeigt";
+                {
+                    if (run.Duration != null)
+                    {
+                        text = $"{text} in je {run.Duration}s einzeln gezeigt";
+                    }
+                    else
+                    {
+                        text = $"{text} einzeln gezeigt";
+                    }
+                }
+                else
+                {
+                    if (run.Duration != null)
+                        text = $"{text} in {run.Duration}s";
+                }
 
                 competitionInfos.Add(text);
             }

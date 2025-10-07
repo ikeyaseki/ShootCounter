@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShootCounter.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,22 +18,53 @@ namespace ShootCounter.ViewModels
         private int _runNumber;
         private string _passeString = string.Empty;
         private bool _showTargetValuations;
+        private CompetitionState _competitionState;
+        private int _singleShoot = 0;
+        private string _singleShootString = string.Empty;
 
         public Command SaveCommand { get; }
         public Command StopCommand { get; }
         public Command ContinueCommand { get; }
 
-        public bool ShowTargetValuations 
-        { 
-            get => _showTargetValuations; 
+        public int SingleShoot
+        {
+            get => _singleShoot;
+            set
+            {
+                SetProperty(ref _singleShoot, value);
+                SingleShootString = _singleShoot != 0 ? $"Einzelschuss {_singleShoot}" : string.Empty;
+            }
+        }
+
+        public string SingleShootString
+        {
+            get => _singleShootString;
+            set
+            {
+                SetProperty(ref _singleShootString, value);
+            }
+        }
+
+        public CompetitionState CompetitionState
+        {
+            get => _competitionState;
+            set
+            {
+                SetProperty(ref _competitionState, value);
+            }
+        }
+
+        public bool ShowTargetValuations
+        {
+            get => _showTargetValuations;
             set
             {
                 SetProperty(ref _showTargetValuations, value);
             }
         }
 
-        public string PasseString 
-        { 
+        public string PasseString
+        {
             get => _passeString;
             set
             {
@@ -40,9 +72,9 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public ShootingCompetition Shooting 
-        { 
-            get => _shooting; 
+        public ShootingCompetition Shooting
+        {
+            get => _shooting;
             set
             {
                 SetProperty(ref _shooting, value);
@@ -65,6 +97,7 @@ namespace ShootCounter.ViewModels
             set
             {
                 SetProperty(ref _runNumber, value);
+                PasseString = _runNumber != 0 ? $"Passe {_runNumber}" : string.Empty;
             }
         }
 
@@ -80,7 +113,7 @@ namespace ShootCounter.ViewModels
         public CompetitionRunViewModel()
         {
             Title = "Wettkampf";
-            RunNumber = 1;
+            CompetitionState = CompetitionState.Info;
             SaveCommand = new Command(OnSave, CanExecuteSave);
             StopCommand = new Command(OnStop, CanExecuteStop);
             ContinueCommand = new Command(OnContinue, CanExecuteContinue);
@@ -99,13 +132,75 @@ namespace ShootCounter.ViewModels
 
         private bool CanExecuteContinue()
         {
-            PasseString = $"Passe {RunNumber}";
             return true;
         }
 
         private void OnContinue()
         {
-            throw new NotImplementedException();
+           
+            // ToDo: save valuations
+              
+
+            StateChange();
+        }
+
+        private void StateChange()
+        {
+            switch (CompetitionState)
+            {
+                case CompetitionState.Info:
+                    RunNumber = 1;
+
+                    if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
+                        SingleShoot = 1;
+
+                    CompetitionState = CompetitionState.Prepare;
+                    break;
+                case CompetitionState.Prepare:
+                    CompetitionState = CompetitionState.Shooting;
+                    break;
+                case CompetitionState.Shooting:
+                    CompetitionState = CompetitionState.CountPoints;
+                    break;
+                case CompetitionState.CountPoints:
+                    if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
+                    {
+                        if (SingleShoot >= Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).NumberOfBullets)
+                        {
+                            if (RunNumber >= Shooting.CompetitionProperties.CompetitionRuns.Count())
+                            {
+                                SingleShoot = 0;
+                                RunNumber = 0;
+                                CompetitionState = CompetitionState.Result;
+                            }
+                            else
+                            {
+                                SingleShoot = 0;
+                                RunNumber++;
+                                CompetitionState = CompetitionState.Prepare;
+                            }
+                        }
+                        else
+                        {
+                            SingleShoot++;
+                            CompetitionState = CompetitionState.Prepare;
+                        }
+                    }
+                    else 
+                    {
+                        if (RunNumber >= Shooting.CompetitionProperties.CompetitionRuns.Count())
+                        {
+                            RunNumber = 0;
+                            CompetitionState = CompetitionState.Result;
+                        }
+                        else
+                        {
+                            RunNumber++;
+                            CompetitionState = CompetitionState.Prepare;
+                        }
+                    }
+                    break;
+            }
         }
 
         private async void LoadItemId(string itemId)

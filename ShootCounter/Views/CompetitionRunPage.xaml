@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShootCounter.Views.CompetitionRunPage"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
              Title="{Binding Title}">
 
     <Shell.BackButtonBehavior>
@@ -9,6 +10,8 @@
     </Shell.BackButtonBehavior>
 
     <ContentPage.Resources>
+        <converter:CompetitionStateToStringConverter x:Key="CompetitionStateConverter" />
+        
         <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
             <Setter Property="BackgroundColor" Value="LightGray" />
             <Setter Property="TextColor" Value="Black" />
@@ -54,7 +57,15 @@
                        FontSize="Medium"
                        FontAttributes="Bold"
                        Margin="15,0,0,0"/>
-                <Label Text="{Binding PasseString}"
+                <HorizontalStackLayout>
+                    <Label Text="{Binding PasseString}"
+                           FontSize="Medium"
+                           Margin="15,0,0,0" />
+                    <Label Text="{Binding SingleShootString}"
+                           FontSize="Medium"
+                           Margin="15,0,0,0" />
+                </HorizontalStackLayout>
+                <Label Text="{Binding CompetitionState, Converter={StaticResource CompetitionStateConverter}}"
                        FontSize="Medium"
                        Margin="15,0,0,0" />
             </VerticalStackLayout>
@@ -98,7 +109,6 @@
 
             <Button Text="Weiter" Command="{Binding ContinueCommand}" Margin="5" />
 
-            <Button Text="Next run" Command="{Binding SaveCommand}" Margin="5"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
