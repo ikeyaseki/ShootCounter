@@ -179,10 +179,7 @@ namespace ShootCounter.ViewModels
             {
                 if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
                 {
-                    if (Shell.Current.CurrentPage is RunPage)
-                    {
-                        e.Cancel();
-                    }
+                    e.Cancel();
                 }
             };
         }
@@ -267,6 +264,7 @@ namespace ShootCounter.ViewModels
                 case CompetitionState.Shooting:
                     _timer?.Dispose();
                     SecondsTimer = 0;
+                    GenerateRunTemplate();
                     CompetitionState = CompetitionState.CountPoints;
                     break;
                 case CompetitionState.CountPoints:
@@ -344,8 +342,6 @@ namespace ShootCounter.ViewModels
 
                 if (Shooting == null || Shooting.CompetitionProperties == null)
                     throw new Exception("ShootingCompetition not allowed to be null");
-
-                GenerateRunTemplate();
 
                 ContinueCommand.ChangeCanExecute();
 

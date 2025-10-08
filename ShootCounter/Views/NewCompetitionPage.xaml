@@ -2,11 +2,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShootCounter.Views.NewCompetitionPage"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
              Title="{Binding Title}">
 
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
+
+    <ContentPage.Resources>
+        <converter:CompetitionTypeToInfoStringConverter x:Key="CompetitonTypeConverter" />
+    </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding CancelCommand}" Text="Abbruch" />
@@ -26,7 +31,7 @@
                 <Entry FontSize="Medium" 
                        Text="{Binding Location, Mode=TwoWay}" 
                        Keyboard="Text"/>
-                <Label FontSize="Medium" Text="Wettkampf" />
+                <Label FontSize="Medium" Text="Stich" />
                 <Picker Title="Select competition"
                         ItemsSource="{Binding Competitions}"
                         ItemDisplayBinding="{Binding Name}"
@@ -38,16 +43,11 @@
             </StackLayout>
         </Border>
 
-
-        <CollectionView ItemsSource="{Binding CompetitionInfos}" Margin="10,20,0,0">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Label Text="{Binding .}" FontSize="Medium" Padding="5"/>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
+        <Label Text="{Binding SelectedCompetition.CompetitionType, Converter={StaticResource CompetitonTypeConverter}}"
+               LineBreakMode="WordWrap"
+               FontSize="Medium"
+               FontAttributes="None"
+               Margin="15,20,0,0" />
     </VerticalStackLayout>
-    
-    
+        
 </ContentPage>

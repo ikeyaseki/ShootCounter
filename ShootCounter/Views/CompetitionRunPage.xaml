@@ -12,6 +12,7 @@
     <ContentPage.Resources>
         <converter:CompetitionStateToStringConverter x:Key="CompetitionStateConverter" />
         <converter:WarningStateToBackgroundColorConverter x:Key="WarningStateConverter" />
+        <converter:CompetitionTypeToInfoStringConverter x:Key="CompetitonTypeConverter" />
 
         <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
             <Setter Property="BackgroundColor" Value="LightGray" />
@@ -73,10 +74,16 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout IsVisible="{Binding IsEnabledInfo}">
-                <Label Text="Info"
+                <Label Text="{Binding Shooting.CompetitionType, Converter={StaticResource CompetitonTypeConverter}}"
+                       LineBreakMode="WordWrap"
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,0,0" />
+                <Label Text="Guet Schuss"
                        FontSize="Medium"
                        FontAttributes="Bold"
-                       Margin="15,20,0,0" />
+                       HorizontalTextAlignment="Center"
+                       Margin="0,20,0,20"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout IsVisible="{Binding IsEnabledPrepare}">

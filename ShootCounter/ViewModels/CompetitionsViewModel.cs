@@ -40,10 +40,7 @@ namespace ShootCounter.ViewModels
             {
                 if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
                 {
-                    if (Shell.Current.CurrentPage is RunPage)
-                    {
-                        e.Cancel();
-                    }
+                    e.Cancel();
                 }
             };
         }
