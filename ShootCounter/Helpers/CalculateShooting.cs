@@ -1,5 +1,4 @@
-﻿
-namespace ShootCounter.Services
+﻿namespace ShootCounter.Helpers
 {
     class CalculateShooting
     {

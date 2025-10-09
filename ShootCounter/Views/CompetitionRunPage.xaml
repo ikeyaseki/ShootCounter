@@ -52,9 +52,9 @@
     
 
     <ScrollView Orientation="Vertical">
-        <VerticalStackLayout>
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-            <VerticalStackLayout IsVisible="True">
+            <VerticalStackLayout IsVisible="True" Grid.Row="0">
                 <Label Text="{Binding Shooting.CompetitionProperties.Name}" 
                        FontSize="Medium"
                        FontAttributes="Bold"
@@ -73,7 +73,7 @@
                        FontAttributes="Bold"/>
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledInfo}">
+            <VerticalStackLayout IsVisible="{Binding IsEnabledInfo}" Grid.Row="1">
                 <Label Text="{Binding Shooting.CompetitionType, Converter={StaticResource CompetitonTypeConverter}}"
                        LineBreakMode="WordWrap"
                        FontSize="Medium"
@@ -86,7 +86,7 @@
                        Margin="0,20,0,20"/>
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledTrialShots}">
+            <VerticalStackLayout IsVisible="{Binding IsEnabledTrialShots}" Grid.Row="1">
                 <Label Text="Schiesse deine Probeschüsse."
                        FontSize="Medium"
                        FontAttributes="None"
@@ -107,7 +107,7 @@
                 </Label>
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledPrepare}">
+            <VerticalStackLayout IsVisible="{Binding IsEnabledPrepare}" Grid.Row="1">
                 <Label Text="{Binding PrepareLoadingString}"
                        FontSize="Medium"
                        FontAttributes="Bold"
@@ -122,13 +122,13 @@
                         <FormattedString>
                             <Span Text="Klicke auf " />
                             <Span Text="Weiter" FontAttributes="Bold" />
-                            <Span Text=" um wenn du bereit bist." />
+                            <Span Text=" wenn du bereit bist." />
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledShooting}">
+            <VerticalStackLayout IsVisible="{Binding IsEnabledShooting}" Grid.Row="1">
                 <Border  Margin="5,10,5,10"
                          BackgroundColor="{Binding WarningState, Converter={StaticResource WarningStateConverter}}">
                     <Border.StrokeShape>
@@ -141,10 +141,11 @@
                 </Border>
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}">
+            <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}" Grid.Row="1">
                 <CollectionView x:Name="BulletListView" 
-                ItemsSource="{Binding Bullets}" 
-                ItemsLayout="HorizontalList">
+                                ItemsSource="{Binding Bullets}" 
+                                ItemsLayout="HorizontalList"
+                                HorizontalOptions="Center">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <VerticalStackLayout Padding="10">
@@ -162,15 +163,15 @@
                 </CollectionView>
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledResult}">
-                <Label Text="Resultat"
+            <VerticalStackLayout IsVisible="{Binding IsEnabledResult}" Grid.Row="1">
+                <Label Text="{Binding ResultString}"
                        FontSize="Medium"
-                       FontAttributes="Bold"
-                       Margin="15,20,0,0" />
+                       FontAttributes="None"
+                       Margin="15,20,15,20" />
             </VerticalStackLayout>
 
-            <Button Text="Weiter" Command="{Binding ContinueCommand}" Margin="5" />
+            <Button Text="Weiter" Command="{Binding ContinueCommand}" Margin="5" Grid.Row="3" />
 
-        </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>

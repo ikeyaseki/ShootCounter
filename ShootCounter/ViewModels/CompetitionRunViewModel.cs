@@ -1,5 +1,6 @@
 ﻿using ShootCounter.Helpers;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace ShootCounter.ViewModels
 {
@@ -26,8 +27,8 @@ namespace ShootCounter.ViewModels
         private Timer _timer;
         private string _prepareLoadingString = string.Empty;
         private string _prepareCommandString = string.Empty;
+        private string _resultString = string.Empty;
 
-        public Command SaveCommand { get; }
         public Command StopCommand { get; }
         public Command ContinueCommand { get; }
 
@@ -121,6 +122,14 @@ namespace ShootCounter.ViewModels
                 SetProperty(ref _singleShootString, value);
             }
         }
+        public string ResultString
+        {
+            get => _resultString;
+            set
+            {
+                SetProperty(ref _resultString, value);
+            }
+        }
 
         public string PrepareLoadingString
         {
@@ -201,7 +210,6 @@ namespace ShootCounter.ViewModels
             Title = "Wettkampf";
             CompetitionState = CompetitionState.Info;
             IsEnabledChange();
-            SaveCommand = new Command(OnSave, CanExecuteSave);
             StopCommand = new Command(OnStop, CanExecuteStop);
             ContinueCommand = new Command(OnContinue, CanExecuteContinue);
 
@@ -216,16 +224,15 @@ namespace ShootCounter.ViewModels
 
         private bool CanExecuteContinue()
         {
-            return true;
+            if (CompetitionState != CompetitionState.CountPoints)
+                return true;
+
+            return CheckAllValuationsDone();
         }
 
-        private void OnContinue()
+        private async void OnContinue()
         {
-           
-            // ToDo: save valuations
-              
-
-            StateChange();
+            await StateChange();
             IsEnabledChange();
         }
 
@@ -284,7 +291,7 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        private void StateChange()
+        private async Task StateChange()
         {
             switch (CompetitionState)
             {
@@ -305,6 +312,7 @@ namespace ShootCounter.ViewModels
                         CompetitionState = CompetitionState.Prepare;
                     }
                     break;
+
                 case CompetitionState.TrialShots:
                     RunNumber = 1;
 
@@ -315,6 +323,7 @@ namespace ShootCounter.ViewModels
 
                     CompetitionState = CompetitionState.Prepare;
                     break;
+
                 case CompetitionState.Prepare:
                     int? duration = Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Duration;
 
@@ -323,13 +332,17 @@ namespace ShootCounter.ViewModels
 
                     CompetitionState = CompetitionState.Shooting;
                     break;
+
                 case CompetitionState.Shooting:
                     _timer?.Dispose();
                     SecondsTimer = 0;
                     GenerateRunTemplate();
                     CompetitionState = CompetitionState.CountPoints;
                     break;
+
                 case CompetitionState.CountPoints:
+                    await SaveAsync();
+
                     if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
                     {
                         if (SingleShoot >= Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).NumberOfBullets)
@@ -338,6 +351,7 @@ namespace ShootCounter.ViewModels
                             {
                                 SingleShoot = 0;
                                 RunNumber = 0;
+                                await CalculateResult();
                                 CompetitionState = CompetitionState.Result;
                             }
                             else
@@ -360,6 +374,7 @@ namespace ShootCounter.ViewModels
                         if (RunNumber >= Shooting.CompetitionProperties.CompetitionRuns.Count())
                         {
                             RunNumber = 0;
+                            await CalculateResult();
                             CompetitionState = CompetitionState.Result;
                         }
                         else
@@ -370,6 +385,65 @@ namespace ShootCounter.ViewModels
                         }
                     }
                     break;
+
+                case CompetitionState.Result:
+                    await Shell.Current.GoToAsync($"{nameof(CompetitionsPage)}", true);
+                    break;
+            }
+
+            ContinueCommand.ChangeCanExecute();
+        }
+
+        private async Task CalculateResult()
+        {
+            CalculateShooting calculateShooting = new CalculateShooting();
+
+            Shooting = await calculateShooting.CalculateCompetition(Shooting);
+
+            ResultString = $"Du hast {Shooting.Result} Punkte von maximal {Shooting.CompetitionProperties.MaxPoints} gemacht.";
+
+            var numberOfZeros = Shooting.Runs.SelectMany(n => n.Results).Where(n => n == 0).Count();
+
+            
+
+            if (Shooting.CompetitionProperties.CompetitionType == CompetitionType.Obligatorisch25m)
+            {
+                var minPoints = Shooting.CompetitionProperties.MinPoints.Value;
+                var maxZeros = Shooting.CompetitionProperties.MaxZeros.Value;
+
+                var failPoints = Shooting.Result < minPoints;
+                var failZeros = numberOfZeros > maxZeros;
+
+                if (failPoints)
+                    ResultString = $"{ResultString}\n\nDu hast nicht bestanden da zu wenig Punkte.";
+
+                if (failZeros)
+                    ResultString = $"{ResultString}\n\nDu hast nicht bestanden da zuviele 0er.";
+
+                if (failPoints || failZeros)
+                    return;
+
+                if (!failPoints && !failZeros)
+                    ResultString = $"{ResultString}\n\nDu hast bestanden.";
+            }
+
+            var kranz = Shooting.CompetitionProperties.KranzPoints;
+            if (kranz.HasValue)
+            {
+                if (Shooting.Result >= kranz.Value)
+                {
+                    ResultString = $"{ResultString}\n\nDu hast den Kranz geholt, Gratulation!";
+                    return;
+                }
+            }
+
+            var karte = Shooting.CompetitionProperties.KartePoints;
+            if (karte.HasValue)
+            {
+                if (Shooting.Result >= karte.Value)
+                {
+                    ResultString = $"{ResultString}\n\nDu hast eine Anerkennungskarte geholt, Gratulation!";
+                }
             }
         }
 
@@ -465,44 +539,81 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        private bool CanExecuteSave(object arg)
-        {
-            var isDone = CheckAllValuationsDone();
-
-            if (isDone == false)
-                return false;
-
-            return true;
-        }
-
-        private async void OnSave(object obj)
+        private async Task SaveAsync()
         {
             List<Run> runs = new();
 
             if (Shooting?.Runs != null)
                 runs = [.. Shooting.Runs];
 
-
-            Run run = new()
+            if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
             {
-                RunNumber = RunNumber,
-                BulletNumber = Bullets.Count(),
-                Time = DateTime.Now,
-                ShootingId = Shooting?.Id ?? Guid.Empty,
-            };
+                if (SingleShoot == 1)
+                {
+                    Run run = new()
+                    {
+                        RunNumber = RunNumber,
+                        BulletNumber = 1,
+                        Time = DateTime.Now,
+                        ShootingId = Shooting?.Id ?? Guid.Empty,
+                    };
 
-            List<int> valuations = [];
+                    List<int> valuations = [];
 
-            foreach (var bullet in Bullets)
-            {
-                if (bullet.Valuations == null)
-                    throw new Exception("Valuations can not be null here");
+                    foreach (var bullet in Bullets)
+                    {
+                        if (bullet.Valuations == null)
+                            throw new Exception("Valuations can not be null here");
 
-                valuations.Add(bullet.Valuations.FirstOrDefault(n => n.Hit)?.Value ?? 0);
+                        valuations.Add(bullet.Valuations.FirstOrDefault(n => n.Hit)?.Value ?? 0);
+                    }
+
+                    run.Results = valuations;
+                    runs.Add(run);
+                }
+                else
+                {
+                    Run run = Shooting.Runs.First(n => n.RunNumber == RunNumber);
+                    run.BulletNumber++;
+                    run.Time = DateTime.Now;
+
+                    List<int> valuations = run.Results.ToList();
+
+                    foreach (var bullet in Bullets)
+                    {
+                        if (bullet.Valuations == null)
+                            throw new Exception("Valuations can not be null here");
+
+                        valuations.Add(bullet.Valuations.FirstOrDefault(n => n.Hit)?.Value ?? 0);
+                    }
+
+                    run.Results = valuations;
+                    runs[RunNumber - 1] = run;
+                }
             }
+            else
+            {
+                Run run = new()
+                {
+                    RunNumber = RunNumber,
+                    BulletNumber = Bullets.Count(),
+                    Time = DateTime.Now,
+                    ShootingId = Shooting?.Id ?? Guid.Empty,
+                };
 
-            run.Results = valuations;
-            runs.Add(run);
+                List<int> valuations = [];
+
+                foreach (var bullet in Bullets)
+                {
+                    if (bullet.Valuations == null)
+                        throw new Exception("Valuations can not be null here");
+
+                    valuations.Add(bullet.Valuations.FirstOrDefault(n => n.Hit)?.Value ?? 0);
+                }
+
+                run.Results = valuations;
+                runs.Add(run);
+            }
 
             if (Shooting == null)
                 throw new Exception("Shooting not allowed to be null here");
@@ -510,11 +621,6 @@ namespace ShootCounter.ViewModels
             Shooting.Runs = runs;
 
             await CompetitionDataStore.UpdateItemAsync(Shooting);
-
-            GenerateRunTemplate();
-
-            StopCommand.ChangeCanExecute();
-            SaveCommand.ChangeCanExecute();
         }
 
         private bool CheckAllValuationsDone()
@@ -537,9 +643,16 @@ namespace ShootCounter.ViewModels
         {
             List<BulletTemplate> bullets = new List<BulletTemplate>();
 
-            for (int bullet = 0; bullet < Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).NumberOfBullets; bullet++)
+            if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
             {
-                bullets.Add(new BulletTemplate { BulletNumber = bullet + 1, Valuations = GenerateValuationTemplates() });
+                bullets.Add(new BulletTemplate { BulletNumber = SingleShoot, Valuations = GenerateValuationTemplates() });
+            }
+            else
+            {
+                for (int bullet = 0; bullet < Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).NumberOfBullets; bullet++)
+                {
+                    bullets.Add(new BulletTemplate { BulletNumber = bullet + 1, Valuations = GenerateValuationTemplates() });
+                }
             }
 
             Bullets = bullets;

@@ -2,6 +2,7 @@
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Maui.Graphics;
+using ShootCounter.Helpers;
 using SkiaSharp;
 using SQLitePCL;
 using System;

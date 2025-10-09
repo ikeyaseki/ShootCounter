@@ -13,7 +13,6 @@ public partial class CompetitionRunPage : ContentPage
 
     private void RadioButton_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
-        _competitionRunViewModel.SaveCommand.ChangeCanExecute();
-        _competitionRunViewModel.StopCommand.ChangeCanExecute();
+        _competitionRunViewModel.ContinueCommand.ChangeCanExecute();
     }
 }
