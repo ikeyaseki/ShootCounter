@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.CompetitionRunPage"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
+             Title="{Binding Title}">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
+    </Shell.BackButtonBehavior>
+
+    <ContentPage.Resources>
+        <converter:CompetitionStateToStringConverter x:Key="CompetitionStateConverter" />
+        <converter:WarningStateToBackgroundColorConverter x:Key="WarningStateConverter" />
+        <converter:CompetitionTypeToInfoStringConverter x:Key="CompetitonTypeConverter" />
+
+        <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
+            <Setter Property="BackgroundColor" Value="LightGray" />
+            <Setter Property="TextColor" Value="Black" />
+            <Setter Property="Padding" Value="15" />
+            <Setter Property="Margin" Value="0,5,0,0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderColor" Value="Gray" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{x:StaticResource Primary}" />
+                                <Setter Property="TextColor" Value="White" />
+                                <Setter Property="BorderColor" Value="DarkBlue" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGray" />
+                                <Setter Property="TextColor" Value="Black" />
+                                <Setter Property="BorderColor" Value="Gray" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding StopCommand}" Text="Abbruch" />
+    </ContentPage.ToolbarItems>
+    
+
+    <ScrollView Orientation="Vertical">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+            <VerticalStackLayout IsVisible="True" Grid.Row="0">
+                <Label Text="{Binding Shooting.CompetitionProperties.Name}" 
+                       FontSize="Medium"
+                       FontAttributes="Bold"
+                       Margin="15,0,15,0"/>
+                <HorizontalStackLayout>
+                    <Label Text="{Binding PasseString}"
+                           FontSize="Medium"
+                           Margin="15,0,0,0" />
+                    <Label Text="{Binding SingleShootString}"
+                           FontSize="Medium"
+                           Margin="15,0,15,0" />
+                </HorizontalStackLayout>
+                <Label Text="{Binding CompetitionState, Converter={StaticResource CompetitionStateConverter}}"
+                       FontSize="Medium"
+                       Margin="15,15,0,0" 
+                       FontAttributes="Bold"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledInfo}" Grid.Row="1">
+                <Label Text="{Binding Shooting.CompetitionType, Converter={StaticResource CompetitonTypeConverter}}"
+                       LineBreakMode="WordWrap"
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,0,0" />
+                <Label Text="Guet Schuss"
+                       FontSize="Medium"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,20,0,20"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledTrialShots}" Grid.Row="1">
+                <Label Text="Schiesse deine Probeschüsse."
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,15,0" />
+                <Label Text="Schaue dir die Resultate an, die Punkte werden aber nicht geschrieben."
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,15,20" />
+                <Label Margin="15,20,15,20"
+                       FontSize="Medium">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Klicke auf " />
+                            <Span Text="Weiter" FontAttributes="Bold" />
+                            <Span Text=" um die 1. Passe zu starten." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledPrepare}" Grid.Row="1">
+                <Label Text="{Binding PrepareLoadingString}"
+                       FontSize="Medium"
+                       FontAttributes="Bold"
+                       Margin="15,20,15,0" />
+                <Label Text="{Binding PrepareCommandString}"
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,15,0" />
+                <Label Margin="15,20,15,20"
+                       FontSize="Medium">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Klicke auf " />
+                            <Span Text="Weiter" FontAttributes="Bold" />
+                            <Span Text=" wenn du bereit bist." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledShooting}" Grid.Row="1">
+                <Border  Margin="5,10,5,10"
+                         BackgroundColor="{Binding WarningState, Converter={StaticResource WarningStateConverter}}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding SecondsTimer}"
+                           FontSize="200"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}" Grid.Row="1">
+                <CollectionView x:Name="BulletListView" 
+                                ItemsSource="{Binding Bullets}" 
+                                ItemsLayout="HorizontalList"
+                                HorizontalOptions="Center">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <VerticalStackLayout Padding="10">
+                                <Label FontSize="16" Text="{Binding BulletNumber}" />
+                                <CollectionView ItemsSource="{Binding Valuations}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <RadioButton Content="{Binding Value}" Value="{Binding Value}" IsChecked="{Binding Hit}" CheckedChanged="RadioButton_CheckedChanged" Style="{StaticResource ToggleRadioStyle}" WidthRequest="60" Padding="5"/>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledResult}" Grid.Row="1">
+                <Label Text="{Binding ResultString}"
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,15,20" />
+            </VerticalStackLayout>
+
+            <Button Text="Weiter" Command="{Binding ContinueCommand}" Margin="5" Grid.Row="3" />
+
+        </Grid>
+    </ScrollView>
+</ContentPage>

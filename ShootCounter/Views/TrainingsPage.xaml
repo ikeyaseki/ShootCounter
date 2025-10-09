@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ShootCounter.Views.ShootingsPage"
+             x:Class="ShootCounter.Views.TrainingsPage"
              xmlns:converter="clr-namespace:ShootCounter.Converter"
              xmlns:model="clr-namespace:ShootCounter.Models"
              xmlns:vm="clr-namespace:ShootCounter.ViewModels"
@@ -14,15 +14,13 @@
     </ContentPage.Resources>
 
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IsVisible="False" />
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding AddShootingCommand}" Text="New" />
+        <ToolbarItem Command="{Binding AddShootingCommand}" Text="Neu" />
         <ToolbarItem Command="{Binding DetailsCommand}" Text="Details" />
     </ContentPage.ToolbarItems>
-
-
 
     <RefreshView Command="{Binding LoadShootingsCommand}" IsRefreshing="{Binding IsBusy}">
         <CollectionView x:Name="ShootingListView" ItemsSource="{Binding Shootings}" SelectedItem="{Binding SelectedShooting}" SelectionMode="Single">
@@ -142,11 +140,11 @@
                             </Grid>
                             <StackLayout.GestureRecognizers>
                                 <TapGestureRecognizer
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=ShootingTapped}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainingsViewModel}}, Path=ShootingTapped}"
                                             CommandParameter="{Binding .}"
                                             NumberOfTapsRequired="2" />
                                 <TapGestureRecognizer
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ShootingsViewModel}}, Path=SelectionChangedCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrainingsViewModel}}, Path=SelectionChangedCommand}"
                                             CommandParameter="{Binding .}"
                                             NumberOfTapsRequired="1" />
                                 </StackLayout.GestureRecognizers>

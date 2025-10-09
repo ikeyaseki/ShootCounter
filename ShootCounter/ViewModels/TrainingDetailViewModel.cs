@@ -2,6 +2,7 @@
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Maui.Graphics;
+using ShootCounter.Helpers;
 using SkiaSharp;
 using SQLitePCL;
 using System;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 namespace ShootCounter.ViewModels
 {
     [QueryProperty(nameof(ShootingId), nameof(ShootingId))]
-    public class ShootingDetailViewModel : BaseViewModel
+    public class TrainingDetailViewModel : BaseViewModel
     {
         public IEnumerable<ISeries> RunSeries 
         { 
@@ -48,11 +49,9 @@ namespace ShootCounter.ViewModels
         private Shooting _shooting = new();
         private IEnumerable<ISeries> _runSeries = new List<ISeries>();
         private Axis[] _xAxes;
-        private readonly ShootingsViewModel _shootingsViewModel;
+        private readonly TrainingsViewModel _shootingsViewModel;
 
         public Command DeleteCommand { get; private set; }
-
-        public string Text { get; set; } = "Shooting details";
 
         public string ShootingId
         {
@@ -64,10 +63,10 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public ShootingDetailViewModel(ShootingsViewModel shootingsViewModel)
+        public TrainingDetailViewModel(TrainingsViewModel shootingsViewModel)
         {
             _shootingsViewModel = shootingsViewModel;
-            Title = "Shooting Detail";
+            Title = "Training Details";
             DeleteCommand = new Command(async () => await ExecuteDelete(), CanExecuteSave);
         }
 
@@ -79,16 +78,16 @@ namespace ShootCounter.ViewModels
         private async Task ExecuteDelete()
         {
             bool confirm = await Shell.Current.DisplayAlert(
-                "Stop shooting",
-                "Are you shure to delete shooting?",
-                "Yes",
-                "No");
+                "Training löschen",
+                "Willst du das Training wirklich löschen?",
+                "Ja",
+                "Nein");
 
             if (confirm)
             {
-                await DataStore.DeleteItemAsync(Shooting.Id);
+                await TrainingDataStore.DeleteItemAsync(Shooting.Id);
 
-                await Shell.Current.GoToAsync($"{nameof(ShootingsPage)}", true);
+                await Shell.Current.GoToAsync($"{nameof(TrainingsPage)}", true);
             }
         }
 
@@ -98,7 +97,7 @@ namespace ShootCounter.ViewModels
             {
                 IsBusy = true;
 
-                var shooting = await DataStore.GetItemAsync(Guid.Parse(id));
+                var shooting = await TrainingDataStore.GetItemAsync(Guid.Parse(id));
 
                 if (shooting == null)
                 {
@@ -107,7 +106,7 @@ namespace ShootCounter.ViewModels
                 }
 
                 CalculateShooting calculate = new();
-                Shooting = await calculate.Calculate(shooting);
+                Shooting = await calculate.CalculateTraining(shooting);
 
                 if (Shooting.Runs == null)
                 {
@@ -125,7 +124,7 @@ namespace ShootCounter.ViewModels
                 {
                     new Axis
                     {
-                        Name = "Runs",
+                        Name = "Passen",
                         Labels = xAxisLabels.ToList(),
                     }
                 }.ToArray();
@@ -135,7 +134,7 @@ namespace ShootCounter.ViewModels
                 RunSeries = Enumerable.Range(0, maxLength + 1)
                     .Select(i => new ColumnSeries<int>
                     {
-                        Name = i >= maxLength ? "Placeholder" : $"Bullet {i + 1}",
+                        Name = i >= maxLength ? "Platzhalter" : $"Schuss {i + 1}",
                         Values = Shooting.Runs.Select(run =>
                             i < run.Results.Count() ? run.Results.ElementAt(i) : 0).ToList(),
                         Fill = new SolidColorPaint(SKColors.BlueViolet),

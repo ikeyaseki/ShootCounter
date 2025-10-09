@@ -1,8 +1,8 @@
 namespace ShootCounter.Views;
 
-public partial class ShootingsPage : ContentPage
+public partial class TrainingsPage : ContentPage
 {
-	public ShootingsPage(ShootingsViewModel shootingsViewModel)
+	public TrainingsPage(TrainingsViewModel shootingsViewModel)
 	{
 		InitializeComponent();
 		BindingContext = shootingsViewModel;
@@ -11,6 +11,6 @@ public partial class ShootingsPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-		(BindingContext as ShootingsViewModel)?.OnAppearing();
+		(BindingContext as TrainingsViewModel)?.OnAppearing();
     }
 }

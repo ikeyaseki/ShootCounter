@@ -67,10 +67,7 @@ namespace ShootCounter.ViewModels
             {
                 if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
                 {
-                    if (Shell.Current.CurrentPage is RunPage)
-                    {
-                        e.Cancel();
-                    }
+                    e.Cancel();
                 }
             };
         }
@@ -83,18 +80,18 @@ namespace ShootCounter.ViewModels
         private async void OnStop(object obj)
         {
             bool confirm = await Shell.Current.DisplayAlert(
-                "Stop shooting",
-                "Are you shure to stop shooting?",
-                "Yes",
-                "No");
+                "Stopp Training",
+                "Willst du das Training stoppen?",
+                "Ja",
+                "Nein");
 
             if (confirm)
             {
                 _shooting.EndTime = DateTime.Now;
 
-                await DataStore.UpdateItemAsync(_shooting);
+                await TrainingDataStore.UpdateItemAsync(_shooting);
 
-                await Shell.Current.GoToAsync($"{nameof(ShootingsPage)}", true);
+                await Shell.Current.GoToAsync($"{nameof(TrainingsPage)}", true);
             }
         }
 
@@ -151,7 +148,7 @@ namespace ShootCounter.ViewModels
             double score = result / maxResult * 100;
             score = Math.Round(score, 0);
 
-            Result = $"You score {result} out of {maxResult}";
+            Result = $"Treffer {result} von {maxResult}";
             Percent = $"{score}%";
         }
 
@@ -223,7 +220,7 @@ namespace ShootCounter.ViewModels
 
             _shooting.Runs = runs;
 
-            await DataStore.UpdateItemAsync(_shooting);
+            await TrainingDataStore.UpdateItemAsync(_shooting);
 
             GenerateRunTemplate();
 
@@ -236,7 +233,7 @@ namespace ShootCounter.ViewModels
             get => _runNumber; 
             set
             {
-                Title = $"Run {value}";
+                Title = $"Passe {value}";
                 SetProperty(ref _runNumber, value);
             }
         }
@@ -246,7 +243,7 @@ namespace ShootCounter.ViewModels
             try
             {
                 IsBusy = true;
-                _shooting = await DataStore.GetItemAsync(Guid.Parse(itemId));
+                _shooting = await TrainingDataStore.GetItemAsync(Guid.Parse(itemId));
                 GenerateRunTemplate();
                 IsBusy = false;
             }

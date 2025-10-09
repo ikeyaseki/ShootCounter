@@ -1,6 +1,6 @@
 ﻿namespace ShootCounter.ViewModels
 {
-    public class NewShootingViewModel : BaseViewModel
+    public class NewTrainingViewModel : BaseViewModel
     {
         private string _location = string.Empty;
         private TargetProperties? _selectedTarget = null;
@@ -55,20 +55,17 @@
             }
         }
 
-        public NewShootingViewModel()
+        public NewTrainingViewModel()
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
-            Title = "Add new shooting";
+            Title = "Neues Training";
 
             Shell.Current.Navigating += (s, e) =>
             {
                 if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
                 {
-                    if (Shell.Current.CurrentPage is RunPage)
-                    {
-                        e.Cancel();
-                    }
+                    e.Cancel();
                 }
             };
         }
@@ -80,7 +77,7 @@
 
         private bool ValidateSave()
         {
-            return Location != string.Empty && SelectedTarget != null && BulletsPerRun != null;
+            return Location != string.Empty && SelectedTarget != null && BulletsPerRun != null && Weapon != string.Empty;
         }
 
         private async void OnSave()
@@ -95,7 +92,7 @@
                 BulletsPerRun = BulletsPerRun
             };
 
-            await DataStore.AddItemAsync(shooting);
+            await TrainingDataStore.AddItemAsync(shooting);
 
             await Shell.Current.GoToAsync($"{nameof(RunPage)}?{nameof(RunViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }

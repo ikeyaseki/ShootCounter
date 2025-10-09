@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShootCounter.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ShootCounter.ViewModels
 {
-    public class ShootingsViewModel : BaseViewModel
+    public class TrainingsViewModel : BaseViewModel
     {
         private Shooting? _selectedShoting;
 
@@ -20,9 +21,9 @@ namespace ShootCounter.ViewModels
         public Command DetailsCommand { get; }
         public Command ReloadShootingsCommand { get; }
 
-        public ShootingsViewModel()
+        public TrainingsViewModel()
         {
-            Title = "Shootings";
+            Title = "Trainings";
             LoadShootingsCommand = new Command(async () => await ExecuteLoadShootingsCommand());
             AddShootingCommand = new Command(async () => await ExecuteAddShootingCommand());
             ShootingTapped = new Command<Shooting>(OnShootingSelected);
@@ -34,10 +35,7 @@ namespace ShootCounter.ViewModels
             {
                 if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
                 {
-                    if (Shell.Current.CurrentPage is RunPage)
-                    {
-                        e.Cancel();
-                    }
+                    e.Cancel();
                 }
             };
         }
@@ -61,7 +59,7 @@ namespace ShootCounter.ViewModels
 
         private async Task ExecuteAddShootingCommand()
         {
-            await Shell.Current.GoToAsync(nameof(NewShootingPage), true);
+            await Shell.Current.GoToAsync(nameof(NewTrainingPage), true);
         }
 
         private async Task ExecuteLoadShootingsCommand()
@@ -79,7 +77,7 @@ namespace ShootCounter.ViewModels
             {
                 Shootings.Clear();
 
-                var shootingStoreItems = await DataStore.GetItemsAsync(true);
+                var shootingStoreItems = await TrainingDataStore.GetItemsAsync(true);
 
                 foreach (var shooting in shootingStoreItems)
                 {
@@ -97,7 +95,7 @@ namespace ShootCounter.ViewModels
         {
             CalculateShooting calculate = new();
 
-            shooting = await calculate.Calculate(shooting);
+            shooting = await calculate.CalculateTraining(shooting);
 
             return shooting;
         }
@@ -117,7 +115,7 @@ namespace ShootCounter.ViewModels
             if (shooting == null)
                 return;
 
-            await Shell.Current.GoToAsync($"{nameof(ShootingDetailPage)}?{nameof(ShootingDetailViewModel.ShootingId)}={shooting.Id.ToString()}", true);
+            await Shell.Current.GoToAsync($"{nameof(TrainingDetailPage)}?{nameof(TrainingDetailViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }
 
         public void OnAppearing()

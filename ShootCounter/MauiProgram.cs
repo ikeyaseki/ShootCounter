@@ -30,20 +30,25 @@ namespace ShootCounter
 
             // register our service
             builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
-            builder.Services.AddSingleton<IDataStore<Shooting>, ShootingDataStore>();
+            builder.Services.AddSingleton<IDataStore<Shooting>, TrainingDataStore>();
+            builder.Services.AddSingleton<IDataStore<ShootingCompetition>, CompetitionDataStore>();
 
             // register our pages
-            builder.Services.AddSingleton<ShootingsPage>();
-            builder.Services.AddTransient<ShootingDetailPage>();
-            builder.Services.AddTransient<NewShootingPage>();
+            builder.Services.AddSingleton<TrainingsPage>();
+            builder.Services.AddTransient<TrainingDetailPage>();
+            builder.Services.AddTransient<NewTrainingPage>();
             builder.Services.AddTransient<RunPage>();
 
             // register viewmodels
             builder.Services.AddSingleton<AboutViewModel>();
-            builder.Services.AddSingleton<ShootingsViewModel>();
-            builder.Services.AddTransient<ShootingDetailViewModel>();
-            builder.Services.AddTransient<NewShootingViewModel>();
+            builder.Services.AddSingleton<TrainingsViewModel>();
+            builder.Services.AddTransient<TrainingDetailViewModel>();
+            builder.Services.AddTransient<NewTrainingViewModel>();
             builder.Services.AddTransient<RunViewModel>();
+            builder.Services.AddTransient<CompetitionsViewModel>();
+            builder.Services.AddTransient<NewCompetitionViewModel>();
+            builder.Services.AddTransient<CompetitionDetailViewModel>();
+            builder.Services.AddTransient<CompetitionRunViewModel>();
 
             var app = builder.Build();
 

@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace ShootCounter.Services
 {
-    public class ShootingDataStore : IDataStore<Shooting>
+    public class TrainingDataStore : IDataStore<Shooting>
     {
         private readonly IDatabaseService _db;
 
-        public ShootingDataStore(IDatabaseService db)
+        public TrainingDataStore(IDatabaseService db)
         {
             _db = db;
             Task.Run(InitDb);

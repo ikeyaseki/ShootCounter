@@ -39,12 +39,11 @@
                 </VisualStateGroupList>
             </Setter>
         </Style>
-
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding AddBulletCommand}" Text="Add bullet" />
-        <ToolbarItem Command="{Binding RemoveBulletCommand}" Text="Remove bullet" />
+        <ToolbarItem Command="{Binding AddBulletCommand}" Text="Schuss +" />
+        <ToolbarItem Command="{Binding RemoveBulletCommand}" Text="Schuss -" />
     </ContentPage.ToolbarItems>
 
     <ScrollView Orientation="Vertical">
