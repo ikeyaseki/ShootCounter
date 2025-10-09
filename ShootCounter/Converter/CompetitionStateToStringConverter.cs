@@ -12,6 +12,7 @@ namespace ShootCounter.Converter
                 return competitionState switch
                 {
                     CompetitionState.Info => "Info",
+                    CompetitionState.TrialShots => "Probeschüsse",
                     CompetitionState.Prepare => "Vorbereitung",
                     CompetitionState.Shooting => "Schiessen",
                     CompetitionState.CountPoints => "Punkte zählen",

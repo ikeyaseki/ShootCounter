@@ -15,6 +15,7 @@ namespace ShootCounter.ViewModels
         private int _singleShoot = 0;
         private string _singleShootString = string.Empty;
         private bool _isEnabledInfo;
+        private bool _isEnabledTrialShots;
         private bool _isEnabledPrepare;
         private bool _isEnabledShooting;
         private bool _isEnabledCountPoints;
@@ -23,6 +24,8 @@ namespace ShootCounter.ViewModels
         private int _timerDuration;
         private WarningState _warningState;
         private Timer _timer;
+        private string _prepareLoadingString = string.Empty;
+        private string _prepareCommandString = string.Empty;
 
         public Command SaveCommand { get; }
         public Command StopCommand { get; }
@@ -52,6 +55,15 @@ namespace ShootCounter.ViewModels
             set
             {
                 SetProperty(ref _isEnabledInfo, value);
+            }
+        }
+
+        public bool IsEnabledTrialShots
+        {
+            get => _isEnabledTrialShots;
+            set
+            {
+                SetProperty(ref _isEnabledTrialShots, value);
             }
         }
 
@@ -107,6 +119,24 @@ namespace ShootCounter.ViewModels
             set
             {
                 SetProperty(ref _singleShootString, value);
+            }
+        }
+
+        public string PrepareLoadingString
+        {
+            get => _prepareLoadingString;
+            set
+            {
+                SetProperty(ref _prepareLoadingString, value);
+            }
+        }
+
+        public string PrepareCommandString
+        {
+            get => _prepareCommandString;
+            set
+            {
+                SetProperty(ref _prepareCommandString, value);
             }
         }
 
@@ -205,6 +235,15 @@ namespace ShootCounter.ViewModels
             {
                 case CompetitionState.Info:
                     IsEnabledInfo = true;
+                    IsEnabledTrialShots = false;
+                    IsEnabledPrepare = false;
+                    IsEnabledShooting = false;
+                    IsEnabledCountPoints = false;
+                    IsEnabledResult = false;
+                    break;
+                case CompetitionState.TrialShots:
+                    IsEnabledInfo = false;
+                    IsEnabledTrialShots = true;
                     IsEnabledPrepare = false;
                     IsEnabledShooting = false;
                     IsEnabledCountPoints = false;
@@ -212,6 +251,7 @@ namespace ShootCounter.ViewModels
                     break;
                 case CompetitionState.Prepare:
                     IsEnabledInfo = false;
+                    IsEnabledTrialShots = false;
                     IsEnabledPrepare = true;
                     IsEnabledShooting = false;
                     IsEnabledCountPoints = false;
@@ -219,6 +259,7 @@ namespace ShootCounter.ViewModels
                     break;
                 case CompetitionState.Shooting:
                     IsEnabledInfo = false;
+                    IsEnabledTrialShots = false;
                     IsEnabledPrepare = false;
                     IsEnabledShooting = true;
                     IsEnabledCountPoints = false;
@@ -226,6 +267,7 @@ namespace ShootCounter.ViewModels
                     break;
                 case CompetitionState.CountPoints:
                     IsEnabledInfo = false;
+                    IsEnabledTrialShots = false;
                     IsEnabledPrepare = false;
                     IsEnabledShooting = false;
                     IsEnabledCountPoints = true;
@@ -233,6 +275,7 @@ namespace ShootCounter.ViewModels
                     break;
                 case CompetitionState.Result:
                     IsEnabledInfo = false;
+                    IsEnabledTrialShots = false;
                     IsEnabledPrepare = false;
                     IsEnabledShooting = false;
                     IsEnabledCountPoints = false;
@@ -246,10 +289,29 @@ namespace ShootCounter.ViewModels
             switch (CompetitionState)
             {
                 case CompetitionState.Info:
+                    if (Shooting.CompetitionProperties.TrialShots == true)
+                    {
+                        CompetitionState = CompetitionState.TrialShots;
+                    }
+                    else
+                    {
+                        RunNumber = 1;
+
+                        if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
+                            SingleShoot = 1;
+
+                        CreatePrepareStrings();
+
+                        CompetitionState = CompetitionState.Prepare;
+                    }
+                    break;
+                case CompetitionState.TrialShots:
                     RunNumber = 1;
 
                     if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
                         SingleShoot = 1;
+
+                    CreatePrepareStrings();
 
                     CompetitionState = CompetitionState.Prepare;
                     break;
@@ -282,12 +344,14 @@ namespace ShootCounter.ViewModels
                             {
                                 SingleShoot = 0;
                                 RunNumber++;
+                                CreatePrepareStrings();
                                 CompetitionState = CompetitionState.Prepare;
                             }
                         }
                         else
                         {
                             SingleShoot++;
+                            CreatePrepareStrings();
                             CompetitionState = CompetitionState.Prepare;
                         }
                     }
@@ -301,10 +365,35 @@ namespace ShootCounter.ViewModels
                         else
                         {
                             RunNumber++;
+                            CreatePrepareStrings();
                             CompetitionState = CompetitionState.Prepare;
                         }
                     }
                     break;
+            }
+        }
+
+        private void CreatePrepareStrings()
+        {
+            int? duration = Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Duration;
+            bool isSingleShot = Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt;
+            int numberOfBullets = Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).NumberOfBullets;
+
+            if (isSingleShot)
+            {
+                PrepareLoadingString = "1 Schuss laden";
+
+                PrepareCommandString = duration.HasValue
+                    ? $"Für 1 Schuss Einzelfeuer in {duration} Sekunden, ist der Schütze bereit?"
+                    : $"Für 1 Schuss Einzelfeuer ohne Zeitlimite, ist der Schütze bereit?";
+            }
+            else
+            {
+                PrepareLoadingString = $"{numberOfBullets} Schuss laden";
+
+                PrepareCommandString = duration.HasValue
+                    ? $"Für {numberOfBullets} Schuss Schnellfeuer in {duration} Sekunden, ist der Schütze bereit?"
+                    : $"Für {numberOfBullets} Schuss Schnellfeuer ohne Zeitlimite, ist der Schütze bereit?";
             }
         }
 

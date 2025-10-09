@@ -58,14 +58,14 @@
                 <Label Text="{Binding Shooting.CompetitionProperties.Name}" 
                        FontSize="Medium"
                        FontAttributes="Bold"
-                       Margin="15,0,0,0"/>
+                       Margin="15,0,15,0"/>
                 <HorizontalStackLayout>
                     <Label Text="{Binding PasseString}"
                            FontSize="Medium"
                            Margin="15,0,0,0" />
                     <Label Text="{Binding SingleShootString}"
                            FontSize="Medium"
-                           Margin="15,0,0,0" />
+                           Margin="15,0,15,0" />
                 </HorizontalStackLayout>
                 <Label Text="{Binding CompetitionState, Converter={StaticResource CompetitionStateConverter}}"
                        FontSize="Medium"
@@ -86,11 +86,46 @@
                        Margin="0,20,0,20"/>
             </VerticalStackLayout>
 
+            <VerticalStackLayout IsVisible="{Binding IsEnabledTrialShots}">
+                <Label Text="Schiesse deine Probeschüsse."
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,15,0" />
+                <Label Text="Schaue dir die Resultate an, die Punkte werden aber nicht geschrieben."
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,15,20" />
+                <Label Margin="15,20,15,20"
+                       FontSize="Medium">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Klicke auf " />
+                            <Span Text="Weiter" FontAttributes="Bold" />
+                            <Span Text=" um die 1. Passe zu starten." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+
             <VerticalStackLayout IsVisible="{Binding IsEnabledPrepare}">
-                <Label Text="Prepare"
+                <Label Text="{Binding PrepareLoadingString}"
                        FontSize="Medium"
                        FontAttributes="Bold"
-                       Margin="15,20,0,0" />
+                       Margin="15,20,15,0" />
+                <Label Text="{Binding PrepareCommandString}"
+                       FontSize="Medium"
+                       FontAttributes="None"
+                       Margin="15,20,15,0" />
+                <Label Margin="15,20,15,20"
+                       FontSize="Medium">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Klicke auf " />
+                            <Span Text="Weiter" FontAttributes="Bold" />
+                            <Span Text=" um wenn du bereit bist." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
             </VerticalStackLayout>
 
             <VerticalStackLayout IsVisible="{Binding IsEnabledShooting}">

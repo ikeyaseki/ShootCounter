@@ -47,7 +47,7 @@
                LineBreakMode="WordWrap"
                FontSize="Medium"
                FontAttributes="None"
-               Margin="15,20,0,0" />
+               Margin="15,20,15,0" />
     </VerticalStackLayout>
         
 </ContentPage>
