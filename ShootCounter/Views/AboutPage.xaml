@@ -2,15 +2,10 @@
 <ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:vm="clr-namespace:ShootCounter.ViewModels"
     x:Class="ShootCounter.Views.AboutPage"
     Title="AboutPage"
     Shell.NavBarIsVisible="False">
 
-    <ContentPage.BindingContext>
-        <vm:AboutViewModel />
-    </ContentPage.BindingContext>
-    
     <VerticalStackLayout Margin="10, 0, 10, 0">
         <Label Style="{StaticResource Info}" Text="App info" />
         <Label Style="{StaticResource Legend}" Text="Name" />

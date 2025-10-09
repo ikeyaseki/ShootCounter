@@ -2,8 +2,9 @@ namespace ShootCounter.Views;
 
 public partial class AboutPage : ContentPage
 {
-	public AboutPage()
+	public AboutPage(AboutViewModel aboutViewModel)
 	{
 		InitializeComponent();
+		BindingContext = aboutViewModel;
 	}
 }

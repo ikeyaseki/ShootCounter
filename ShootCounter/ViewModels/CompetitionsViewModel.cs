@@ -36,14 +36,6 @@ namespace ShootCounter.ViewModels
             SelectionChangedCommand = new Command<ShootingCompetition>(OnSelectionChangedCommand);
             DetailsCommand = new Command(async () => await ExecuteDetailsCommand(), CanExecuteDetailsCommand);
             ReloadShootingsCommand = new Command(async () => await LoadShootingsAsync());
-
-            Shell.Current.Navigating += (s, e) =>
-            {
-                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
-                {
-                    e.Cancel();
-                }
-            };
         }
 
         private async Task LoadShootingsAsync()

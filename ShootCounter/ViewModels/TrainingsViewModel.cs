@@ -29,15 +29,7 @@ namespace ShootCounter.ViewModels
             ShootingTapped = new Command<Shooting>(OnShootingSelected);
             SelectionChangedCommand = new Command<Shooting>(OnSelectionChangedCommand);
             DetailsCommand = new Command(async () => await ExecuteDetailsCommand(), CanExecuteDetailsCommand);
-            ReloadShootingsCommand = new Command(async () => await LoadShootingsAsync());
-
-            Shell.Current.Navigating += (s, e) =>
-            {
-                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
-                {
-                    e.Cancel();
-                }
-            };
+            ReloadShootingsCommand = new Command(async () => await LoadShootingsAsync());    
         }
 
         private bool CanExecuteDetailsCommand()
