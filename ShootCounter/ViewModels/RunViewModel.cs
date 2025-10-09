@@ -62,14 +62,6 @@ namespace ShootCounter.ViewModels
             AddBulletCommand = new Command(OnAddBullet);
             RemoveBulletCommand = new Command(OnRemoveBullet, CanExecuteRemove);
             StopCommand = new Command(OnStop, CanExecuteStop);
-
-            Shell.Current.Navigating += (s, e) =>
-            {
-                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
-                {
-                    e.Cancel();
-                }
-            };
         }
 
         private bool CanExecuteStop(object arg)

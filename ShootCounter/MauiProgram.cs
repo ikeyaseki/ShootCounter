@@ -32,6 +32,7 @@ namespace ShootCounter
             builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddSingleton<IDataStore<Shooting>, TrainingDataStore>();
             builder.Services.AddSingleton<IDataStore<ShootingCompetition>, CompetitionDataStore>();
+            builder.Services.AddSingleton<INavigationService, NavigationService>();
 
             // register our pages
             builder.Services.AddSingleton<TrainingsPage>();
@@ -45,7 +46,7 @@ namespace ShootCounter
             builder.Services.AddTransient<TrainingDetailViewModel>();
             builder.Services.AddTransient<NewTrainingViewModel>();
             builder.Services.AddTransient<RunViewModel>();
-            builder.Services.AddTransient<CompetitionsViewModel>();
+            builder.Services.AddSingleton<CompetitionsViewModel>();
             builder.Services.AddTransient<NewCompetitionViewModel>();
             builder.Services.AddTransient<CompetitionDetailViewModel>();
             builder.Services.AddTransient<CompetitionRunViewModel>();

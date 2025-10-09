@@ -23,20 +23,10 @@ namespace ShootCounter.ViewModels
                 await Launcher.Default.OpenAsync(url);
         });
 
-        public AboutViewModel()
+        public AboutViewModel(INavigationService navigationService)
         {
             Title = "About";
-
-            Shell.Current.Navigating += (s, e) =>
-            {
-                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
-                {
-                    if (Shell.Current.CurrentPage is RunPage)
-                    {
-                        e.Cancel();
-                    }
-                }
-            };
+            navigationService.HandleNavigationEvent();
         }
     }
 }

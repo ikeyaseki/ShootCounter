@@ -60,14 +60,6 @@
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             Title = "Neues Training";
-
-            Shell.Current.Navigating += (s, e) =>
-            {
-                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
-                {
-                    e.Cancel();
-                }
-            };
         }
 
         private async void OnCancel()

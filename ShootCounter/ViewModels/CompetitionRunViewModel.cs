@@ -212,14 +212,6 @@ namespace ShootCounter.ViewModels
             IsEnabledChange();
             StopCommand = new Command(OnStop, CanExecuteStop);
             ContinueCommand = new Command(OnContinue, CanExecuteContinue);
-
-            Shell.Current.Navigating += (s, e) =>
-            {
-                if (e.Source == ShellNavigationSource.Pop && e.CanCancel)
-                {
-                    e.Cancel();
-                }
-            };
         }
 
         private bool CanExecuteContinue()
