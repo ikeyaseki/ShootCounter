@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 namespace ShootCounter.Services
 {
     public class NavigationService : INavigationService
-    {
-        public NavigationService()
-        {
-        }
-
+    {    
         public void HandleNavigationEvent()
         {
             Shell.Current.Navigating += (s, e) =>

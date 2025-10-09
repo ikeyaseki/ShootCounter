@@ -611,6 +611,7 @@ namespace ShootCounter.ViewModels
                 throw new Exception("Shooting not allowed to be null here");
 
             Shooting.Runs = runs;
+            Shooting.EndTime = DateTime.Now;
 
             await CompetitionDataStore.UpdateItemAsync(Shooting);
         }
