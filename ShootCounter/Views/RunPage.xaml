@@ -70,8 +70,8 @@
 
             <Label FontSize="30" Text="{Binding Result}" HorizontalOptions="Center" Grid.Row="1"/>
             <Label FontSize="30" Text="{Binding Percent}" HorizontalOptions="Center" Grid.Row="2"/>
-            <Button Text="Next run" Command="{Binding SaveCommand}" Grid.Row="3" Margin="5"/>
-            <Button Text="Stop shooting" Command="{Binding StopCommand}" Grid.Row="5" Margin="5,5,5,20"/>
+            <Button Text="Nächste Passe" Command="{Binding SaveCommand}" Grid.Row="3" Margin="5"/>
+            <Button Text="Training beenden" Command="{Binding StopCommand}" Grid.Row="5" Margin="5,5,5,20"/>
         </Grid>
     </ScrollView>
 </ContentPage>
