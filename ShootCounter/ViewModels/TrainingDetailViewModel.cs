@@ -1,17 +1,9 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
-using Microsoft.Maui.Graphics;
 using ShootCounter.Helpers;
 using SkiaSharp;
-using SQLitePCL;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ShootCounter.ViewModels
 {
@@ -49,7 +41,6 @@ namespace ShootCounter.ViewModels
         private Shooting _shooting = new();
         private IEnumerable<ISeries> _runSeries = new List<ISeries>();
         private Axis[] _xAxes;
-        private readonly TrainingsViewModel _shootingsViewModel;
 
         public Command DeleteCommand { get; private set; }
 
@@ -63,14 +54,13 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public TrainingDetailViewModel(TrainingsViewModel shootingsViewModel)
+        public TrainingDetailViewModel()
         {
-            _shootingsViewModel = shootingsViewModel;
             Title = "Training Details";
-            DeleteCommand = new Command(async () => await ExecuteDelete(), CanExecuteSave);
+            DeleteCommand = new Command(async () => await ExecuteDelete(), CanExecuteDelete);
         }
 
-        private bool CanExecuteSave()
+        private bool CanExecuteDelete()
         {
             return Shooting != null;
         }

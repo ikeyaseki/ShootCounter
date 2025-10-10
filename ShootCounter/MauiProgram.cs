@@ -39,6 +39,10 @@ namespace ShootCounter
             builder.Services.AddTransient<TrainingDetailPage>();
             builder.Services.AddTransient<NewTrainingPage>();
             builder.Services.AddTransient<RunPage>();
+            builder.Services.AddSingleton<CompetitionsPage>();
+            builder.Services.AddTransient<CompetitionDetailPage>();
+            builder.Services.AddTransient<NewCompetitionPage>();
+            builder.Services.AddTransient<CompetitionRunPage>();
 
             // register viewmodels
             builder.Services.AddSingleton<AboutViewModel>();
