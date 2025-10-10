@@ -29,15 +29,15 @@
                 </Border.StrokeShape>
                 <StackLayout Padding="10">
                     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
-              ColumnDefinitions="0.5*,0.5*">
+                          ColumnDefinitions="0.5*,0.5*">
                         <Label Style="{StaticResource TableHeader}" 
-                   Text="{Binding Shooting.Location}"
-                   Grid.Row="0"
-                   Grid.ColumnSpan="2" />
+                               Text="{Binding Shooting.Location}"
+                               Grid.Row="0"
+                               Grid.ColumnSpan="2" />
                         <Label Style="{StaticResource TableContent}"
-                   Text="{Binding Shooting.StartTime}"
-                   Grid.Row="1"
-                   Grid.Column="0" />
+                               Text="{Binding Shooting.StartTime}"
+                               Grid.Row="1"
+                               Grid.Column="0" />
                         <HorizontalStackLayout Grid.Row="1"
                                    Grid.Column="1">
                             <Label Style="{StaticResource TableContentIcon}"
