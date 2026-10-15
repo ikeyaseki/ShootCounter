@@ -56,9 +56,6 @@ namespace ShootCounter
 
             var app = builder.Build();
 
-            // initalize our service helper before calling it
-            ServiceHelper.Initialize(app.Services);
-
             return app;
         }
     }

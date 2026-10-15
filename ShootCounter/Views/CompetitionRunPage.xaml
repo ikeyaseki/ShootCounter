@@ -13,37 +13,6 @@
         <converter:CompetitionStateToStringConverter x:Key="CompetitionStateConverter" />
         <converter:WarningStateToBackgroundColorConverter x:Key="WarningStateConverter" />
         <converter:CompetitionTypeToInfoStringConverter x:Key="CompetitonTypeConverter" />
-
-        <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
-            <Setter Property="BackgroundColor" Value="LightGray" />
-            <Setter Property="TextColor" Value="Black" />
-            <Setter Property="Padding" Value="15" />
-            <Setter Property="Margin" Value="0,5,0,0" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="BorderColor" Value="Gray" />
-            <Setter Property="BorderWidth" Value="1" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CheckedStates">
-                        <VisualState x:Name="Checked">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{x:StaticResource Primary}" />
-                                <Setter Property="TextColor" Value="White" />
-                                <Setter Property="BorderColor" Value="DarkBlue" />
-                            </VisualState.Setters>
-                        </VisualState>
-                        <VisualState x:Name="Unchecked">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="LightGray" />
-                                <Setter Property="TextColor" Value="Black" />
-                                <Setter Property="BorderColor" Value="Gray" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
-        </Style>
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
@@ -142,25 +111,24 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}" Grid.Row="1">
-                <CollectionView x:Name="BulletListView" 
-                                ItemsSource="{Binding Bullets}" 
-                                ItemsLayout="HorizontalList"
-                                HorizontalOptions="Center">
-                    <CollectionView.ItemTemplate>
+                <!-- wraps into a second row when the bullets do not fit the screen width -->
+                <FlexLayout BindableLayout.ItemsSource="{Binding Bullets}" Wrap="Wrap" JustifyContent="Center">
+                    <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <VerticalStackLayout Padding="10">
                                 <Label FontSize="16" Text="{Binding BulletNumber}" />
-                                <CollectionView ItemsSource="{Binding Valuations}">
-                                    <CollectionView.ItemTemplate>
+                                <!-- the radio buttons share this parent, so only one value per bullet can be checked -->
+                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Valuations}">
+                                    <BindableLayout.ItemTemplate>
                                         <DataTemplate>
                                             <RadioButton Content="{Binding Value}" Value="{Binding Value}" IsChecked="{Binding Hit}" CheckedChanged="RadioButton_CheckedChanged" Style="{StaticResource ToggleRadioStyle}" WidthRequest="60" Padding="5"/>
                                         </DataTemplate>
-                                    </CollectionView.ItemTemplate>
-                                </CollectionView>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
                             </VerticalStackLayout>
                         </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
             </VerticalStackLayout>
 
             <VerticalStackLayout IsVisible="{Binding IsEnabledResult}" Grid.Row="1">

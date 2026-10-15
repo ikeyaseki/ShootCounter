@@ -7,6 +7,7 @@ namespace ShootCounter.ViewModels
     [QueryProperty(nameof(ShootingId), nameof(ShootingId))]
     public class CompetitionRunViewModel : BaseViewModel
     {
+        private readonly IDataStore<ShootingCompetition> _competitionDataStore;
         private string _shootingId = string.Empty;
         private ShootingCompetition _shooting = new();
         private IEnumerable<BulletTemplate> _bullets = [];
@@ -206,8 +207,9 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public CompetitionRunViewModel()
+        public CompetitionRunViewModel(IDataStore<ShootingCompetition> competitionDataStore)
         {
+            _competitionDataStore = competitionDataStore;
             Title = "Wettkampf";
             CompetitionState = CompetitionState.Info;
             IsEnabledChange();
@@ -509,10 +511,7 @@ namespace ShootCounter.ViewModels
                 if (id == Guid.Empty)
                     throw new Exception("Wrong id");
 
-                if (CompetitionDataStore == null)
-                    throw new Exception("DataStore is null");
-
-                Shooting = await CompetitionDataStore.GetItemAsync(id);
+                Shooting = await _competitionDataStore.GetItemAsync(id);
 
                 if (Shooting == null || Shooting.CompetitionProperties == null)
                     throw new Exception("ShootingCompetition not allowed to be null");
@@ -548,7 +547,7 @@ namespace ShootCounter.ViewModels
 
                 Shooting.EndTime = DateTime.Now;
 
-                await CompetitionDataStore.UpdateItemAsync(Shooting);
+                await _competitionDataStore.UpdateItemAsync(Shooting);
 
                 await Shell.Current.GoToAsync($"//{nameof(CompetitionsPage)}", true);
             }
@@ -636,7 +635,7 @@ namespace ShootCounter.ViewModels
             Shooting.Runs = runs;
             Shooting.EndTime = DateTime.Now;
 
-            await CompetitionDataStore.UpdateItemAsync(Shooting);
+            await _competitionDataStore.UpdateItemAsync(Shooting);
         }
 
         private bool CheckAllValuationsDone()
@@ -674,30 +673,6 @@ namespace ShootCounter.ViewModels
             Bullets = bullets;
         }
 
-        private List<ValuationTemplate> GenerateValuationTemplates()
-        {
-            if (Shooting.TargetProperties?.Valuations == null)
-                throw new Exception("Valuations not found");
-
-            List<ValuationTemplate> templates = new();
-            foreach (int assesment in Shooting.TargetProperties.Valuations)
-            {
-                templates.Add(new ValuationTemplate { Value = assesment, Hit = false });
-            }
-
-            return templates;
-        }
-
-        public class BulletTemplate
-        {
-            public int BulletNumber { get; set; }
-            public IEnumerable<ValuationTemplate>? Valuations { get; set; }
-        }
-
-        public class ValuationTemplate
-        {
-            public int Value { get; set; }
-            public bool Hit { get; set; }
-        }
+        private List<ValuationTemplate> GenerateValuationTemplates() => ValuationTemplate.CreateList(Shooting.TargetProperties);
     }
 }

@@ -5,6 +5,7 @@ namespace ShootCounter.ViewModels
     [QueryProperty(nameof(ShootingId), nameof(ShootingId))]
     public class RunViewModel : BaseViewModel
     {
+        private readonly IDataStore<Shooting> _trainingDataStore;
         private string _shootingId = string.Empty;
         private Shooting _shooting = new();
         private IEnumerable<BulletTemplate> _bullets = [];
@@ -56,8 +57,9 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public RunViewModel()
+        public RunViewModel(IDataStore<Shooting> trainingDataStore)
         {
+            _trainingDataStore = trainingDataStore;
             RunNumber = 0;
             SaveCommand = new Command(OnSave, CanExecuteSave);
             AddBulletCommand = new Command(OnAddBullet);
@@ -82,7 +84,7 @@ namespace ShootCounter.ViewModels
             {
                 _shooting.EndTime = DateTime.Now;
 
-                await TrainingDataStore.UpdateItemAsync(_shooting);
+                await _trainingDataStore.UpdateItemAsync(_shooting);
 
                 await Shell.Current.GoToAsync($"//{nameof(TrainingsPage)}", true);
             }
@@ -237,7 +239,7 @@ namespace ShootCounter.ViewModels
             // keep the end time current, so the duration is correct even if the training is never stopped
             _shooting.EndTime = DateTime.Now;
 
-            await TrainingDataStore.UpdateItemAsync(_shooting);
+            await _trainingDataStore.UpdateItemAsync(_shooting);
 
             GenerateRunTemplate();
 
@@ -260,7 +262,7 @@ namespace ShootCounter.ViewModels
             try
             {
                 IsBusy = true;
-                _shooting = await TrainingDataStore.GetItemAsync(Guid.Parse(itemId));
+                _shooting = await _trainingDataStore.GetItemAsync(Guid.Parse(itemId));
                 GenerateRunTemplate();
                 IsBusy = false;
             }
@@ -283,30 +285,6 @@ namespace ShootCounter.ViewModels
             RunNumber++;
         }
 
-        private List<ValuationTemplate> GenerateValuationTemplates()
-        {
-            if (_shooting.TargetProperties?.Valuations == null)
-                throw new Exception("Valuations not found");
-
-            List<ValuationTemplate> templates = new();
-            foreach (int assesment in _shooting.TargetProperties.Valuations)
-            {
-                templates.Add(new ValuationTemplate { Value = assesment, Hit = false });
-            }
-
-            return templates;
-        }
-
-        public class BulletTemplate
-        {
-            public int BulletNumber { get; set; }
-            public IEnumerable<ValuationTemplate>? Valuations {  get; set; }
-        }
-
-        public class ValuationTemplate
-        {
-            public int Value { get; set; }
-            public bool Hit {  get; set; }
-        }
+        private List<ValuationTemplate> GenerateValuationTemplates() => ValuationTemplate.CreateList(_shooting.TargetProperties);
     }
 }

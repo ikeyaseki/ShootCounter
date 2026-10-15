@@ -2,6 +2,7 @@
 {
     public class NewTrainingViewModel : BaseViewModel
     {
+        private readonly IDataStore<Shooting> _trainingDataStore;
         private string _location = string.Empty;
         private TargetProperties? _selectedTarget = null;
         private int? _bulletsPerRun = null;
@@ -56,8 +57,9 @@
             }
         }
 
-        public NewTrainingViewModel()
+        public NewTrainingViewModel(IDataStore<Shooting> trainingDataStore)
         {
+            _trainingDataStore = trainingDataStore;
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             Title = "Neues Training";
@@ -107,7 +109,7 @@
                 BulletsPerRun = BulletsPerRun
             };
 
-            await TrainingDataStore.AddItemAsync(shooting);
+            await _trainingDataStore.AddItemAsync(shooting);
 
             await Shell.Current.GoToAsync($"{nameof(RunPage)}?{nameof(RunViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }

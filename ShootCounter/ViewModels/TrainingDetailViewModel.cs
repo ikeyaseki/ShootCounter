@@ -1,8 +1,6 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
 using ShootCounter.Helpers;
-using SkiaSharp;
 using System.Diagnostics;
 
 namespace ShootCounter.ViewModels
@@ -10,6 +8,7 @@ namespace ShootCounter.ViewModels
     [QueryProperty(nameof(ShootingId), nameof(ShootingId))]
     public class TrainingDetailViewModel : BaseViewModel
     {
+        private readonly IDataStore<Shooting> _trainingDataStore;
         public IEnumerable<ISeries> RunSeries 
         { 
             get => _runSeries; 
@@ -40,7 +39,7 @@ namespace ShootCounter.ViewModels
         private string _shootingId = string.Empty;
         private Shooting _shooting = new();
         private IEnumerable<ISeries> _runSeries = new List<ISeries>();
-        private Axis[] _xAxes;
+        private Axis[] _xAxes = [];
 
         public Command DeleteCommand { get; private set; }
 
@@ -54,8 +53,9 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public TrainingDetailViewModel()
+        public TrainingDetailViewModel(IDataStore<Shooting> trainingDataStore)
         {
+            _trainingDataStore = trainingDataStore;
             Title = "Training Details";
             DeleteCommand = new Command(async () => await ExecuteDelete(), CanExecuteDelete);
         }
@@ -75,7 +75,7 @@ namespace ShootCounter.ViewModels
 
             if (confirm)
             {
-                await TrainingDataStore.DeleteItemAsync(Shooting.Id);
+                await _trainingDataStore.DeleteItemAsync(Shooting.Id);
 
                 await Shell.Current.GoToAsync($"//{nameof(TrainingsPage)}", true);
             }
@@ -87,7 +87,7 @@ namespace ShootCounter.ViewModels
             {
                 IsBusy = true;
 
-                var shooting = await TrainingDataStore.GetItemAsync(Guid.Parse(id));
+                var shooting = await _trainingDataStore.GetItemAsync(Guid.Parse(id));
 
                 if (shooting == null)
                     return;
@@ -95,29 +95,11 @@ namespace ShootCounter.ViewModels
                 CalculateShooting calculate = new();
                 Shooting = await calculate.CalculateTraining(shooting);
 
-                // a training stopped before the first run has no runs, Max() would throw on an empty list
-                var runResults = Shooting.Runs?.Select(n => n.Results?.ToList() ?? []).ToList() ?? [];
-                if (runResults.Count == 0)
-                    return;
-
-                XAxes =
-                [
-                    new Axis
-                    {
-                        Name = "Passen",
-                        Labels = Enumerable.Range(1, runResults.Count).Select(x => x.ToString()).ToList(),
-                    }
-                ];
-
-                var maxLength = runResults.Max(n => n.Count);
-
-                RunSeries = Enumerable.Range(0, maxLength + 1)
-                    .Select(i => new ColumnSeries<int>
-                    {
-                        Name = i >= maxLength ? "Platzhalter" : $"Schuss {i + 1}",
-                        Values = runResults.Select(results => i < results.Count ? results[i] : 0).ToList(),
-                        Fill = new SolidColorPaint(SKColors.BlueViolet),
-                    }).ToList();
+                if (RunChart.TryCreate(Shooting.Runs, out var xAxes, out var runSeries))
+                {
+                    XAxes = xAxes;
+                    RunSeries = runSeries;
+                }
             }
             catch (Exception ex)
             {

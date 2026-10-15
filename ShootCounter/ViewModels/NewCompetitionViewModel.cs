@@ -11,6 +11,7 @@ namespace ShootCounter.ViewModels
 {
     public class NewCompetitionViewModel : BaseViewModel
     {
+        private readonly IDataStore<ShootingCompetition> _competitionDataStore;
         private CompetitionProperties? _selectedCompetition = null;
         private string _location = string.Empty;
         private string _weapon = string.Empty;
@@ -50,8 +51,9 @@ namespace ShootCounter.ViewModels
 
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
-        public NewCompetitionViewModel()
+        public NewCompetitionViewModel(IDataStore<ShootingCompetition> competitionDataStore)
         {
+            _competitionDataStore = competitionDataStore;
             Title = "Neuer Wettkampf";
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
@@ -99,7 +101,7 @@ namespace ShootCounter.ViewModels
                 Weapon = Weapon
             };
 
-            await CompetitionDataStore.AddItemAsync(competition);
+            await _competitionDataStore.AddItemAsync(competition);
 
             await Shell.Current.GoToAsync($"{nameof(CompetitionRunPage)}?{nameof(CompetitionRunViewModel.ShootingId)}={competition.Id.ToString()}", true);
         }

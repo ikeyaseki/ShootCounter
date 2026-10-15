@@ -7,6 +7,7 @@ namespace ShootCounter.ViewModels
 {
     public class CompetitionsViewModel : BaseViewModel
     {
+        private readonly IDataStore<ShootingCompetition> _competitionDataStore;
         private ShootingCompetition? _selectedShootingCompetition;
 
         public ObservableCollection<ShootingCompetition> ShootingCompetitions { get; private set; } = [];
@@ -27,8 +28,9 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public CompetitionsViewModel()
+        public CompetitionsViewModel(IDataStore<ShootingCompetition> competitionDataStore)
         {
+            _competitionDataStore = competitionDataStore;
             Title = "Wettkämpfe";
             LoadShootingsCommand = new Command(async () => await ExecuteLoadShootingsCommand());
             AddShootingCommand = new Command(async () => await ExecuteAddShootingCommand());
@@ -42,7 +44,7 @@ namespace ShootCounter.ViewModels
         {
             try
             {
-                var shootingStoreItems = await CompetitionDataStore.GetItemsAsync(true);
+                var shootingStoreItems = await _competitionDataStore.GetItemsAsync(true);
 
                 // clear after loading, so the list does not flash empty while the database is read
                 ShootingCompetitions.Clear();
