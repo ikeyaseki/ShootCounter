@@ -13,4 +13,9 @@ public partial class TrainingsPage : ContentPage
         base.OnAppearing();
 		(BindingContext as TrainingsViewModel)?.OnAppearing();
     }
+
+    private void Legend_Clicked(object? sender, EventArgs e)
+    {
+        Legend.Show();
+    }
 }

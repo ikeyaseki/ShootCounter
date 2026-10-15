@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.LegendOverlay"
+             x:Name="Root"
+             IsVisible="False">
+
+    <!-- dimmed background over the page, a tap next to the legend closes it -->
+    <Grid BackgroundColor="#99000000">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="Close_Tapped" />
+        </Grid.GestureRecognizers>
+
+        <Border Margin="20"
+                Padding="15"
+                BackgroundColor="White"
+                Stroke="DarkGray"
+                StrokeThickness="2"
+                VerticalOptions="Center">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+            <!-- swallows taps on the legend itself, so only a tap next to it closes -->
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer />
+            </Border.GestureRecognizers>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource TableHeader}" Text="Legende" TextColor="Black" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Source={x:Reference Root}, Path=Items}" Spacing="6">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="60,*">
+                                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Icons}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Style="{StaticResource TableContentIcon}" Text="{Binding .}" TextColor="Black" />
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                                <Label Grid.Column="1" Style="{StaticResource TableContent}" Text="{Binding Text}" TextColor="Black" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Button Text="Schliessen" Clicked="Close_Tapped" Margin="0,10,0,0" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>
