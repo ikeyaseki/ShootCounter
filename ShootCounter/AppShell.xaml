@@ -47,6 +47,15 @@
                     Color="DarkSlateGray" />
             </ShellContent.Icon>
         </ShellContent>
+        <ShellContent Title="Statistik" Route="StatisticsPage" ContentTemplate="{DataTemplate views:StatisticsPage }">
+            <ShellContent.Icon>
+                <FontImageSource
+                    Glyph="{x:Static icons:IconFont.PercentBoxOutline}"
+                    FontFamily="IconFont"
+                    Size="24"
+                    Color="DarkSlateGray" />
+            </ShellContent.Icon>
+        </ShellContent>
     </TabBar>
 
 </Shell>

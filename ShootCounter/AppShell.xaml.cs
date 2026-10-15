@@ -5,7 +5,7 @@
         public AppShell()
         {
             InitializeComponent();
-            // the tab root pages (AboutPage, TrainingsPage, CompetitionsPage, WeaponsPage) get their route from AppShell.xaml
+            // the tab root pages (AboutPage, TrainingsPage, CompetitionsPage, WeaponsPage, StatisticsPage) get their route from AppShell.xaml
             Routing.RegisterRoute(nameof(TrainingDetailPage), typeof(TrainingDetailPage));
             Routing.RegisterRoute(nameof(NewTrainingPage), typeof(NewTrainingPage));
             Routing.RegisterRoute(nameof(RunPage), typeof(RunPage));
