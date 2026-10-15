@@ -32,6 +32,7 @@ namespace ShootCounter
             builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddSingleton<IDataStore<Shooting>, TrainingDataStore>();
             builder.Services.AddSingleton<IDataStore<ShootingCompetition>, CompetitionDataStore>();
+            builder.Services.AddSingleton<IDataStore<Weapon>, WeaponDataStore>();
 
             // register our pages
             builder.Services.AddSingleton<TrainingsPage>();
@@ -42,6 +43,8 @@ namespace ShootCounter
             builder.Services.AddTransient<CompetitionDetailPage>();
             builder.Services.AddTransient<NewCompetitionPage>();
             builder.Services.AddTransient<CompetitionRunPage>();
+            builder.Services.AddSingleton<WeaponsPage>();
+            builder.Services.AddTransient<WeaponDetailPage>();
 
             // register viewmodels
             builder.Services.AddSingleton<AboutViewModel>();
@@ -53,6 +56,8 @@ namespace ShootCounter
             builder.Services.AddTransient<NewCompetitionViewModel>();
             builder.Services.AddTransient<CompetitionDetailViewModel>();
             builder.Services.AddTransient<CompetitionRunViewModel>();
+            builder.Services.AddSingleton<WeaponsViewModel>();
+            builder.Services.AddTransient<WeaponDetailViewModel>();
 
             var app = builder.Build();
 

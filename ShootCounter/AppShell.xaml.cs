@@ -5,13 +5,14 @@
         public AppShell()
         {
             InitializeComponent();
-            // the tab root pages (AboutPage, TrainingsPage, CompetitionsPage) get their route from AppShell.xaml
+            // the tab root pages (AboutPage, TrainingsPage, CompetitionsPage, WeaponsPage) get their route from AppShell.xaml
             Routing.RegisterRoute(nameof(TrainingDetailPage), typeof(TrainingDetailPage));
             Routing.RegisterRoute(nameof(NewTrainingPage), typeof(NewTrainingPage));
             Routing.RegisterRoute(nameof(RunPage), typeof(RunPage));
             Routing.RegisterRoute(nameof(NewCompetitionPage), typeof(NewCompetitionPage));
             Routing.RegisterRoute(nameof(CompetitionDetailPage), typeof(CompetitionDetailPage));
             Routing.RegisterRoute(nameof(CompetitionRunPage), typeof(CompetitionRunPage));
+            Routing.RegisterRoute(nameof(WeaponDetailPage), typeof(WeaponDetailPage));
         }
 
         protected override void OnNavigating(ShellNavigatingEventArgs args)

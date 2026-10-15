@@ -33,6 +33,7 @@ namespace ShootCounter.Services
                 await _db.CreateTableAsync<Shooting>();
                 await _db.CreateTableAsync<Run>();
                 await _db.CreateTableAsync<ShootingCompetition>();
+                await _db.CreateTableAsync<Weapon>();
 
                 _initDone = true;
             }
@@ -182,6 +183,43 @@ namespace ShootCounter.Services
 
                 SaveRuns(conn, shootingCompetition.Id, shootingCompetition.Runs);
             });
+        }
+
+        public async Task<IEnumerable<Weapon>> LoadAllWeaponAsync()
+        {
+            await InitAsync();
+
+            var weapons = await _db.Table<Weapon>().ToListAsync();
+
+            return weapons.OrderBy(n => n.DisplayName, StringComparer.CurrentCultureIgnoreCase).ToList();
+        }
+
+        public async Task<Weapon?> LoadWeaponAsync(Guid id)
+        {
+            await InitAsync();
+
+            return await _db.Table<Weapon>().FirstOrDefaultAsync(n => n.Id == id);
+        }
+
+        public async Task SaveWeaponAsync(Weapon weapon)
+        {
+            await InitAsync();
+
+            // trainings and competitions store the weapon name, a renamed weapon updates it there too
+            await _db.RunInTransactionAsync(conn =>
+            {
+                conn.InsertOrReplace(weapon);
+                conn.Execute($"UPDATE {nameof(Shooting)} SET {nameof(Shooting.Weapon)} = ? WHERE {nameof(Shooting.WeaponId)} = ?", weapon.DisplayName, weapon.Id);
+                conn.Execute($"UPDATE {nameof(ShootingCompetition)} SET {nameof(ShootingCompetition.Weapon)} = ? WHERE {nameof(ShootingCompetition.WeaponId)} = ?", weapon.DisplayName, weapon.Id);
+            });
+        }
+
+        // trainings and competitions keep the weapon name as text, so they can still show it
+        public async Task DeleteWeaponAsync(Guid id)
+        {
+            await InitAsync();
+
+            await _db.Table<Weapon>().DeleteAsync(n => n.Id == id);
         }
 
         private Task<List<Run>> LoadRunsAsync(Guid shootingId) =>

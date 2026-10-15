@@ -1,4 +1,6 @@
-﻿namespace ShootCounter.ViewModels
+﻿using System.Collections.ObjectModel;
+
+namespace ShootCounter.ViewModels
 {
     public class NewTrainingViewModel : BaseViewModel
     {
@@ -6,7 +8,9 @@
         private string _location = string.Empty;
         private TargetProperties? _selectedTarget = null;
         private int? _bulletsPerRun = null;
-        private string _weapon = string.Empty;
+        private readonly IDataStore<Weapon> _weaponDataStore;
+        private Weapon? _selectedWeapon;
+        private bool _hasNoWeapons;
         private bool _isSaving;
 
         public Command SaveCommand { get; }
@@ -47,22 +51,54 @@
             }
         }
 
-        public string Weapon 
-        { 
-            get => _weapon; 
+        public ObservableCollection<Weapon> Weapons { get; } = [];
+
+        public Weapon? SelectedWeapon
+        {
+            get => _selectedWeapon;
             set
             {
-                SetProperty(ref _weapon, value);
+                SetProperty(ref _selectedWeapon, value);
                 SaveCommand.ChangeCanExecute();
             }
         }
 
-        public NewTrainingViewModel(IDataStore<Shooting> trainingDataStore)
+        // shows the hint to create a weapon in the weapons tab first
+        public bool HasNoWeapons
         {
+            get => _hasNoWeapons;
+            set => SetProperty(ref _hasNoWeapons, value);
+        }
+
+        public NewTrainingViewModel(IDataStore<Shooting> trainingDataStore, IDataStore<Weapon> weaponDataStore)
+        {
+            _weaponDataStore = weaponDataStore;
             _trainingDataStore = trainingDataStore;
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             Title = "Neues Training";
+            LoadWeaponsAsync();
+        }
+
+        private async void LoadWeaponsAsync()
+        {
+            try
+            {
+                var weapons = (await _weaponDataStore.GetItemsAsync()).ToList();
+
+                foreach (var weapon in weapons)
+                    Weapons.Add(weapon);
+
+                // with only one weapon there is nothing to choose
+                if (weapons.Count == 1)
+                    SelectedWeapon = weapons[0];
+
+                HasNoWeapons = weapons.Count == 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
         }
 
         private async void OnCancel()
@@ -72,7 +108,7 @@
 
         private bool ValidateSave()
         {
-            return !string.IsNullOrWhiteSpace(Location) && SelectedTarget != null && BulletsPerRun > 0 && !string.IsNullOrWhiteSpace(Weapon);
+            return !string.IsNullOrWhiteSpace(Location) && SelectedTarget != null && BulletsPerRun > 0 && SelectedWeapon != null;
         }
 
         private async void OnSave()
@@ -104,7 +140,8 @@
                 StartTime = DateTime.Now,
                 Location = Location,
                 TargetType = SelectedTarget?.TargetType ?? TargetType.Unknown,
-                Weapon = Weapon,
+                Weapon = SelectedWeapon?.DisplayName,
+                WeaponId = SelectedWeapon?.Id,
                 DistanceType = SelectedDistance,
                 BulletsPerRun = BulletsPerRun
             };

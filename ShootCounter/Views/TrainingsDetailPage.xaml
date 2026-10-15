@@ -59,13 +59,16 @@
                             <Label Style="{StaticResource TableContent}"
                        Text="{Binding Shooting.TargetProperties.Name}" />
                         </HorizontalStackLayout>
-                        <HorizontalStackLayout Grid.Row="3"
+                        <!-- long weapon names are cut off instead of overlapping the next column -->
+                        <Grid ColumnDefinitions="Auto,*" Grid.Row="3"
                                    Grid.Column="0">
                             <Label Style="{StaticResource TableContentIcon}"
                        Text="{x:Static icons:IconFont.Pistol}" />
                             <Label Style="{StaticResource TableContent}"
+                       Grid.Column="1"
+                       LineBreakMode="TailTruncation"
                        Text="{Binding Shooting.Weapon}" />
-                        </HorizontalStackLayout>
+                        </Grid>
                         <HorizontalStackLayout Grid.Row="3"
                                    Grid.Column="1">
                             <Label Style="{StaticResource TableContentIcon}"

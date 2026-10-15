@@ -15,6 +15,8 @@ namespace ShootCounter.Models
         }
         public string? Location { get; set; }
         public string? Weapon { get; set; }
+        // the selected weapon, Weapon keeps its name for older entries and deleted weapons
+        public Guid? WeaponId { get; set; }
         public CompetitionType CompetitionType { get; set; }
         [Ignore]
         public TargetProperties? TargetProperties { get; set; }

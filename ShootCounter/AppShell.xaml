@@ -38,6 +38,15 @@
             Color="DarkSlateGray" />
             </ShellContent.Icon>
         </ShellContent>
+        <ShellContent Title="Waffen" Route="WeaponsPage" ContentTemplate="{DataTemplate views:WeaponsPage }">
+            <ShellContent.Icon>
+                <FontImageSource
+                    Glyph="{x:Static icons:IconFont.Ammunition}"
+                    FontFamily="IconFont"
+                    Size="24"
+                    Color="DarkSlateGray" />
+            </ShellContent.Icon>
+        </ShellContent>
     </TabBar>
 
 </Shell>

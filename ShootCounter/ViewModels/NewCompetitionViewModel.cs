@@ -1,4 +1,6 @@
-﻿using ShootCounter.Converter;
+﻿using System.Collections.ObjectModel;
+
+using ShootCounter.Converter;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,7 +16,9 @@ namespace ShootCounter.ViewModels
         private readonly IDataStore<ShootingCompetition> _competitionDataStore;
         private CompetitionProperties? _selectedCompetition = null;
         private string _location = string.Empty;
-        private string _weapon = string.Empty;
+        private readonly IDataStore<Weapon> _weaponDataStore;
+        private Weapon? _selectedWeapon;
+        private bool _hasNoWeapons;
         private bool _isSaving;
 
         public IEnumerable<CompetitionProperties> Competitions { get; } = Models.Competitions.CompetitionProperties;
@@ -39,24 +43,56 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public string Weapon
+        public ObservableCollection<Weapon> Weapons { get; } = [];
+
+        public Weapon? SelectedWeapon
         {
-            get => _weapon;
+            get => _selectedWeapon;
             set
             {
-                SetProperty(ref _weapon, value);
+                SetProperty(ref _selectedWeapon, value);
                 SaveCommand.ChangeCanExecute();
             }
         }
 
+        // shows the hint to create a weapon in the weapons tab first
+        public bool HasNoWeapons
+        {
+            get => _hasNoWeapons;
+            set => SetProperty(ref _hasNoWeapons, value);
+        }
+
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
-        public NewCompetitionViewModel(IDataStore<ShootingCompetition> competitionDataStore)
+        public NewCompetitionViewModel(IDataStore<ShootingCompetition> competitionDataStore, IDataStore<Weapon> weaponDataStore)
         {
+            _weaponDataStore = weaponDataStore;
             _competitionDataStore = competitionDataStore;
             Title = "Neuer Wettkampf";
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
+            LoadWeaponsAsync();
+        }
+
+        private async void LoadWeaponsAsync()
+        {
+            try
+            {
+                var weapons = (await _weaponDataStore.GetItemsAsync()).ToList();
+
+                foreach (var weapon in weapons)
+                    Weapons.Add(weapon);
+
+                // with only one weapon there is nothing to choose
+                if (weapons.Count == 1)
+                    SelectedWeapon = weapons[0];
+
+                HasNoWeapons = weapons.Count == 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
         }
 
         private async void OnCancel()
@@ -66,7 +102,7 @@ namespace ShootCounter.ViewModels
 
         private bool ValidateSave()
         {
-            return !string.IsNullOrWhiteSpace(Location) && SelectedCompetition != null && !string.IsNullOrWhiteSpace(Weapon);
+            return !string.IsNullOrWhiteSpace(Location) && SelectedCompetition != null && SelectedWeapon != null;
         }
 
         private async void OnSave()
@@ -98,7 +134,8 @@ namespace ShootCounter.ViewModels
                 StartTime = DateTime.Now,
                 Location = Location,
                 CompetitionType = SelectedCompetition?.CompetitionType ?? CompetitionType.Unknown,
-                Weapon = Weapon
+                Weapon = SelectedWeapon?.DisplayName,
+                WeaponId = SelectedWeapon?.Id
             };
 
             await _competitionDataStore.AddItemAsync(competition);

@@ -53,13 +53,16 @@
                                     <Label Style="{StaticResource TableContent}"
                                        Text="{Binding Duration, Converter={StaticResource DurationConverter}}" />
                                 </HorizontalStackLayout>
-                                <HorizontalStackLayout Grid.Row="3"
+                                <!-- long weapon names are cut off instead of overlapping the next column -->
+                                <Grid ColumnDefinitions="Auto,*" Grid.Row="3"
                                                    Grid.Column="0">
                                     <Label Style="{StaticResource TableContentIcon}"
                                        Text="{x:Static icons:IconFont.Pistol}" />
                                     <Label Style="{StaticResource TableContent}"
+                                       Grid.Column="1"
+                                       LineBreakMode="TailTruncation"
                                        Text="{Binding Weapon}" />
-                                </HorizontalStackLayout>
+                                </Grid>
                                 <BoxView HeightRequest="1"                                  
                                      Color="DarkGray"
                                      Margin="0,10"
