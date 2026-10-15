@@ -21,5 +21,9 @@ namespace ShootCounter.Services
         Task SaveWeaponAsync(Weapon weapon);
         Task DeleteWeaponAsync(Guid id);
         Task<(int Trainings, int Competitions)> CountWeaponUsageAsync(Guid id);
+
+        Task ExportAsync(string targetPath);
+        bool IsValidBackup(string path);
+        Task ImportAsync(string sourcePath);
     }
 }

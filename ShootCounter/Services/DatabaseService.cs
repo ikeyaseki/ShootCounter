@@ -4,11 +4,14 @@ namespace ShootCounter.Services
 {
     public class DatabaseService : IDatabaseService
     {
-        private readonly SQLiteAsyncConnection _db;
+        private SQLiteAsyncConnection _db;
         public const string DatabaseFilename = "ShootingSQLite.db3";
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
         public static string DatabasePath => Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
+
+        // copy of the data before the last import, in case the wrong backup was imported
+        public static string BeforeImportPath => Path.Combine(FileSystem.AppDataDirectory, "ShootingSQLite.before-import.db3");
 
         private readonly SemaphoreSlim _initLock = new(1, 1);
         private bool _initDone = false;
@@ -237,6 +240,67 @@ namespace ShootCounter.Services
             var competitions = await _db.Table<ShootingCompetition>().CountAsync(n => n.WeaponId == id);
 
             return (trainings, competitions);
+        }
+
+        // VACUUM INTO writes a consistent copy, even while the app uses the database
+        public async Task ExportAsync(string targetPath)
+        {
+            await InitAsync();
+
+            if (File.Exists(targetPath))
+                File.Delete(targetPath);
+
+            await _db.ExecuteAsync("VACUUM INTO ?", targetPath);
+        }
+
+        // a backup has to be a sqlite file with the tables of ShootCounter
+        public bool IsValidBackup(string path)
+        {
+            try
+            {
+                using var backup = new SQLiteConnection(path, SQLiteOpenFlags.ReadOnly);
+
+                var tables = backup.ExecuteScalar<int>(
+                    "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name IN (?, ?)",
+                    nameof(Shooting), nameof(Run));
+
+                return tables == 2;
+            }
+            catch (SQLiteException)
+            {
+                return false;
+            }
+        }
+
+        // replaces all data with the backup, the current data is kept as BeforeImportPath
+        public async Task ImportAsync(string sourcePath)
+        {
+            await _initLock.WaitAsync();
+            try
+            {
+                await _db.CloseAsync();
+
+                if (File.Exists(DatabasePath))
+                    File.Copy(DatabasePath, BeforeImportPath, true);
+
+                File.Copy(sourcePath, DatabasePath, true);
+
+                foreach (var suffix in new[] { "-wal", "-shm", "-journal" })
+                {
+                    if (File.Exists(DatabasePath + suffix))
+                        File.Delete(DatabasePath + suffix);
+                }
+
+                // an older backup may lack newer tables or columns, InitAsync adds them
+                _db = new SQLiteAsyncConnection(DatabasePath, Flags);
+                _initDone = false;
+            }
+            finally
+            {
+                _initLock.Release();
+            }
+
+            await InitAsync();
         }
 
         private Task<List<Run>> LoadRunsAsync(Guid shootingId) =>
