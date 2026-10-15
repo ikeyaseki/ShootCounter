@@ -23,7 +23,7 @@
         <ShellContent Title="Trainings" Route="TrainingsPage" ContentTemplate="{DataTemplate views:TrainingsPage }">
             <ShellContent.Icon>
                 <FontImageSource
-                    Glyph="{x:Static icons:IconFont.Pistol}"
+                    Glyph="{x:Static icons:IconFont.Ammunition}"
                     FontFamily="IconFont"
                     Size="24"
                     Color="DarkSlateGray" />
@@ -41,7 +41,7 @@
         <ShellContent Title="Waffen" Route="WeaponsPage" ContentTemplate="{DataTemplate views:WeaponsPage }">
             <ShellContent.Icon>
                 <FontImageSource
-                    Glyph="{x:Static icons:IconFont.Ammunition}"
+                    Glyph="{x:Static icons:IconFont.Pistol}"
                     FontFamily="IconFont"
                     Size="24"
                     Color="DarkSlateGray" />
