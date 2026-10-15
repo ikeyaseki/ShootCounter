@@ -84,7 +84,7 @@ namespace ShootCounter.ViewModels
 
                 await TrainingDataStore.UpdateItemAsync(_shooting);
 
-                await Shell.Current.GoToAsync($"{nameof(TrainingsPage)}", true);
+                await Shell.Current.GoToAsync($"//{nameof(TrainingsPage)}", true);
             }
         }
 

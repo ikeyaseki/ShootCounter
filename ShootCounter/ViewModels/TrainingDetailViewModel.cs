@@ -77,7 +77,7 @@ namespace ShootCounter.ViewModels
             {
                 await TrainingDataStore.DeleteItemAsync(Shooting.Id);
 
-                await Shell.Current.GoToAsync($"{nameof(TrainingsPage)}", true);
+                await Shell.Current.GoToAsync($"//{nameof(TrainingsPage)}", true);
             }
         }
 

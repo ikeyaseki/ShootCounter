@@ -398,7 +398,7 @@ namespace ShootCounter.ViewModels
                     break;
 
                 case CompetitionState.Result:
-                    await Shell.Current.GoToAsync($"{nameof(CompetitionsPage)}", true);
+                    await Shell.Current.GoToAsync($"//{nameof(CompetitionsPage)}", true);
                     break;
             }
 
@@ -550,7 +550,7 @@ namespace ShootCounter.ViewModels
 
                 await CompetitionDataStore.UpdateItemAsync(Shooting);
 
-                await Shell.Current.GoToAsync($"{nameof(CompetitionsPage)}", true);
+                await Shell.Current.GoToAsync($"//{nameof(CompetitionsPage)}", true);
             }
         }
 
