@@ -1,6 +1,6 @@
 namespace ShootCounter.Models
 {
-    // common calibers to choose from in the weapon management,
+    // pistol and revolver calibers to choose from in the weapon management,
     // without brackets because the weapon name shows the caliber in brackets
     public static class Calibers
     {
@@ -8,38 +8,61 @@ namespace ShootCounter.Models
 
         public static IReadOnlyList<string> All { get; } =
         [
-            // pistol and revolver
+            // rimfire
+            ".22 Short",
             ".22 lr",
             ".22 WMR",
+            ".17 HMR",
+
+            // small calibers
+            "6.35 mm Browning",
+            "5.7×28",
+            ".30 Super Carry",
+
+            // .32 and 7.5 to 7.65 mm
+            ".32 S&W",
             ".32 S&W long",
+            ".32 H&R Magnum",
+            ".327 Federal Magnum",
+            "7.62×25 Tokarev",
+            "7.62 Nagant",
+            "7.5 mm Ordonnanz 1882",
             "7.65 mm Browning",
+            "7.65 mm Parabellum",
+
+            // 9 mm and .38
             "9 mm kurz",
+            "9×18 Makarov",
             "9 mm Para",
             "9×21",
+            "9×23",
+            ".38 S&W",
             ".38 Special",
+            ".38 Super",
             ".357 Magnum",
+            ".357 SIG",
+
+            // .40 and 10 mm
             ".40 S&W",
             "10 mm Auto",
+            ".41 Magnum",
+
+            // .44 and .45
+            ".44 Special",
             ".44 Magnum",
             ".45 ACP",
-            "5.7×28",
-            "7.62×25 Tokarev",
+            ".45 GAP",
+            ".45 Colt",
+            ".454 Casull",
+            ".460 S&W Magnum",
+            ".480 Ruger",
 
-            // rifle
-            ".17 HMR",
-            ".223 Remington",
-            "5.56×45 GP 90",
-            "6.5×55",
-            "6.5 Creedmoor",
-            "7.5×55 GP 11",
-            "7.62×39",
-            ".308 Winchester",
-            ".30-06 Springfield",
-            ".300 Win Mag",
+            // .50
+            ".50 AE",
+            ".500 S&W Magnum",
 
-            // air guns
-            "4.5 mm Luftdruck",
-            "5.5 mm Luftdruck",
+            // air pistol
+            "4.5 mm Luftpistole",
         ];
     }
 }
