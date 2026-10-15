@@ -32,7 +32,8 @@ namespace ShootCounter
             builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddSingleton<IDataStore<Shooting>, TrainingDataStore>();
             builder.Services.AddSingleton<IDataStore<ShootingCompetition>, CompetitionDataStore>();
-            builder.Services.AddSingleton<INavigationService, NavigationService>();
+            builder.Services.AddSingleton<IDataStore<Weapon>, WeaponDataStore>();
+            builder.Services.AddSingleton<StatisticsService>();
 
             // register our pages
             builder.Services.AddSingleton<TrainingsPage>();
@@ -43,6 +44,9 @@ namespace ShootCounter
             builder.Services.AddTransient<CompetitionDetailPage>();
             builder.Services.AddTransient<NewCompetitionPage>();
             builder.Services.AddTransient<CompetitionRunPage>();
+            builder.Services.AddSingleton<WeaponsPage>();
+            builder.Services.AddTransient<WeaponDetailPage>();
+            builder.Services.AddSingleton<StatisticsPage>();
 
             // register viewmodels
             builder.Services.AddSingleton<AboutViewModel>();
@@ -54,11 +58,11 @@ namespace ShootCounter
             builder.Services.AddTransient<NewCompetitionViewModel>();
             builder.Services.AddTransient<CompetitionDetailViewModel>();
             builder.Services.AddTransient<CompetitionRunViewModel>();
+            builder.Services.AddSingleton<WeaponsViewModel>();
+            builder.Services.AddTransient<WeaponDetailViewModel>();
+            builder.Services.AddSingleton<StatisticsViewModel>();
 
             var app = builder.Build();
-
-            // initalize our service helper before calling it
-            ServiceHelper.Initialize(app.Services);
 
             return app;
         }

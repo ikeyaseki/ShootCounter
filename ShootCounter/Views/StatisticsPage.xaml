@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.StatisticsPage"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Margin" Value="5,10,5,0" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Stroke" Value="DarkGray" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+        </Style>
+        <Style x:Key="Value" TargetType="Label" BasedOn="{StaticResource TableContent}">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="HorizontalTextAlignment" Value="End" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="0,0,0,20">
+
+            <!-- filter -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout>
+                    <Label Style="{StaticResource TableHeader}" Text="Filter" />
+                    <Picker Title="Zeitraum"
+                            ItemsSource="{Binding Periods}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedPeriod}" />
+                    <Grid ColumnDefinitions="Auto,*,Auto,*" IsVisible="{Binding IsCustomPeriod}">
+                        <Label Text="von" VerticalOptions="Center" Style="{StaticResource TableContent}" />
+                        <DatePicker Grid.Column="1" Date="{Binding CustomFrom}" Format="dd.MM.yyyy" />
+                        <Label Grid.Column="2" Text="bis" VerticalOptions="Center" Margin="10,0,0,0" Style="{StaticResource TableContent}" />
+                        <DatePicker Grid.Column="3" Date="{Binding CustomTo}" Format="dd.MM.yyyy" />
+                    </Grid>
+                    <Picker Title="Waffe"
+                            ItemsSource="{Binding WeaponOptions}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedWeapon}" />
+                    <Picker Title="Kaliber"
+                            ItemsSource="{Binding CaliberOptions}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedCaliber}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Für diesen Filter gibt es keine Trainings oder Wettkämpfe."
+                   Margin="15,20"
+                   HorizontalTextAlignment="Center"
+                   IsVisible="{Binding IsEmpty}" />
+
+            <VerticalStackLayout IsVisible="{Binding HasData}">
+
+                <!-- key figures -->
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="15">
+                        <Label Grid.Column="1" Style="{StaticResource TableContent}" Text="Training" HorizontalTextAlignment="End" />
+                        <Label Grid.Column="2" Style="{StaticResource TableContent}" Text="Wettkampf" HorizontalTextAlignment="End" />
+
+                        <Label Grid.Row="1" Style="{StaticResource TableContent}" Text="Anzahl" />
+                        <Label Grid.Row="1" Grid.Column="1" Style="{StaticResource Value}" Text="{Binding TrainingCount}" />
+                        <Label Grid.Row="1" Grid.Column="2" Style="{StaticResource Value}" Text="{Binding CompetitionCount}" />
+
+                        <Label Grid.Row="2" Style="{StaticResource TableContent}" Text="Schüsse" />
+                        <Label Grid.Row="2" Grid.Column="1" Style="{StaticResource Value}" Text="{Binding TrainingShots}" />
+                        <Label Grid.Row="2" Grid.Column="2" Style="{StaticResource Value}" Text="{Binding CompetitionShots}" />
+
+                        <Label Grid.Row="3" Style="{StaticResource TableContent}" Text="Ø Punkte" />
+                        <Label Grid.Row="3" Grid.Column="1" Style="{StaticResource Value}" Text="{Binding TrainingPercentage}" />
+                        <Label Grid.Row="3" Grid.Column="2" Style="{StaticResource Value}" Text="{Binding CompetitionPercentage}" />
+
+                        <Label Grid.Row="4" Style="{StaticResource TableHeader}" Text="Schüsse total" Margin="0,10,0,0" />
+                        <Label Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource TableHeader}" Text="{Binding TotalShots}"
+                               HorizontalTextAlignment="End" FontAttributes="Bold" Margin="0,10,0,0" />
+                    </Grid>
+                </Border>
+
+                <!-- shots over time -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout>
+                        <Label Style="{StaticResource TableHeader}" Text="{Binding ChartTitle}" />
+                        <lvc:CartesianChart HeightRequest="260"
+                                            Series="{Binding ShotSeries}"
+                                            XAxes="{Binding XAxes}"
+                                            YAxes="{Binding YAxes}"
+                                            LegendPosition="Bottom" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- results per weapon -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Style="{StaticResource TableHeader}" Text="Resultate pro Waffe" />
+                        <Label Style="{StaticResource Legend}" Text="Ø Punkte in Prozent, in Klammern die Anzahl" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding WeaponResults}" Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                                        <Label Grid.ColumnSpan="2" Style="{StaticResource TableContent}" Text="{Binding WeaponName}" FontAttributes="Bold" />
+                                        <Label Grid.Row="1" Style="{StaticResource TableContent}" Text="{Binding Training, StringFormat='Training: {0}'}" />
+                                        <Label Grid.Row="1" Grid.Column="1" Style="{StaticResource TableContent}" Text="{Binding Competition, StringFormat='Wettkampf: {0}'}" />
+                                        <Label Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource TableContent}" Text="{Binding Shots, StringFormat='{0} Schüsse'}" TextColor="Gray" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- shots per day -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Style="{StaticResource TableHeader}" Text="Schüsse pro Tag" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Days}" Spacing="4">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Style="{StaticResource TableContent}" Text="{Binding Label}" />
+                                        <Label Grid.Column="1" Style="{StaticResource Value}" Text="{Binding TotalShots}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

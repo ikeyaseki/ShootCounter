@@ -11,6 +11,7 @@ namespace ShootCounter.ViewModels
 {
     public class TrainingsViewModel : BaseViewModel
     {
+        private readonly IDataStore<Shooting> _trainingDataStore;
         private Shooting? _selectedShoting;
 
         public ObservableCollection<Shooting> Shootings { get; private set; } = [];
@@ -21,8 +22,9 @@ namespace ShootCounter.ViewModels
         public Command DetailsCommand { get; }
         public Command ReloadShootingsCommand { get; }
 
-        public TrainingsViewModel()
+        public TrainingsViewModel(IDataStore<Shooting> trainingDataStore)
         {
+            _trainingDataStore = trainingDataStore;
             Title = "Trainings";
             LoadShootingsCommand = new Command(async () => await ExecuteLoadShootingsCommand());
             AddShootingCommand = new Command(async () => await ExecuteAddShootingCommand());
@@ -67,15 +69,15 @@ namespace ShootCounter.ViewModels
         {
             try
             {
+                var shootingStoreItems = await _trainingDataStore.GetItemsAsync(true);
+
+                // clear after loading, so the list does not flash empty while the database is read
                 Shootings.Clear();
 
-                var shootingStoreItems = await TrainingDataStore.GetItemsAsync(true);
-
-                foreach (var shooting in shootingStoreItems)
+                foreach (var shooting in shootingStoreItems.OrderByDescending(n => n.StartTime))
                 {
                     Shootings.Add(await CalculateResults(shooting));
                 }
-
             }
             catch (Exception ex)
             {

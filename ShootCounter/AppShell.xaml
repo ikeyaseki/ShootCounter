@@ -11,7 +11,7 @@
 
 
     <TabBar>
-        <ShellContent Title="Info" ContentTemplate="{DataTemplate views:AboutPage}">
+        <ShellContent Title="Info" Route="AboutPage" ContentTemplate="{DataTemplate views:AboutPage}">
             <ShellContent.Icon>
                 <FontImageSource
                     Glyph="{x:Static icons:IconFont.InformationOutline}"
@@ -20,7 +20,25 @@
                     Color="DarkSlateGray" />
             </ShellContent.Icon>
         </ShellContent>
-        <ShellContent Title="Trainings" ContentTemplate="{DataTemplate views:TrainingsPage }">
+        <ShellContent Title="Trainings" Route="TrainingsPage" ContentTemplate="{DataTemplate views:TrainingsPage }">
+            <ShellContent.Icon>
+                <FontImageSource
+                    Glyph="{x:Static icons:IconFont.Ammunition}"
+                    FontFamily="IconFont"
+                    Size="24"
+                    Color="DarkSlateGray" />
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Wettkämpfe" Route="CompetitionsPage" ContentTemplate="{DataTemplate views:CompetitionsPage }">
+            <ShellContent.Icon>
+                <FontImageSource
+            Glyph="{x:Static icons:IconFont.Bullseye}"
+            FontFamily="IconFont"
+            Size="24"
+            Color="DarkSlateGray" />
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Waffen" Route="WeaponsPage" ContentTemplate="{DataTemplate views:WeaponsPage }">
             <ShellContent.Icon>
                 <FontImageSource
                     Glyph="{x:Static icons:IconFont.Pistol}"
@@ -29,13 +47,13 @@
                     Color="DarkSlateGray" />
             </ShellContent.Icon>
         </ShellContent>
-        <ShellContent Title="Wettkämpfe" ContentTemplate="{DataTemplate views:CompetitionsPage }">
+        <ShellContent Title="Statistik" Route="StatisticsPage" ContentTemplate="{DataTemplate views:StatisticsPage }">
             <ShellContent.Icon>
                 <FontImageSource
-            Glyph="{x:Static icons:IconFont.Bullseye}"
-            FontFamily="IconFont"
-            Size="24"
-            Color="DarkSlateGray" />
+                    Glyph="{x:Static icons:IconFont.PercentBoxOutline}"
+                    FontFamily="IconFont"
+                    Size="24"
+                    Color="DarkSlateGray" />
             </ShellContent.Icon>
         </ShellContent>
     </TabBar>

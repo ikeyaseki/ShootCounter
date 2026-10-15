@@ -13,4 +13,9 @@ public partial class CompetitionsPage : ContentPage
         base.OnAppearing();
         (BindingContext as CompetitionsViewModel)?.OnAppearing();
     }
+
+    private void Legend_Clicked(object? sender, EventArgs e)
+    {
+        Legend.Show();
+    }
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.WeaponsPage"
+             xmlns:model="clr-namespace:ShootCounter.Models"
+             xmlns:vm="clr-namespace:ShootCounter.ViewModels"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converter:IsNotNullConverter x:Key="IsNotNullConverter" />
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding AddWeaponCommand}" Text="Neu" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView Command="{Binding LoadWeaponsCommand}" IsRefreshing="{Binding IsBusy}">
+        <CollectionView ItemsSource="{Binding Weapons}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="5,10,5,10"
+                            Stroke="DarkGray"
+                            StrokeThickness="2">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Padding="10" x:DataType="model:Weapon">
+                            <Label Style="{StaticResource TableHeader}" Text="{Binding DisplayName}" />
+                            <Label Style="{StaticResource TableContent}"
+                                   Text="Ausgemustert"
+                                   FontAttributes="Italic"
+                                   TextColor="Gray"
+                                   IsVisible="{Binding IsRetired}" />
+                            <Label Style="{StaticResource TableContent}"
+                                   Text="{Binding PurchaseDate, StringFormat='Gekauft am {0:dd.MM.yyyy}'}"
+                                   IsVisible="{Binding PurchaseDate, Converter={StaticResource IsNotNullConverter}}" />
+                            <Label Style="{StaticResource TableContent}"
+                                   Text="{Binding Notes}"
+                                   MaxLines="2"
+                                   LineBreakMode="TailTruncation"
+                                   IsVisible="{Binding Notes, Converter={StaticResource IsNotNullConverter}}" />
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WeaponsViewModel}}, Path=WeaponTapped}"
+                                    CommandParameter="{Binding .}" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <ContentView>
+                    <VerticalStackLayout>
+                        <Label Text="Noch keine Waffen erfasst. Tippe auf &quot;Neu&quot;, um eine zu erfassen." Margin="15" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </ContentView>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </RefreshView>
+</ContentPage>

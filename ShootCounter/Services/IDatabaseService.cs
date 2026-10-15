@@ -15,5 +15,15 @@ namespace ShootCounter.Services
         Task AddShootingCompetitionAsync(ShootingCompetition shootingCompetition);
         Task DeleteShootingCompetitionAsync(Guid id);
         Task UpdateShootingCompetitionAsync(ShootingCompetition shootingCompetition);
+
+        Task<IEnumerable<Weapon>> LoadAllWeaponAsync();
+        Task<Weapon?> LoadWeaponAsync(Guid id);
+        Task SaveWeaponAsync(Weapon weapon);
+        Task DeleteWeaponAsync(Guid id);
+        Task<(int Trainings, int Competitions)> CountWeaponUsageAsync(Guid id);
+
+        Task ExportAsync(string targetPath);
+        bool IsValidBackup(string path);
+        Task ImportAsync(string sourcePath);
     }
 }

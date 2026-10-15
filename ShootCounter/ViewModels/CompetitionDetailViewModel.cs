@@ -1,8 +1,6 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
 using ShootCounter.Helpers;
-using SkiaSharp;
 using System.Diagnostics;
 
 namespace ShootCounter.ViewModels
@@ -10,10 +8,11 @@ namespace ShootCounter.ViewModels
     [QueryProperty(nameof(ShootingCompetitionId), nameof(ShootingCompetitionId))]
     public class CompetitionDetailViewModel : BaseViewModel
     {
+        private readonly IDataStore<ShootingCompetition> _competitionDataStore;
         private string _shootingCompetitionId = string.Empty;
         private ShootingCompetition _shooting = new();
         private IEnumerable<ISeries> _runSeries = new List<ISeries>();
-        private Axis[] _xAxes;
+        private Axis[] _xAxes = [];
 
         public Command DeleteCommand { get; private set; }
 
@@ -54,8 +53,9 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public CompetitionDetailViewModel()
+        public CompetitionDetailViewModel(IDataStore<ShootingCompetition> competitionDataStore)
         {
+            _competitionDataStore = competitionDataStore;
             Title = "Wettkampf Details";
             DeleteCommand = new Command(async () => await ExecuteDelete(), CanExecuteDelete);
         }
@@ -75,9 +75,9 @@ namespace ShootCounter.ViewModels
 
             if (confirm)
             {
-                await CompetitionDataStore.DeleteItemAsync(Shooting.Id);
+                await _competitionDataStore.DeleteItemAsync(Shooting.Id);
 
-                await Shell.Current.GoToAsync($"{nameof(CompetitionsPage)}", true);
+                await Shell.Current.GoToAsync($"//{nameof(CompetitionsPage)}", true);
             }
         }
 
@@ -87,54 +87,27 @@ namespace ShootCounter.ViewModels
             {
                 IsBusy = true;
 
-                var shooting = await CompetitionDataStore.GetItemAsync(Guid.Parse(id));
+                var shooting = await _competitionDataStore.GetItemAsync(Guid.Parse(id));
 
                 if (shooting == null)
-                {
-                    IsBusy = false;
                     return;
-                }
 
                 CalculateShooting calculate = new();
                 Shooting = await calculate.CalculateCompetition(shooting);
 
-                if (Shooting.Runs == null)
+                if (RunChart.TryCreate(Shooting.Runs, out var xAxes, out var runSeries))
                 {
-                    IsBusy = false;
-                    return;
+                    XAxes = xAxes;
+                    RunSeries = runSeries;
                 }
-
-                List<string> xAxisLabels = new List<string>();
-                for (int x = 1; x <= Shooting.Runs.Count(); x++)
-                {
-                    xAxisLabels.Add(x.ToString());
-                }
-
-                XAxes = new List<Axis>
-                {
-                    new Axis
-                    {
-                        Name = "Passen",
-                        Labels = xAxisLabels.ToList(),
-                    }
-                }.ToArray();
-
-                var maxLength = Shooting.Runs.Max(n => n.Results.Count());
-
-                RunSeries = Enumerable.Range(0, maxLength + 1)
-                    .Select(i => new ColumnSeries<int>
-                    {
-                        Name = i >= maxLength ? "Platzhalter" : $"Schuss {i + 1}",
-                        Values = Shooting.Runs.Select(run =>
-                            i < run.Results.Count() ? run.Results.ElementAt(i) : 0).ToList(),
-                        Fill = new SolidColorPaint(SKColors.BlueViolet),
-                    }).ToList();
-
-                IsBusy = false;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
             }
 
             DeleteCommand.ChangeCanExecute();

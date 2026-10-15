@@ -21,4 +21,34 @@
         <Setter Property="FontFamily" Value="IconFont" />
         <Setter Property="Margin" Value="0,3,5,0" />
     </Style>
+
+    <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
+        <Setter Property="BackgroundColor" Value="LightGray" />
+        <Setter Property="TextColor" Value="Black" />
+        <Setter Property="Padding" Value="15" />
+        <Setter Property="Margin" Value="0,5,0,0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <!-- the border is not changed by the visual states, recycled list cells would keep a wrong border -->
+        <Setter Property="BorderColor" Value="Gray" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CheckedStates">
+                    <VisualState x:Name="Checked">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{x:StaticResource Primary}" />
+                            <Setter Property="TextColor" Value="White" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Unchecked">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="LightGray" />
+                            <Setter Property="TextColor" Value="Black" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
 </ResourceDictionary>

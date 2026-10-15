@@ -4,54 +4,74 @@ namespace ShootCounter.Services
 {
     public class DatabaseService : IDatabaseService
     {
-        private readonly SQLiteAsyncConnection _db;
+        private SQLiteAsyncConnection _db;
         public const string DatabaseFilename = "ShootingSQLite.db3";
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
         public static string DatabasePath => Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
 
-        private static bool _initDone = false;
-        
+        // copy of the data before the last import, in case the wrong backup was imported
+        public static string BeforeImportPath => Path.Combine(FileSystem.AppDataDirectory, "ShootingSQLite.before-import.db3");
+
+        private readonly SemaphoreSlim _initLock = new(1, 1);
+        private bool _initDone = false;
 
         public DatabaseService()
         {
             _db = new SQLiteAsyncConnection(DatabasePath, Flags);
         }
 
+        // every public method awaits this, so no query can run before the tables exist
         public async Task InitAsync()
         {
-            if (_initDone) 
+            if (_initDone)
                 return;
 
-            await _db.CreateTableAsync<Shooting>();
-            await _db.CreateTableAsync<Run>();
-            await _db.CreateTableAsync<ShootingCompetition>();
+            await _initLock.WaitAsync();
+            try
+            {
+                if (_initDone)
+                    return;
 
-            _initDone = true;
+                await _db.CreateTableAsync<Shooting>();
+                await _db.CreateTableAsync<Run>();
+                await _db.CreateTableAsync<ShootingCompetition>();
+                await _db.CreateTableAsync<Weapon>();
+
+                _initDone = true;
+            }
+            finally
+            {
+                _initLock.Release();
+            }
         }
 
         public async Task AddShootingAsync(Shooting shooting)
         {
-            await _db.InsertAsync(shooting);
+            await InitAsync();
 
-            if (shooting.Runs != null)
+            await _db.RunInTransactionAsync(conn =>
             {
-                foreach (var run in shooting.Runs)
-                {
-                    run.ShootingId = shooting.Id;
-                    await _db.InsertAsync(run);
-                }
-            }
+                conn.Insert(shooting);
+                SaveRuns(conn, shooting.Id, shooting.Runs);
+            });
         }
 
         public async Task<IEnumerable<Shooting>> LoadAllShootingAsync()
         {
-            var shootings = await _db.Table<Shooting>().ToArrayAsync();
+            await InitAsync();
+
+            var shootings = await _db.Table<Shooting>().ToListAsync();
+
+            // load all runs with one query instead of one query per shooting
+            var runs = (await _db.QueryAsync<Run>(
+                    $"SELECT r.* FROM {nameof(Run)} r INNER JOIN {nameof(Shooting)} s ON r.{nameof(Run.ShootingId)} = s.{nameof(Shooting.Id)} ORDER BY r.{nameof(Run.Id)}"))
+                .ToLookup(n => n.ShootingId);
 
             foreach (var shooting in shootings)
             {
                 shooting.TargetProperties = Targets.TargetProperties.FirstOrDefault(n => n.TargetType == shooting.TargetType);
-                shooting.Runs = await _db.Table<Run>().Where(n => n.ShootingId == shooting.Id).ToListAsync();
+                shooting.Runs = runs[shooting.Id].ToList();
             }
 
             return shootings;
@@ -59,15 +79,13 @@ namespace ShootCounter.Services
 
         public async Task<Shooting?> LoadShootingAsync(Guid id)
         {
+            await InitAsync();
+
             var shooting = await _db.Table<Shooting>().FirstOrDefaultAsync(n => n.Id == id);
 
             if (shooting != null)
             {
-                shooting.Runs = await _db.Table<Run>().Where(n => n.ShootingId == id).ToListAsync();
-            }
-
-            if (shooting != null)
-            {
+                shooting.Runs = await LoadRunsAsync(id);
                 shooting.TargetProperties = Targets.TargetProperties.FirstOrDefault(n => n.TargetType == shooting.TargetType);
             }
 
@@ -76,47 +94,44 @@ namespace ShootCounter.Services
 
         public async Task DeleteShootingAsync(Guid id)
         {
-            var shooting = await LoadShootingAsync(id);
+            await InitAsync();
 
-            if (shooting?.Runs != null)
+            await _db.RunInTransactionAsync(conn =>
             {
-                await _db.Table<Run>().DeleteAsync(n => n.ShootingId == id);
-            }
-
-            await _db.Table<Shooting>().DeleteAsync(n => n.Id == id);
+                conn.Table<Run>().Delete(n => n.ShootingId == id);
+                conn.Table<Shooting>().Delete(n => n.Id == id);
+            });
         }
 
         public async Task UpdateShootingAsync(Shooting shooting)
         {
-            if (shooting.Runs != null)
+            await InitAsync();
+
+            await _db.RunInTransactionAsync(conn =>
             {
-                foreach (var run in shooting.Runs)
-                {
-                    var existingRun = await _db.Table<Run>().FirstOrDefaultAsync(n => n.Id == run.Id);
+                if (conn.Update(shooting) == 0)
+                    conn.Insert(shooting);
 
-                    if (existingRun != null)
-                    {
-                        await _db.UpdateAsync(run);
-                    }
-                    else
-                    {
-                        await _db.InsertAsync(run);
-                    }
-                }
-            }
-
-            await _db.UpdateAsync(shooting);
+                SaveRuns(conn, shooting.Id, shooting.Runs);
+            });
         }
 
         public async Task<IEnumerable<ShootingCompetition>> LoadAllShootingCompetitionAsync()
         {
-            var shootings = await _db.Table<ShootingCompetition>().ToArrayAsync();
+            await InitAsync();
+
+            var shootings = await _db.Table<ShootingCompetition>().ToListAsync();
+
+            // load all runs with one query instead of one query per competition
+            var runs = (await _db.QueryAsync<Run>(
+                    $"SELECT r.* FROM {nameof(Run)} r INNER JOIN {nameof(ShootingCompetition)} s ON r.{nameof(Run.ShootingId)} = s.{nameof(ShootingCompetition.Id)} ORDER BY r.{nameof(Run.Id)}"))
+                .ToLookup(n => n.ShootingId);
 
             foreach (var shooting in shootings)
             {
                 shooting.CompetitionProperties = Competitions.CompetitionProperties.First(n => n.CompetitionType == shooting.CompetitionType);
                 shooting.TargetProperties = Targets.TargetProperties.First(n => n.TargetType == shooting.CompetitionProperties.TargetType);
-                shooting.Runs = await _db.Table<Run>().Where(n => n.ShootingId == shooting.Id).ToListAsync();
+                shooting.Runs = runs[shooting.Id].ToList();
             }
 
             return shootings;
@@ -124,15 +139,13 @@ namespace ShootCounter.Services
 
         public async Task<ShootingCompetition?> LoadShootingCompetitionAsync(Guid id)
         {
+            await InitAsync();
+
             var shooting = await _db.Table<ShootingCompetition>().FirstOrDefaultAsync(n => n.Id == id);
 
             if (shooting != null)
             {
-                shooting.Runs = await _db.Table<Run>().Where(n => n.ShootingId == id).ToListAsync();
-            }
-
-            if (shooting != null)
-            {
+                shooting.Runs = await LoadRunsAsync(id);
                 shooting.CompetitionProperties = Competitions.CompetitionProperties.First(n => n.CompetitionType == shooting.CompetitionType);
                 shooting.TargetProperties = Targets.TargetProperties.First(n => n.TargetType == shooting.CompetitionProperties.TargetType);
             }
@@ -142,50 +155,170 @@ namespace ShootCounter.Services
 
         public async Task AddShootingCompetitionAsync(ShootingCompetition shootingCompetition)
         {
-            await _db.InsertAsync(shootingCompetition);
+            await InitAsync();
 
-            if (shootingCompetition.Runs != null)
+            await _db.RunInTransactionAsync(conn =>
             {
-                foreach (var run in shootingCompetition.Runs)
-                {
-                    run.ShootingId = shootingCompetition.Id;
-                    await _db.InsertAsync(run);
-                }
-            }
+                conn.Insert(shootingCompetition);
+                SaveRuns(conn, shootingCompetition.Id, shootingCompetition.Runs);
+            });
         }
 
         public async Task DeleteShootingCompetitionAsync(Guid id)
         {
-            var shooting = await LoadShootingCompetitionAsync(id);
+            await InitAsync();
 
-            if (shooting?.Runs != null)
+            await _db.RunInTransactionAsync(conn =>
             {
-                await _db.Table<Run>().DeleteAsync(n => n.ShootingId == id);
-            }
-
-            await _db.Table<ShootingCompetition>().DeleteAsync(n => n.Id == id);
+                conn.Table<Run>().Delete(n => n.ShootingId == id);
+                conn.Table<ShootingCompetition>().Delete(n => n.Id == id);
+            });
         }
 
         public async Task UpdateShootingCompetitionAsync(ShootingCompetition shootingCompetition)
         {
-            if (shootingCompetition.Runs != null)
-            {
-                foreach (var run in shootingCompetition.Runs)
-                {
-                    var existingRun = await _db.Table<Run>().FirstOrDefaultAsync(n => n.Id == run.Id);
+            await InitAsync();
 
-                    if (existingRun != null)
-                    {
-                        await _db.UpdateAsync(run);
-                    }
-                    else
-                    {
-                        await _db.InsertAsync(run);
-                    }
+            await _db.RunInTransactionAsync(conn =>
+            {
+                if (conn.Update(shootingCompetition) == 0)
+                    conn.Insert(shootingCompetition);
+
+                SaveRuns(conn, shootingCompetition.Id, shootingCompetition.Runs);
+            });
+        }
+
+        public async Task<IEnumerable<Weapon>> LoadAllWeaponAsync()
+        {
+            await InitAsync();
+
+            var weapons = await _db.Table<Weapon>().ToListAsync();
+
+            return weapons.OrderBy(n => n.DisplayName, StringComparer.CurrentCultureIgnoreCase).ToList();
+        }
+
+        public async Task<Weapon?> LoadWeaponAsync(Guid id)
+        {
+            await InitAsync();
+
+            return await _db.Table<Weapon>().FirstOrDefaultAsync(n => n.Id == id);
+        }
+
+        public async Task SaveWeaponAsync(Weapon weapon)
+        {
+            await InitAsync();
+
+            // trainings and competitions store the weapon name, a renamed weapon updates it there too
+            await _db.RunInTransactionAsync(conn =>
+            {
+                conn.InsertOrReplace(weapon);
+                conn.Execute($"UPDATE {nameof(Shooting)} SET {nameof(Shooting.Weapon)} = ? WHERE {nameof(Shooting.WeaponId)} = ?", weapon.DisplayName, weapon.Id);
+                conn.Execute($"UPDATE {nameof(ShootingCompetition)} SET {nameof(ShootingCompetition.Weapon)} = ? WHERE {nameof(ShootingCompetition.WeaponId)} = ?", weapon.DisplayName, weapon.Id);
+            });
+        }
+
+        // deletes the weapon together with all its trainings, competitions and their runs
+        public async Task DeleteWeaponAsync(Guid id)
+        {
+            await InitAsync();
+
+            await _db.RunInTransactionAsync(conn =>
+            {
+                conn.Execute($"DELETE FROM {nameof(Run)} WHERE {nameof(Run.ShootingId)} IN (SELECT {nameof(Shooting.Id)} FROM {nameof(Shooting)} WHERE {nameof(Shooting.WeaponId)} = ?)", id);
+                conn.Execute($"DELETE FROM {nameof(Run)} WHERE {nameof(Run.ShootingId)} IN (SELECT {nameof(ShootingCompetition.Id)} FROM {nameof(ShootingCompetition)} WHERE {nameof(ShootingCompetition.WeaponId)} = ?)", id);
+                conn.Execute($"DELETE FROM {nameof(Shooting)} WHERE {nameof(Shooting.WeaponId)} = ?", id);
+                conn.Execute($"DELETE FROM {nameof(ShootingCompetition)} WHERE {nameof(ShootingCompetition.WeaponId)} = ?", id);
+                conn.Delete<Weapon>(id);
+            });
+        }
+
+        public async Task<(int Trainings, int Competitions)> CountWeaponUsageAsync(Guid id)
+        {
+            await InitAsync();
+
+            var trainings = await _db.Table<Shooting>().CountAsync(n => n.WeaponId == id);
+            var competitions = await _db.Table<ShootingCompetition>().CountAsync(n => n.WeaponId == id);
+
+            return (trainings, competitions);
+        }
+
+        // VACUUM INTO writes a consistent copy, even while the app uses the database
+        public async Task ExportAsync(string targetPath)
+        {
+            await InitAsync();
+
+            if (File.Exists(targetPath))
+                File.Delete(targetPath);
+
+            await _db.ExecuteAsync("VACUUM INTO ?", targetPath);
+        }
+
+        // a backup has to be a sqlite file with the tables of ShootCounter
+        public bool IsValidBackup(string path)
+        {
+            try
+            {
+                using var backup = new SQLiteConnection(path, SQLiteOpenFlags.ReadOnly);
+
+                var tables = backup.ExecuteScalar<int>(
+                    "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name IN (?, ?)",
+                    nameof(Shooting), nameof(Run));
+
+                return tables == 2;
+            }
+            catch (SQLiteException)
+            {
+                return false;
+            }
+        }
+
+        // replaces all data with the backup, the current data is kept as BeforeImportPath
+        public async Task ImportAsync(string sourcePath)
+        {
+            await _initLock.WaitAsync();
+            try
+            {
+                await _db.CloseAsync();
+
+                if (File.Exists(DatabasePath))
+                    File.Copy(DatabasePath, BeforeImportPath, true);
+
+                File.Copy(sourcePath, DatabasePath, true);
+
+                foreach (var suffix in new[] { "-wal", "-shm", "-journal" })
+                {
+                    if (File.Exists(DatabasePath + suffix))
+                        File.Delete(DatabasePath + suffix);
                 }
+
+                // an older backup may lack newer tables or columns, InitAsync adds them
+                _db = new SQLiteAsyncConnection(DatabasePath, Flags);
+                _initDone = false;
+            }
+            finally
+            {
+                _initLock.Release();
             }
 
-            await _db.UpdateAsync(shootingCompetition);
+            await InitAsync();
+        }
+
+        private Task<List<Run>> LoadRunsAsync(Guid shootingId) =>
+            _db.Table<Run>().Where(n => n.ShootingId == shootingId).OrderBy(n => n.Id).ToListAsync();
+
+        // new runs have Id 0 (auto increment), Insert assigns the generated Id to the object
+        private static void SaveRuns(SQLiteConnection conn, Guid shootingId, IEnumerable<Run>? runs)
+        {
+            if (runs == null)
+                return;
+
+            foreach (var run in runs)
+            {
+                run.ShootingId = shootingId;
+
+                if (run.Id == 0 || conn.Update(run) == 0)
+                    conn.Insert(run);
+            }
         }
     }
 }

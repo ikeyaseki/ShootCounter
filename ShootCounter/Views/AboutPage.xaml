@@ -6,37 +6,45 @@
     Title="AboutPage"
     Shell.NavBarIsVisible="False">
 
-    <VerticalStackLayout Margin="10, 0, 10, 0">
-        <Label Style="{StaticResource Info}" Text="App info" />
-        <Label Style="{StaticResource Legend}" Text="Name" />
-        <Label Style="{StaticResource Info}" Text="{Binding AppName}" />
-        <Label Style="{StaticResource Legend}" Text="Version" />
-        <Label Style="{StaticResource Info}" Text="{Binding AppVersion}" />
-        <Label Style="{StaticResource Legend}" Text="Build" />
-        <Label Style="{StaticResource Info}" Text="{Binding AppBuild}" />
-        <Label Style="{StaticResource Legend}" Text="Developer" />
-        <Label Style="{StaticResource Info}" Text="Thomas Baumgartner&#10;Montanstrasse 5&#10;6052 Hergiswil&#10;thomasbaumgartner@gmx.ch" />
-        <Label Style="{StaticResource Legend}" Text="Git" />
-        <Label Style="{StaticResource Info}" Text="https://github.com/ikeyaseki/ShootCounter.git" >
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer
-                    Command="{Binding OpenLinkCommand}"
-                    CommandParameter="https://github.com/ikeyaseki/ShootCounter.git" />
-            </Label.GestureRecognizers>
-        </Label>
-
-        <Label Margin="0, 20, 0,0" />
-        <Label Style="{StaticResource Info}" Text="Device info" />
-        <Label Style="{StaticResource Legend}" Text="Name" />
-        <Label Style="{StaticResource Info}" Text="{Binding DeviceName}" />
-        
-        <Label Style="{StaticResource Legend}" Text="Platform" />
-        <Label Style="{StaticResource Info}" Text="{Binding Platform}" />
-        
-        <Label Style="{StaticResource Legend}" Text="Version" />
-        <Label Style="{StaticResource Info}" Text="{Binding Version}" />
-
-        <Label Style="{StaticResource Legend}" Text="Device Type" />
-        <Label Style="{StaticResource Info}" Text="{Binding DeviceType}" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Margin="10, 0, 10, 0">
+            <Label Style="{StaticResource Info}" Text="App info" />
+            <Label Style="{StaticResource Legend}" Text="Name" />
+            <Label Style="{StaticResource Info}" Text="{Binding AppName}" />
+            <Label Style="{StaticResource Legend}" Text="Version" />
+            <Label Style="{StaticResource Info}" Text="{Binding AppVersion}" />
+            <Label Style="{StaticResource Legend}" Text="Build" />
+            <Label Style="{StaticResource Info}" Text="{Binding AppBuild}" />
+            <Label Style="{StaticResource Legend}" Text="Developer" />
+            <Label Style="{StaticResource Info}" Text="Thomas Baumgartner&#10;Montanstrasse 5&#10;6052 Hergiswil&#10;thomasbaumgartner@gmx.ch" />
+            <Label Style="{StaticResource Legend}" Text="Git" />
+            <Label Style="{StaticResource Info}" Text="https://github.com/ikeyaseki/ShootCounter.git" >
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding OpenLinkCommand}"
+                        CommandParameter="https://github.com/ikeyaseki/ShootCounter.git" />
+                </Label.GestureRecognizers>
+            </Label>
+    
+            <Label Margin="0, 20, 0,0" />
+            <Label Style="{StaticResource Info}" Text="Device info" />
+            <Label Style="{StaticResource Legend}" Text="Name" />
+            <Label Style="{StaticResource Info}" Text="{Binding DeviceName}" />
+            
+            <Label Style="{StaticResource Legend}" Text="Platform" />
+            <Label Style="{StaticResource Info}" Text="{Binding Platform}" />
+            
+            <Label Style="{StaticResource Legend}" Text="Version" />
+            <Label Style="{StaticResource Info}" Text="{Binding Version}" />
+    
+            <Label Style="{StaticResource Legend}" Text="Device Type" />
+            <Label Style="{StaticResource Info}" Text="{Binding DeviceType}" />
+    
+            <Label Margin="0, 20, 0,0" />
+            <Label Style="{StaticResource Info}" Text="Daten" />
+            <Label Style="{StaticResource Legend}" Text="Sichere alle Trainings, Wettkämpfe und Waffen in eine Datei, z. B. vor einer Neuinstallation, und spiele sie bei Bedarf wieder ein." />
+            <Button Text="Daten exportieren" Command="{Binding ExportCommand}" Margin="0,10,0,0" />
+            <Button Text="Daten importieren" Command="{Binding ImportCommand}" Margin="0,10,0,20" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

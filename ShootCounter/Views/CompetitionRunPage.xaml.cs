@@ -11,7 +11,7 @@ public partial class CompetitionRunPage : ContentPage
         _competitionRunViewModel = competitionRunViewModel;
     }
 
-    private void RadioButton_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    private void BulletScoring_ValuationChanged(object? sender, EventArgs e)
     {
         _competitionRunViewModel.ContinueCommand.ChangeCanExecute();
     }

@@ -18,6 +18,8 @@ namespace ShootCounter.Models
         public DistanceType DistanceType {  get; set; }
         public TargetType TargetType { get; set; }
         public string? Weapon {  get; set; }
+        // the selected weapon, Weapon keeps its name for older entries and deleted weapons
+        public Guid? WeaponId { get; set; }
         public int? BulletsPerRun { get; set; }
         [Ignore]
         public TargetProperties? TargetProperties { get; set; }
