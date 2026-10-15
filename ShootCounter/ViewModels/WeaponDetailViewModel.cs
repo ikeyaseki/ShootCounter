@@ -12,7 +12,8 @@ namespace ShootCounter.ViewModels
         private string _weaponId = string.Empty;
         private string _manufacturer = string.Empty;
         private string _model = string.Empty;
-        private string _caliber = string.Empty;
+        private string _caliber = Calibers.None;
+        private IReadOnlyList<string> _caliberOptions = [Calibers.None, .. Calibers.All];
         private bool _hasPurchaseDate;
         private DateTime _purchaseDate = DateTime.Today;
         private string _notes = string.Empty;
@@ -55,10 +56,21 @@ namespace ShootCounter.ViewModels
             }
         }
 
+        // the picker clears the selection while its items are replaced
         public string Caliber
         {
             get => _caliber;
-            set => SetProperty(ref _caliber, value);
+            set
+            {
+                if (value != null)
+                    SetProperty(ref _caliber, value);
+            }
+        }
+
+        public IReadOnlyList<string> CaliberOptions
+        {
+            get => _caliberOptions;
+            set => SetProperty(ref _caliberOptions, value);
         }
 
         public bool HasPurchaseDate
@@ -126,7 +138,7 @@ namespace ShootCounter.ViewModels
                 _weapon = weapon;
                 Manufacturer = weapon.Manufacturer ?? string.Empty;
                 Model = weapon.Model ?? string.Empty;
-                Caliber = weapon.Caliber ?? string.Empty;
+                SelectCaliber(weapon.Caliber);
                 HasPurchaseDate = weapon.PurchaseDate.HasValue;
                 PurchaseDate = weapon.PurchaseDate ?? DateTime.Today;
                 Notes = weapon.Notes ?? string.Empty;
@@ -139,6 +151,28 @@ namespace ShootCounter.ViewModels
             {
                 Debug.WriteLine(ex);
             }
+        }
+
+        // calibers typed by hand before the list existed are matched to the list,
+        // an unknown one stays selectable so it is not lost when saving
+        private void SelectCaliber(string? caliber)
+        {
+            if (string.IsNullOrWhiteSpace(caliber))
+            {
+                Caliber = Calibers.None;
+                return;
+            }
+
+            var key = StatisticsService.NormalizeCaliber(caliber);
+            var match = Calibers.All.FirstOrDefault(n => StatisticsService.NormalizeCaliber(n) == key);
+
+            if (match == null)
+            {
+                match = caliber.Trim();
+                CaliberOptions = [Calibers.None, match, .. Calibers.All];
+            }
+
+            Caliber = match;
         }
 
         private bool ValidateSave()
@@ -157,7 +191,7 @@ namespace ShootCounter.ViewModels
             {
                 _weapon.Manufacturer = Manufacturer.Trim();
                 _weapon.Model = Model.Trim();
-                _weapon.Caliber = string.IsNullOrWhiteSpace(Caliber) ? null : Caliber.Trim();
+                _weapon.Caliber = Caliber == Calibers.None ? null : Caliber;
                 _weapon.PurchaseDate = HasPurchaseDate ? PurchaseDate.Date : null;
                 _weapon.Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim();
 

@@ -24,7 +24,7 @@
                 <Label FontSize="Medium" Text="Modell" />
                 <Entry FontSize="Medium" Text="{Binding Model, Mode=TwoWay}" Keyboard="Text" />
                 <Label FontSize="Medium" Text="Kaliber" />
-                <Entry FontSize="Medium" Text="{Binding Caliber, Mode=TwoWay}" Placeholder="z. B. 9 mm Para" Keyboard="Text" />
+                <Picker Title="Kaliber wählen" FontSize="Medium" ItemsSource="{Binding CaliberOptions}" SelectedItem="{Binding Caliber}" />
                 <HorizontalStackLayout>
                     <CheckBox IsChecked="{Binding HasPurchaseDate, Mode=TwoWay}" VerticalOptions="Center" />
                     <Label FontSize="Medium" Text="Kaufdatum bekannt" VerticalOptions="Center" />
