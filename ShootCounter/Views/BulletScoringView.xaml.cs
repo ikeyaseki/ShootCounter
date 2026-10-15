@@ -30,6 +30,8 @@ public partial class BulletScoringView : ContentView
         {
             if (Width > 0)
                 ColumnWidth = Width / VisibleBullets;
+
+            UpdateListWidth();
         };
 
         BulletList.PropertyChanged += BulletList_PropertyChanged;
@@ -45,7 +47,18 @@ public partial class BulletScoringView : ContentView
         if (BulletCount > 0)
             BulletList.ScrollTo(0, position: ScrollToPosition.Start, animate: false);
 
+        UpdateListWidth();
         UpdateScrollHint();
+    }
+
+    // fewer bullets than columns are centered instead of starting on the left
+    private void UpdateListWidth()
+    {
+        int count = BulletCount;
+        bool centered = count > 0 && count < VisibleBullets;
+
+        BulletList.WidthRequest = centered ? count * ColumnWidth : -1;
+        BulletList.HorizontalOptions = centered ? LayoutOptions.Center : LayoutOptions.Fill;
     }
 
     private void BulletList_Scrolled(object? sender, ItemsViewScrolledEventArgs e)
@@ -62,10 +75,16 @@ public partial class BulletScoringView : ContentView
         int count = BulletCount;
         int nextBullet = _lastVisibleIndex + 2;
 
-        ScrollHint.IsVisible = nextBullet <= count;
-        ScrollHint.Text = nextBullet < count
-            ? $"Schuss {nextBullet}–{count}: nach links wischen ›"
-            : $"Schuss {count}: nach links wischen ›";
+        // the hint keeps its space while scrolling, so the bullets do not jump when it disappears
+        ScrollHint.IsVisible = count > VisibleBullets;
+        ScrollHint.Opacity = nextBullet <= count ? 1 : 0;
+
+        if (nextBullet <= count)
+        {
+            ScrollHint.Text = nextBullet < count
+                ? $"Schuss {nextBullet}–{count}: nach links wischen ›"
+                : $"Schuss {count}: nach links wischen ›";
+        }
     }
 
     private void RadioButton_CheckedChanged(object sender, CheckedChangedEventArgs e)
