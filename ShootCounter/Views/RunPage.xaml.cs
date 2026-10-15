@@ -11,7 +11,7 @@ public partial class RunPage : ContentPage
         _runViewModel = runViewModel;
     }
 
-    private void RadioButton_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    private void BulletScoring_ValuationChanged(object? sender, EventArgs e)
     {
         _runViewModel.SaveCommand.ChangeCanExecute();
         _runViewModel.StopCommand.ChangeCanExecute();

@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShootCounter.Views.RunPage"
+             xmlns:views="clr-namespace:ShootCounter.Views"
              Title="{Binding Title}">
 
     <Shell.BackButtonBehavior>
@@ -15,24 +16,7 @@
 
     <ScrollView Orientation="Vertical">
         <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
-            <!-- wraps into a second row when the bullets do not fit the screen width -->
-            <FlexLayout BindableLayout.ItemsSource="{Binding Bullets}" Wrap="Wrap" JustifyContent="Center" Grid.Row="0">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate>
-                        <VerticalStackLayout Padding="10">
-                            <Label FontSize="16" Text="{Binding BulletNumber}" />
-                            <!-- the radio buttons share this parent, so only one value per bullet can be checked -->
-                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Valuations}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate>
-                                        <RadioButton Content="{Binding Value}" Value="{Binding Value}" IsChecked="{Binding Hit}" CheckedChanged="RadioButton_CheckedChanged" Style="{StaticResource ToggleRadioStyle}" WidthRequest="60" Padding="5"/>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
-                        </VerticalStackLayout>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </FlexLayout>
+            <views:BulletScoringView ValuationChanged="BulletScoring_ValuationChanged" Grid.Row="0" />
 
             <Label FontSize="30" Text="{Binding Result}" HorizontalOptions="Center" Grid.Row="1"/>
             <Label FontSize="30" Text="{Binding Percent}" HorizontalOptions="Center" Grid.Row="2"/>
