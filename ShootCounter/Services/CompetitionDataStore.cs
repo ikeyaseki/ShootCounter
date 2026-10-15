@@ -8,7 +8,6 @@ namespace ShootCounter.Services
         public CompetitionDataStore(IDatabaseService db)
         {
             _db = db;
-            Task.Run(() => { _db.InitAsync(); });
         }
 
         public async Task AddItemAsync(ShootingCompetition item)
@@ -28,18 +27,10 @@ namespace ShootCounter.Services
             return await _db.LoadAllShootingCompetitionAsync();
         }
 
+        // inserts the item if it does not exist yet
         public async Task UpdateItemAsync(ShootingCompetition item)
         {
-            var existingItem = await GetItemAsync(item.Id);
-
-            if (existingItem != null)
-            {
-                await _db.UpdateShootingCompetitionAsync(item);
-            }
-            else
-            {
-                await _db.AddShootingCompetitionAsync(item);
-            }
+            await _db.UpdateShootingCompetitionAsync(item);
         }
     }
 }

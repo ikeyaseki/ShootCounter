@@ -32,12 +32,12 @@
                Text="{Binding Location, Mode=TwoWay}" 
                Keyboard="Text"/>
                 <Label FontSize="Medium" Text="Distanz" />
-                <Picker Title="Select distance"
+                <Picker Title="Distanz wählen"
                 ItemsSource="{Binding Distances}"
                 ItemDisplayBinding="{Binding ., Converter={StaticResource DistanceTypeConverter}}"
                 SelectedItem="{Binding SelectedDistance}" />
                 <Label FontSize="Medium" Text="Scheibe" />
-                <Picker Title="Select target"
+                <Picker Title="Scheibe wählen"
                 ItemsSource="{Binding Targets}"
                 ItemDisplayBinding="{Binding Name}"
                 SelectedItem="{Binding SelectedTarget}" />

@@ -11,6 +11,7 @@ namespace ShootCounter.ViewModels
         private int _runNumber;
         private string _result = string.Empty;
         private string _percent = string.Empty;
+        private bool _isSaving;
 
         public Command SaveCommand { get; }
         public Command AddBulletCommand { get; }
@@ -180,6 +181,28 @@ namespace ShootCounter.ViewModels
 
         private async void OnSave(object obj)
         {
+            // a fast double tap would otherwise save the same run twice
+            if (_isSaving)
+                return;
+
+            _isSaving = true;
+            try
+            {
+                await SaveRunAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlert("Fehler", "Die Passe konnte nicht gespeichert werden.", "OK");
+            }
+            finally
+            {
+                _isSaving = false;
+            }
+        }
+
+        private async Task SaveRunAsync()
+        {
             List<Run> runs = new();
 
             if (_shooting?.Runs != null)
@@ -211,6 +234,8 @@ namespace ShootCounter.ViewModels
                 throw new Exception("Shooting not allowed to be null here");
 
             _shooting.Runs = runs;
+            // keep the end time current, so the duration is correct even if the training is never stopped
+            _shooting.EndTime = DateTime.Now;
 
             await TrainingDataStore.UpdateItemAsync(_shooting);
 

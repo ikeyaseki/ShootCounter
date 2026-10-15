@@ -67,15 +67,15 @@ namespace ShootCounter.ViewModels
         {
             try
             {
-                Shootings.Clear();
-
                 var shootingStoreItems = await TrainingDataStore.GetItemsAsync(true);
 
-                foreach (var shooting in shootingStoreItems)
+                // clear after loading, so the list does not flash empty while the database is read
+                Shootings.Clear();
+
+                foreach (var shooting in shootingStoreItems.OrderByDescending(n => n.StartTime))
                 {
                     Shootings.Add(await CalculateResults(shooting));
                 }
-
             }
             catch (Exception ex)
             {

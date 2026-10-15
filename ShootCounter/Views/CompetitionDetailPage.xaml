@@ -39,7 +39,7 @@
                                Grid.Row="1"
                                Grid.ColumnSpan="2" />
                         <Label Style="{StaticResource TableContent}"
-                               Text="{Binding Shooting.StartTime}"
+                               Text="{Binding Shooting.StartTime, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
                                Grid.Row="2"
                                Grid.Column="0" />
                         <HorizontalStackLayout Grid.Row="2"

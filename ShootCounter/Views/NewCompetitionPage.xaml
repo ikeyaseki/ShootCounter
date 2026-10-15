@@ -32,7 +32,7 @@
                        Text="{Binding Location, Mode=TwoWay}" 
                        Keyboard="Text"/>
                 <Label FontSize="Medium" Text="Stich" />
-                <Picker Title="Select competition"
+                <Picker Title="Wettkampf wählen"
                         ItemsSource="{Binding Competitions}"
                         ItemDisplayBinding="{Binding Name}"
                         SelectedItem="{Binding SelectedCompetition}" />

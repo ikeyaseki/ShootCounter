@@ -90,51 +90,42 @@ namespace ShootCounter.ViewModels
                 var shooting = await TrainingDataStore.GetItemAsync(Guid.Parse(id));
 
                 if (shooting == null)
-                {
-                    IsBusy = false;
                     return;
-                }
 
                 CalculateShooting calculate = new();
                 Shooting = await calculate.CalculateTraining(shooting);
 
-                if (Shooting.Runs == null)
-                {
-                    IsBusy = false;
+                // a training stopped before the first run has no runs, Max() would throw on an empty list
+                var runResults = Shooting.Runs?.Select(n => n.Results?.ToList() ?? []).ToList() ?? [];
+                if (runResults.Count == 0)
                     return;
-                }
 
-                List<string> xAxisLabels = new List<string>();
-                for (int x = 1; x <= Shooting.Runs.Count(); x++ )
-                {
-                   xAxisLabels.Add(x.ToString());
-                }
-
-                XAxes = new List<Axis>
-                {
+                XAxes =
+                [
                     new Axis
                     {
                         Name = "Passen",
-                        Labels = xAxisLabels.ToList(),
+                        Labels = Enumerable.Range(1, runResults.Count).Select(x => x.ToString()).ToList(),
                     }
-                }.ToArray();
+                ];
 
-                var maxLength = Shooting.Runs.Max(n => n.Results.Count());       
+                var maxLength = runResults.Max(n => n.Count);
 
                 RunSeries = Enumerable.Range(0, maxLength + 1)
                     .Select(i => new ColumnSeries<int>
                     {
                         Name = i >= maxLength ? "Platzhalter" : $"Schuss {i + 1}",
-                        Values = Shooting.Runs.Select(run =>
-                            i < run.Results.Count() ? run.Results.ElementAt(i) : 0).ToList(),
+                        Values = runResults.Select(results => i < results.Count ? results[i] : 0).ToList(),
                         Fill = new SolidColorPaint(SKColors.BlueViolet),
                     }).ToList();
-
-                IsBusy = false;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
             }
 
             DeleteCommand.ChangeCanExecute();

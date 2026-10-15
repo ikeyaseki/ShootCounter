@@ -24,10 +24,11 @@ namespace ShootCounter.ViewModels
         private int _secondsTimer = 0;
         private int _timerDuration;
         private WarningState _warningState;
-        private Timer _timer;
+        private Timer? _timer;
         private string _prepareLoadingString = string.Empty;
         private string _prepareCommandString = string.Empty;
         private string _resultString = string.Empty;
+        private bool _isContinuing;
 
         public Command StopCommand { get; }
         public Command ContinueCommand { get; }
@@ -224,8 +225,25 @@ namespace ShootCounter.ViewModels
 
         private async void OnContinue()
         {
-            await StateChange();
-            IsEnabledChange();
+            // a fast double tap would otherwise save the same run twice
+            if (_isContinuing)
+                return;
+
+            _isContinuing = true;
+            try
+            {
+                await StateChange();
+                IsEnabledChange();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlert("Fehler", "Der Wettkampf konnte nicht gespeichert werden.", "OK");
+            }
+            finally
+            {
+                _isContinuing = false;
+            }
         }
 
         private void IsEnabledChange()
@@ -327,6 +345,7 @@ namespace ShootCounter.ViewModels
 
                 case CompetitionState.Shooting:
                     _timer?.Dispose();
+                    _timer = null;
                     SecondsTimer = 0;
                     GenerateRunTemplate();
                     CompetitionState = CompetitionState.CountPoints;
@@ -523,6 +542,10 @@ namespace ShootCounter.ViewModels
 
             if (confirm)
             {
+                // stop the timer, otherwise it keeps ticking after the page is left
+                _timer?.Dispose();
+                _timer = null;
+
                 Shooting.EndTime = DateTime.Now;
 
                 await CompetitionDataStore.UpdateItemAsync(Shooting);

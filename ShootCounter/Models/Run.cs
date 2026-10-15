@@ -1,29 +1,41 @@
 ﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ShootCounter.Models
 {
     public class Run
     {
+        private string? _resultsJson;
+        private List<int>? _results;
+
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+        [Indexed]
         public Guid ShootingId { get; set; }
         public DateTime Time { get; set; }
         public int RunNumber { get; set; }
         public int BulletNumber { get; set; }
-        public string? ResultsJson { get; set; }
+        public string? ResultsJson
+        {
+            get => _resultsJson;
+            set
+            {
+                _resultsJson = value;
+                _results = null;
+            }
+        }
+        // deserialized once and cached, instead of on every access
         [Ignore]
         public IEnumerable<int>? Results
         {
-            get => string.IsNullOrEmpty(ResultsJson)
+            get => _results ??= string.IsNullOrEmpty(_resultsJson)
                 ? null
-                : JsonSerializer.Deserialize<IEnumerable<int>>(ResultsJson);
-            set => ResultsJson = JsonSerializer.Serialize(value);
+                : JsonSerializer.Deserialize<List<int>>(_resultsJson);
+            set
+            {
+                ResultsJson = JsonSerializer.Serialize(value);
+                _results = value?.ToList();
+            }
         }
     }
 }

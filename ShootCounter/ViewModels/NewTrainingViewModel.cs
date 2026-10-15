@@ -6,6 +6,7 @@
         private TargetProperties? _selectedTarget = null;
         private int? _bulletsPerRun = null;
         private string _weapon = string.Empty;
+        private bool _isSaving;
 
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
@@ -69,10 +70,32 @@
 
         private bool ValidateSave()
         {
-            return Location != string.Empty && SelectedTarget != null && BulletsPerRun != null && Weapon != string.Empty;
+            return !string.IsNullOrWhiteSpace(Location) && SelectedTarget != null && BulletsPerRun > 0 && !string.IsNullOrWhiteSpace(Weapon);
         }
 
         private async void OnSave()
+        {
+            // a fast double tap would otherwise create two trainings
+            if (_isSaving)
+                return;
+
+            _isSaving = true;
+            try
+            {
+                await SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlert("Fehler", "Das Training konnte nicht gespeichert werden.", "OK");
+            }
+            finally
+            {
+                _isSaving = false;
+            }
+        }
+
+        private async Task SaveAsync()
         {
             Shooting shooting = new()
             {

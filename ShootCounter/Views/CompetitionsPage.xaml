@@ -43,7 +43,7 @@
                                    Grid.Row="1"
                                    Grid.ColumnSpan="2" />
                                 <Label Style="{StaticResource TableContent}"
-                                   Text="{Binding StartTime}"
+                                   Text="{Binding StartTime, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
                                    Grid.Row="2"
                                    Grid.Column="0" />
                                 <HorizontalStackLayout Grid.Row="2"
@@ -101,7 +101,7 @@
             <CollectionView.EmptyView>
                 <ContentView>
                     <VerticalStackLayout>
-                        <Label Text="Empty" />
+                        <Label Text="Noch keine Wettkämpfe vorhanden. Tippe auf &quot;Neu&quot;, um einen zu starten." Margin="15" HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
                 </ContentView>
             </CollectionView.EmptyView>

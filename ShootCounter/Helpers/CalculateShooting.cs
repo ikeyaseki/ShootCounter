@@ -9,12 +9,10 @@
             if (competition.Runs == null)
                 return Task.FromResult(competition);
 
+            // a run without results must not break the whole list, it simply counts 0
             foreach (var run in competition.Runs)
             {
-                if (run.Results == null)
-                    throw new Exception("Run results can not be null here");
-
-                competition.Result += run.Results.Sum();
+                competition.Result += run.Results?.Sum() ?? 0;
             }
 
             return Task.FromResult(competition);
@@ -39,10 +37,7 @@
 
             foreach (var run in shooting.Runs)
             {
-                if (run.Results == null)
-                    throw new Exception("Run results can not be null here");
-
-                foreach (var bullet in run.Results)
+                foreach (var bullet in run.Results ?? [])
                 {
                     shooting.TotalBullets++;
                     shooting.TotalPoints += bullet;
@@ -57,7 +52,9 @@
 
             shooting.MaxPoints = shooting.TotalBullets * maxTarget;
 
-            shooting.TotalPercentage = Math.Round(shooting.TotalPoints / (double)shooting.MaxPoints * 100);
+            // avoid NaN for a training without any bullet
+            if (shooting.MaxPoints > 0)
+                shooting.TotalPercentage = Math.Round(shooting.TotalPoints / (double)shooting.MaxPoints * 100);
 
             return Task.FromResult(shooting);
         }

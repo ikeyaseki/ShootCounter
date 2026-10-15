@@ -14,6 +14,7 @@ namespace ShootCounter.ViewModels
         private CompetitionProperties? _selectedCompetition = null;
         private string _location = string.Empty;
         private string _weapon = string.Empty;
+        private bool _isSaving;
 
         public IEnumerable<CompetitionProperties> Competitions { get; } = Models.Competitions.CompetitionProperties;
 
@@ -63,10 +64,32 @@ namespace ShootCounter.ViewModels
 
         private bool ValidateSave()
         {
-            return Location != string.Empty && SelectedCompetition != null && Weapon != string.Empty;
+            return !string.IsNullOrWhiteSpace(Location) && SelectedCompetition != null && !string.IsNullOrWhiteSpace(Weapon);
         }
 
         private async void OnSave()
+        {
+            // a fast double tap would otherwise create two competitions
+            if (_isSaving)
+                return;
+
+            _isSaving = true;
+            try
+            {
+                await SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlert("Fehler", "Der Wettkampf konnte nicht gespeichert werden.", "OK");
+            }
+            finally
+            {
+                _isSaving = false;
+            }
+        }
+
+        private async Task SaveAsync()
         {
             ShootingCompetition competition = new()
             {
