@@ -85,11 +85,11 @@ namespace ShootCounter.Services
             _weaponDataStore = weaponDataStore;
         }
 
-        // calibers are typed by hand, "9 mm Para" and "9mm para" belong together
-        public static string? NormalizeCaliber(string? caliber) =>
-            string.IsNullOrWhiteSpace(caliber)
+        // names typed by hand, "9 mm Para" and "9mm para" or "Sig Sauer" and "SIG Sauer" belong together
+        public static string? NormalizeName(string? name) =>
+            string.IsNullOrWhiteSpace(name)
                 ? null
-                : string.Concat(caliber.Where(c => !char.IsWhiteSpace(c))).ToLowerInvariant();
+                : string.Concat(name.Where(c => !char.IsWhiteSpace(c))).ToLowerInvariant();
 
         // start (inclusive) and end (exclusive) of a period, weeks start on monday
         public static (DateTime? From, DateTime? To) GetRange(StatisticsPeriod period, DateTime today, DateTime customFrom, DateTime customTo)
@@ -162,7 +162,7 @@ namespace ShootCounter.Services
                 date,
                 weapon?.Id,
                 weaponName,
-                NormalizeCaliber(weapon?.Caliber),
+                NormalizeName(weapon?.Caliber),
                 results.Count,
                 results.Sum(),
                 results.Count * maxValuation,

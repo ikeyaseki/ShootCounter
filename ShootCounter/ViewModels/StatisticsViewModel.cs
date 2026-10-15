@@ -184,7 +184,7 @@ namespace ShootCounter.ViewModels
                 var caliberOptions = new List<CaliberOption> { new("Alle Kaliber", null) };
                 caliberOptions.AddRange(weapons
                     .Where(n => !string.IsNullOrWhiteSpace(n.Caliber))
-                    .GroupBy(n => StatisticsService.NormalizeCaliber(n.Caliber))
+                    .GroupBy(n => StatisticsService.NormalizeName(n.Caliber))
                     .Select(n => new CaliberOption(n.First().Caliber!.Trim(), n.Key))
                     .OrderBy(n => n.Name, StringComparer.CurrentCultureIgnoreCase));
 

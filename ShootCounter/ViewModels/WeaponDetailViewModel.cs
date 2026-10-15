@@ -11,6 +11,7 @@ namespace ShootCounter.ViewModels
         private Weapon _weapon = new();
         private string _weaponId = string.Empty;
         private string _manufacturer = string.Empty;
+        private string? _selectedManufacturer;
         private string _model = string.Empty;
         private string _caliber = Calibers.None;
         private IReadOnlyList<string> _caliberOptions = [Calibers.None, .. Calibers.All];
@@ -36,6 +37,22 @@ namespace ShootCounter.ViewModels
             }
         }
 
+        public IReadOnlyList<string> ManufacturerOptions { get; } = [.. Manufacturers.All, Manufacturers.Other];
+
+        public string? SelectedManufacturer
+        {
+            get => _selectedManufacturer;
+            set
+            {
+                SetProperty(ref _selectedManufacturer, value);
+                OnPropertyChanged(nameof(IsOtherManufacturer));
+                SaveCommand.ChangeCanExecute();
+            }
+        }
+
+        public bool IsOtherManufacturer => SelectedManufacturer == Manufacturers.Other;
+
+        // the name typed by hand when the manufacturer is not in the list
         public string Manufacturer
         {
             get => _manufacturer;
@@ -136,7 +153,7 @@ namespace ShootCounter.ViewModels
                     return;
 
                 _weapon = weapon;
-                Manufacturer = weapon.Manufacturer ?? string.Empty;
+                SelectManufacturer(weapon.Manufacturer);
                 Model = weapon.Model ?? string.Empty;
                 SelectCaliber(weapon.Caliber);
                 HasPurchaseDate = weapon.PurchaseDate.HasValue;
@@ -153,6 +170,26 @@ namespace ShootCounter.ViewModels
             }
         }
 
+        private string? ManufacturerName => IsOtherManufacturer ? Manufacturer.Trim() : SelectedManufacturer;
+
+        // a manufacturer typed by hand before the list existed is matched to the list,
+        // otherwise it is kept as "other manufacturer"
+        private void SelectManufacturer(string? manufacturer)
+        {
+            var key = StatisticsService.NormalizeName(manufacturer);
+            var match = Manufacturers.All.FirstOrDefault(n => StatisticsService.NormalizeName(n) == key);
+
+            if (match != null)
+            {
+                SelectedManufacturer = match;
+            }
+            else if (!string.IsNullOrWhiteSpace(manufacturer))
+            {
+                SelectedManufacturer = Manufacturers.Other;
+                Manufacturer = manufacturer.Trim();
+            }
+        }
+
         // calibers typed by hand before the list existed are matched to the list,
         // an unknown one stays selectable so it is not lost when saving
         private void SelectCaliber(string? caliber)
@@ -163,8 +200,8 @@ namespace ShootCounter.ViewModels
                 return;
             }
 
-            var key = StatisticsService.NormalizeCaliber(caliber);
-            var match = Calibers.All.FirstOrDefault(n => StatisticsService.NormalizeCaliber(n) == key);
+            var key = StatisticsService.NormalizeName(caliber);
+            var match = Calibers.All.FirstOrDefault(n => StatisticsService.NormalizeName(n) == key);
 
             if (match == null)
             {
@@ -177,7 +214,7 @@ namespace ShootCounter.ViewModels
 
         private bool ValidateSave()
         {
-            return !string.IsNullOrWhiteSpace(Manufacturer) && !string.IsNullOrWhiteSpace(Model);
+            return !string.IsNullOrWhiteSpace(ManufacturerName) && !string.IsNullOrWhiteSpace(Model);
         }
 
         private async void OnSave()
@@ -189,7 +226,7 @@ namespace ShootCounter.ViewModels
             _isSaving = true;
             try
             {
-                _weapon.Manufacturer = Manufacturer.Trim();
+                _weapon.Manufacturer = ManufacturerName;
                 _weapon.Model = Model.Trim();
                 _weapon.Caliber = Caliber == Calibers.None ? null : Caliber;
                 _weapon.PurchaseDate = HasPurchaseDate ? PurchaseDate.Date : null;

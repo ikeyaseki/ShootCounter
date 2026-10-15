@@ -20,7 +20,8 @@
 
             <VerticalStackLayout Padding="5">
                 <Label FontSize="Medium" Text="Hersteller" />
-                <Entry FontSize="Medium" Text="{Binding Manufacturer, Mode=TwoWay}" Keyboard="Text" />
+                <Picker Title="Hersteller wählen" FontSize="Medium" ItemsSource="{Binding ManufacturerOptions}" SelectedItem="{Binding SelectedManufacturer}" />
+                <Entry FontSize="Medium" Text="{Binding Manufacturer, Mode=TwoWay}" Placeholder="Name des Herstellers" Keyboard="Text" IsVisible="{Binding IsOtherManufacturer}" />
                 <Label FontSize="Medium" Text="Modell" />
                 <Entry FontSize="Medium" Text="{Binding Model, Mode=TwoWay}" Keyboard="Text" />
                 <Label FontSize="Medium" Text="Kaliber" />
