@@ -5,7 +5,7 @@
              Title="{Binding Title}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding DeleteCommand}" Text="Löschen" />
+        <ToolbarItem Command="{Binding RetireCommand}" Text="{Binding RetireText}" />
         <ToolbarItem Command="{Binding SaveCommand}" Text="Speichern" />
     </ContentPage.ToolbarItems>
 
@@ -35,6 +35,12 @@
                             IsEnabled="{Binding HasPurchaseDate}" />
                 <Label FontSize="Medium" Text="Notizen" />
                 <Editor FontSize="Medium" Text="{Binding Notes, Mode=TwoWay}" AutoSize="TextChanges" MinimumHeightRequest="100" />
+                <Button Text="Endgültig löschen"
+                        Command="{Binding DeleteCommand}"
+                        IsVisible="{Binding CanDelete}"
+                        BackgroundColor="DarkRed"
+                        TextColor="White"
+                        Margin="0,20,0,5" />
             </VerticalStackLayout>
         </Border>
     </ScrollView>

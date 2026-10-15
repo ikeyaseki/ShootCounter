@@ -41,7 +41,7 @@
                         ItemsSource="{Binding Weapons}"
                         ItemDisplayBinding="{Binding DisplayName}"
                         SelectedItem="{Binding SelectedWeapon}" />
-                <Label Text="Noch keine Waffe erfasst. Lege sie zuerst im Tab &quot;Waffen&quot; an."
+                <Label Text="Keine aktive Waffe vorhanden. Lege sie zuerst im Tab &quot;Waffen&quot; an."
                        IsVisible="{Binding HasNoWeapons}"
                        TextColor="{StaticResource Primary}" />
             </StackLayout>

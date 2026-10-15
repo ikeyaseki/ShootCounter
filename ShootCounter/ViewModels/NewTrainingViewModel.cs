@@ -84,7 +84,7 @@ namespace ShootCounter.ViewModels
         {
             try
             {
-                var weapons = (await _weaponDataStore.GetItemsAsync()).ToList();
+                var weapons = (await _weaponDataStore.GetItemsAsync()).Where(n => !n.IsRetired).ToList();
 
                 foreach (var weapon in weapons)
                     Weapons.Add(weapon);

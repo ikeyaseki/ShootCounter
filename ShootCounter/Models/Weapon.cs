@@ -11,6 +11,8 @@ namespace ShootCounter.Models
         public string? Caliber { get; set; }
         public DateTime? PurchaseDate { get; set; }
         public string? Notes { get; set; }
+        // retired weapons are not offered for new trainings and competitions, but stay in the statistics
+        public bool IsRetired { get; set; }
 
         // name shown in lists and pickers, also stored in trainings and competitions as text
         [Ignore]

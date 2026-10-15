@@ -30,7 +30,8 @@ namespace ShootCounter.ViewModels
                 var weapons = await _weaponDataStore.GetItemsAsync(true);
 
                 Weapons.Clear();
-                foreach (var weapon in weapons)
+                // retired weapons at the end of the list
+                foreach (var weapon in weapons.OrderBy(n => n.IsRetired))
                     Weapons.Add(weapon);
             }
             catch (Exception ex)

@@ -214,12 +214,29 @@ namespace ShootCounter.Services
             });
         }
 
-        // trainings and competitions keep the weapon name as text, so they can still show it
+        // deletes the weapon together with all its trainings, competitions and their runs
         public async Task DeleteWeaponAsync(Guid id)
         {
             await InitAsync();
 
-            await _db.Table<Weapon>().DeleteAsync(n => n.Id == id);
+            await _db.RunInTransactionAsync(conn =>
+            {
+                conn.Execute($"DELETE FROM {nameof(Run)} WHERE {nameof(Run.ShootingId)} IN (SELECT {nameof(Shooting.Id)} FROM {nameof(Shooting)} WHERE {nameof(Shooting.WeaponId)} = ?)", id);
+                conn.Execute($"DELETE FROM {nameof(Run)} WHERE {nameof(Run.ShootingId)} IN (SELECT {nameof(ShootingCompetition.Id)} FROM {nameof(ShootingCompetition)} WHERE {nameof(ShootingCompetition.WeaponId)} = ?)", id);
+                conn.Execute($"DELETE FROM {nameof(Shooting)} WHERE {nameof(Shooting.WeaponId)} = ?", id);
+                conn.Execute($"DELETE FROM {nameof(ShootingCompetition)} WHERE {nameof(ShootingCompetition.WeaponId)} = ?", id);
+                conn.Delete<Weapon>(id);
+            });
+        }
+
+        public async Task<(int Trainings, int Competitions)> CountWeaponUsageAsync(Guid id)
+        {
+            await InitAsync();
+
+            var trainings = await _db.Table<Shooting>().CountAsync(n => n.WeaponId == id);
+            var competitions = await _db.Table<ShootingCompetition>().CountAsync(n => n.WeaponId == id);
+
+            return (trainings, competitions);
         }
 
         private Task<List<Run>> LoadRunsAsync(Guid shootingId) =>
