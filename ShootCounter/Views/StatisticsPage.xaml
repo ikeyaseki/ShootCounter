@@ -85,6 +85,7 @@
                         <lvc:CartesianChart HeightRequest="260"
                                             Series="{Binding ShotSeries}"
                                             XAxes="{Binding XAxes}"
+                                            YAxes="{Binding YAxes}"
                                             LegendPosition="Bottom" />
                     </VerticalStackLayout>
                 </Border>

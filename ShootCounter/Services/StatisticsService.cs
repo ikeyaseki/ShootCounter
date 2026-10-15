@@ -27,7 +27,8 @@ namespace ShootCounter.Services
         string? CaliberKey,
         int Shots,
         int Points,
-        int MaxPoints);
+        int MaxPoints,
+        bool WeaponRetired);
 
     public record StatisticsFilter(DateTime? From, DateTime? To, Guid? WeaponId, string? CaliberKey);
 
@@ -38,6 +39,7 @@ namespace ShootCounter.Services
 
     public record WeaponResult(
         string WeaponName,
+        bool IsRetired,
         int TrainingCount,
         double? TrainingPercentage,
         int CompetitionCount,
@@ -163,7 +165,8 @@ namespace ShootCounter.Services
                 NormalizeCaliber(weapon?.Caliber),
                 results.Count,
                 results.Sum(),
-                results.Count * maxValuation);
+                results.Count * maxValuation,
+                weapon?.IsRetired ?? false);
         }
 
         public StatisticsResult Calculate(IEnumerable<StatisticsEntry> allEntries, StatisticsFilter filter)
@@ -191,6 +194,7 @@ namespace ShootCounter.Services
                 .GroupBy(n => n.WeaponName)
                 .Select(n => new WeaponResult(
                     n.Key,
+                    n.Any(e => e.WeaponRetired),
                     n.Count(e => e.Kind == ShootingKind.Training),
                     Percentage(n.Where(e => e.Kind == ShootingKind.Training)),
                     n.Count(e => e.Kind == ShootingKind.Competition),

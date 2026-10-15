@@ -145,6 +145,9 @@ namespace ShootCounter.ViewModels
         public bool IsEmpty => !HasData;
         public ISeries[] ShotSeries { get => _shotSeries; set => SetProperty(ref _shotSeries, value); }
         public Axis[] XAxes { get => _xAxes; set => SetProperty(ref _xAxes, value); }
+
+        // the axis starts at 0, otherwise a single day looks like a big difference
+        public Axis[] YAxes { get; } = [new Axis { MinLimit = 0, TextSize = 11 }];
         public string ChartTitle { get => _chartTitle; set => SetProperty(ref _chartTitle, value); }
         public IReadOnlyList<ShotsBucket> Days { get => _days; set => SetProperty(ref _days, value); }
         public IReadOnlyList<WeaponResultRow> WeaponResults { get => _weaponResults; set => SetProperty(ref _weaponResults, value); }
@@ -234,7 +237,7 @@ namespace ShootCounter.ViewModels
                 Days = result.Days;
                 WeaponResults = result.Weapons
                     .Select(n => new WeaponResultRow(
-                        n.WeaponName,
+                        n.IsRetired ? $"{n.WeaponName} (ausgemustert)" : n.WeaponName,
                         FormatResult(n.TrainingPercentage, n.TrainingCount),
                         FormatResult(n.CompetitionPercentage, n.CompetitionCount),
                         n.Shots))
