@@ -18,14 +18,12 @@ namespace ShootCounter.ViewModels
 
     public class ScanViewModel : BaseViewModel
     {
-        // longer side of the analysed photo in pixels, enough for 9mm holes on a target filling the frame
-        private const int AnalysisSize = 1600;
-
         private readonly TaskCompletionSource<IReadOnlyList<int>?> _completion = new();
+        private readonly ScanTarget _target;
         private readonly int _expectedShots;
         private readonly bool _allowMoreShots;
         private readonly List<ScanHit> _hits = [];
-        private ScanResult? _result;
+        private TargetScanResult? _result;
         private string _statusText = "Scheibe wird ausgewertet …";
         private string _summaryText = string.Empty;
         private bool _hasResult;
@@ -38,7 +36,10 @@ namespace ShootCounter.ViewModels
 
         public SKBitmap? Photo { get; private set; }
         public IReadOnlyList<ScanHit> Hits => _hits;
-        public ScanResult? Result => _result;
+        public TargetScanResult? Result => _result;
+
+        // the values a hit can have on this target, lowest first (0 = miss)
+        public IReadOnlyList<int> Valuations { get; }
 
         // the scores of the accepted hits, or null if the scan was cancelled
         public Task<IReadOnlyList<int>?> Completion => _completion.Task;
@@ -66,8 +67,10 @@ namespace ShootCounter.ViewModels
         }
 
         // expectedShots: bullets of the run, allowMoreShots: the run can take more bullets than that
-        public ScanViewModel(int expectedShots, bool allowMoreShots)
+        public ScanViewModel(ScanTarget target, IEnumerable<int> valuations, int expectedShots, bool allowMoreShots)
         {
+            _target = target;
+            Valuations = valuations.OrderBy(n => n).ToList();
             _expectedShots = expectedShots;
             _allowMoreShots = allowMoreShots;
             Title = "Scheibe scannen";
@@ -80,18 +83,16 @@ namespace ShootCounter.ViewModels
             IsBusy = true;
             try
             {
-                var (bitmap, result) = await Task.Run(() =>
-                {
-                    var bmp = Raster.LoadBitmap(photo, AnalysisSize);
-                    return (bmp, Scanner.Scan(Raster.FromBitmap(bmp)));
-                });
+                var (bitmap, result) = await Task.Run(() => TargetScanner.Scan(photo, _target));
 
                 Photo = bitmap;
                 _result = result;
 
                 if (result == null)
                 {
-                    StatusText = "Keine Scheibe erkannt. Fotografiere die ganze Scheibe möglichst gerade von vorne.";
+                    StatusText = _target == ScanTarget.Ordnance25m
+                        ? "Keine Scheibe erkannt. Fotografiere die ganze Scheibe möglichst gerade von vorne."
+                        : "Keine Scheibe erkannt. Der schwarze Spiegel und die Ringe darum müssen gut sichtbar sein.";
                 }
                 else
                 {
@@ -134,7 +135,7 @@ namespace ShootCounter.ViewModels
             if (_result == null)
                 return;
 
-            _hits.Add(new ScanHit { Position = position, Score = _result.HitAt(position).Score, Manual = true });
+            _hits.Add(new ScanHit { Position = position, Score = _result.ScoreAt(position), Manual = true });
             UpdateTexts();
         }
 

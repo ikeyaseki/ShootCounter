@@ -87,7 +87,7 @@ namespace ShootCounter.ViewModels
         private async void OnScan()
         {
             // a training run can take more bullets than planned
-            var scores = await _targetScanService.ScanAsync(Bullets.Count(), allowMoreShots: true);
+            var scores = await _targetScanService.ScanAsync(_shooting.TargetProperties!, Bullets.Count(), allowMoreShots: true);
             if (scores == null)
                 return;
 

@@ -77,3 +77,45 @@ static class AxisProfile
         }
     }
 }
+
+static class RadialProfile
+{
+    /// <summary>Dev tool: centre of the black disc and radii of the dark ring lines of the round target.</summary>
+    public static void Run(string path)
+    {
+        using var bmp = SKBitmap.Decode(path);
+        var r = Raster.FromBitmap(bmp);
+        int w = r.Width, h = r.Height;
+        // centre = centroid of the black disc (dark pixels in the middle third)
+        double sx = 0, sy = 0; int n = 0;
+        for (int y = h / 3; y < h * 2 / 3; y++)
+            for (int x = w / 3; x < w * 2 / 3; x++)
+                if (r.Gray(y * w + x) < 60) { sx += x; sy += y; n++; }
+        double cx = sx / n, cy = sy / n, blackR = Math.Sqrt(n / Math.PI);
+        Console.WriteLine($"{w}x{h} centre=({cx:0.0},{cy:0.0}) black disc r={blackR:0.0}px");
+        // radial profile: mean gray at radius rho over all angles
+        int maxR = (int)Math.Min(Math.Min(cx, w - cx), Math.Min(cy, h - cy));
+        var prof = new double[maxR];
+        for (int rho = 0; rho < maxR; rho++)
+        {
+            double s = 0; int m = 0;
+            for (int k = 0; k < 720; k++)
+            {
+                double t = k * Math.PI / 360;
+                int x = (int)Math.Round(cx + rho * Math.Cos(t)), y = (int)Math.Round(cy + rho * Math.Sin(t));
+                s += r.Gray(y * w + x); m++;
+            }
+            prof[rho] = s / m;
+        }
+        var lines = new List<string>();
+        for (int i = 2; i < maxR - 2; i++)
+            if (prof[i] < prof[i - 1] && prof[i] <= prof[i + 1] && Math.Min(prof[i - 2], prof[i + 2]) - prof[i] > 1.5)
+                lines.Add($"{i}:{prof[i]:0}");
+        Console.WriteLine("dark minima: " + string.Join(" ", lines));
+        var bright = new List<string>();
+        for (int i = 2; i < (int)blackR; i++)
+            if (prof[i] > prof[i - 1] && prof[i] >= prof[i + 1] && prof[i] - Math.Max(prof[i - 2], prof[i + 2]) > 8)
+                bright.Add($"{i}:{prof[i]:0}");
+        Console.WriteLine("bright maxima in black: " + string.Join(" ", bright));
+    }
+}

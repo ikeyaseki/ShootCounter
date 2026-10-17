@@ -1,20 +1,32 @@
+using ShootCounter.TargetScan;
 using System.Diagnostics;
 
 namespace ShootCounter.Services
 {
-    // takes a photo of the 25m rapid fire target and lets the shooter check the detected hits
+    // takes a photo of the target and lets the shooter check the detected hits
     public class TargetScanService
     {
         private const string TakePhoto = "Foto aufnehmen";
         private const string PickPhoto = "Foto aus Galerie";
 
-        // only the ordnance rapid fire target can be recognized so far
-        public static bool IsSupported(TargetType targetType) => targetType == TargetType.OrderlyRapidFire;
+        // the targets that can be recognized so far
+        private static ScanTarget? ToScanTarget(TargetType targetType) => targetType switch
+        {
+            TargetType.OrderlyRapidFire => ScanTarget.Ordnance25m,
+            TargetType.PrecisionTargetP10 => ScanTarget.PrecisionP10,
+            TargetType.PrecisionTargetP4 => ScanTarget.PrecisionP4,
+            _ => null,
+        };
+
+        public static bool IsSupported(TargetType targetType) => ToScanTarget(targetType) != null;
 
         // the scores of the accepted hits, highest first, or null if the shooter cancelled
-        public async Task<IReadOnlyList<int>?> ScanAsync(int expectedShots, bool allowMoreShots)
+        public async Task<IReadOnlyList<int>?> ScanAsync(TargetProperties targetProperties, int expectedShots, bool allowMoreShots)
         {
-            var photo = await GetPhotoAsync();
+            var target = ToScanTarget(targetProperties.TargetType)
+                ?? throw new NotSupportedException($"Target {targetProperties.TargetType} can not be scanned");
+
+            var photo = await GetPhotoAsync(target);
             if (photo == null)
                 return null;
 
@@ -24,7 +36,7 @@ namespace ShootCounter.Services
                 await stream.CopyToAsync(buffer);
             buffer.Position = 0;
 
-            var viewModel = new ScanViewModel(expectedShots, allowMoreShots);
+            var viewModel = new ScanViewModel(target, targetProperties.Valuations ?? [], expectedShots, allowMoreShots);
             var page = new ScanPage(viewModel);
             await Shell.Current.Navigation.PushModalAsync(page);
 
@@ -35,11 +47,13 @@ namespace ShootCounter.Services
             return result;
         }
 
-        private static async Task<FileResult?> GetPhotoAsync()
+        private static async Task<FileResult?> GetPhotoAsync(ScanTarget target)
         {
             var options = MediaPicker.Default.IsCaptureSupported ? new[] { TakePhoto, PickPhoto } : new[] { PickPhoto };
-            string source = await Shell.Current.DisplayActionSheet(
-                "Ganze Scheibe gerade von vorne fotografieren", "Abbrechen", null, options);
+            string title = target == ScanTarget.Ordnance25m
+                ? "Ganze Scheibe gerade von vorne fotografieren"
+                : "Spiegel und Ringe bis zum 5er gerade von vorne fotografieren";
+            string source = await Shell.Current.DisplayActionSheet(title, "Abbrechen", null, options);
 
             try
             {

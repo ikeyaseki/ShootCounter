@@ -238,7 +238,7 @@ namespace ShootCounter.ViewModels
         {
             // the number of bullets of a competition run is fixed
             int bulletCount = Bullets.Count();
-            var scores = await _targetScanService.ScanAsync(bulletCount, allowMoreShots: false);
+            var scores = await _targetScanService.ScanAsync(Shooting.TargetProperties!, bulletCount, allowMoreShots: false);
             if (scores == null)
                 return;
 

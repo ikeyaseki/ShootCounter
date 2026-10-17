@@ -7,9 +7,6 @@ namespace ShootCounter.Views;
 // shows the photo of the target with the detected hits, which can be confirmed, changed, removed or added
 public partial class ScanPage : ContentPage
 {
-    // valuations of the ordnance rapid fire target, a miss counts 0
-    private static readonly int[] Scores = [0, 6, 7, 8, 9, 10];
-
     private readonly ScanViewModel _viewModel;
     // maps image pixels to canvas pixels, set on every paint
     private float _scale = 1;
@@ -83,14 +80,15 @@ public partial class ScanPage : ContentPage
         }
     }
 
-    // the black area of the target plus a margin, or the whole photo when no target was found
-    private static SKRect TargetArea(SKBitmap photo, ScanResult? result)
+    // the interesting part of the target, or the whole photo when no target was found
+    private static SKRect TargetArea(SKBitmap photo, TargetScanResult? result)
     {
         var all = SKRect.Create(photo.Width, photo.Height);
         if (result == null)
             return all;
 
-        SKPoint[] corners = [new(-245, -400), new(245, -400), new(245, 400), new(-245, 400)];
+        var a = result.TemplateArea;
+        SKPoint[] corners = [new(a.Left, a.Top), new(a.Right, a.Top), new(a.Right, a.Bottom), new(a.Left, a.Bottom)];
         var mapped = corners.Select(result.TemplateToImage.Map).ToArray();
         var area = new SKRect(mapped.Min(n => n.X), mapped.Min(n => n.Y), mapped.Max(n => n.X), mapped.Max(n => n.Y));
         return area.IntersectsWith(all) ? SKRect.Intersect(area, all) : all;
@@ -139,14 +137,15 @@ public partial class ScanPage : ContentPage
         const string confirm = "Bestätigen";
         const string remove = "Löschen";
 
-        int index = Array.IndexOf(Scores, hit.Score);
+        var scores = _viewModel.Valuations;
+        int index = scores.ToList().IndexOf(hit.Score);
         var options = new List<string>();
         if (hit.Uncertain || hit.Borderline)
             options.Add(confirm);
-        if (index >= 0 && index < Scores.Length - 1)
-            options.Add($"Wertung {Scores[index + 1]}");
+        if (index >= 0 && index < scores.Count - 1)
+            options.Add($"Wertung {scores[index + 1]}");
         if (index > 0)
-            options.Add($"Wertung {Scores[index - 1]}");
+            options.Add($"Wertung {scores[index - 1]}");
 
         string title = hit.Uncertain ? $"Unsicherer Treffer ({hit.Score})"
             : hit.Borderline ? $"Linienschuss ({hit.Score})"

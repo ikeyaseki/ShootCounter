@@ -2,6 +2,16 @@ using SkiaSharp;
 using ShootCounter.TargetScan;
 
 if (args[0] == "zoom") { using var full = SKBitmap.Decode(args[1]); int zx = int.Parse(args[2]), zy = int.Parse(args[3]), zr = int.Parse(args[4]); using var zb = new SKBitmap(800, 800); using (var zc = new SKCanvas(zb)) zc.DrawBitmap(full, SKRect.Create(zx - zr, zy - zr, 2 * zr, 2 * zr), new SKRect(0, 0, 800, 800)); Save(zb, args[5]); return; }
+if (args[0] == "rim50") { var rl = new List<(int, int)>(); for (int a = 3; a + 1 < args.Length; a += 2) rl.Add((int.Parse(args[a]), int.Parse(args[a + 1]))); Rim50.Run(args[1], double.Parse(args[2]), rl.ToArray()); return; }
+if (args[0] == "hits50") { Hits50.Run(args[1]); return; }
+if (args[0] == "near50") { Near50.Run(args[1], int.Parse(args[2]), int.Parse(args[3])); return; }
+if (args[0] == "dark50") { var dl = new List<(int, int)>(); for (int a = 2; a + 1 < args.Length; a += 2) dl.Add((int.Parse(args[a]), int.Parse(args[a + 1]))); Dark50.Run(args[1], dl.ToArray()); return; }
+if (args[0] == "detail50") { var pl = new List<(int, int)>(); for (int a = 2; a + 1 < args.Length; a += 2) pl.Add((int.Parse(args[a]), int.Parse(args[a + 1]))); Detail50.Run(args[1], pl.ToArray()); return; }
+if (args[0] == "sharp50") { for (int a = 2; a + 1 < args.Length; a += 2) Sharp50.Run(args[1], int.Parse(args[a]), int.Parse(args[a + 1])); return; }
+if (args[0] == "probe50") { Probe50.Run(args[1], int.Parse(args[2]), int.Parse(args[3])); return; }
+if (args[0] == "scan50") { Scan50.Run(args[1], Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "out")), args.Length > 2 ? args[2] : null); return; }
+if (args[0] == "overview") { var of = Directory.GetFiles(args[1], "*.jpg").OrderBy(f => f).Take(10).ToArray(); using var ov = new SKBitmap(5 * 600, 2 * 800); using (var oc = new SKCanvas(ov)) { using var of2 = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold), 40); using var op = new SKPaint { Color = SKColors.Red }; for (int i = 0; i < of.Length; i++) { using var st = File.OpenRead(of[i]); using var b = Raster.LoadBitmap(st, 800); var rc = SKRect.Create(i % 5 * 600, i / 5 * 800, 600, 800); oc.DrawBitmap(b, rc); oc.DrawText(Path.GetFileNameWithoutExtension(of[i])[13..19], rc.Left + 10, rc.Top + 45, of2, op); } } Save(ov, args[2]); return; }
+if (args[0] == "radial") { RadialProfile.Run(args[1]); return; }
 if (args[0] == "template") { TemplateFit.Run(args[1]); AxisProfile.Run(args[1]); return; }
 var dir = args[0];
 var outDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "out"));
