@@ -17,6 +17,7 @@ namespace ShootCounter.Services
             TargetType.PrecisionTargetP4 => ScanTarget.PrecisionP4,
             TargetType.CombinationTargetB5 => ScanTarget.CombinationB5,
             TargetType.CombinationTargetB10 => ScanTarget.CombinationB10,
+            TargetType.Morgarten => ScanTarget.Morgarten,
             _ => null,
         };
 
@@ -52,9 +53,12 @@ namespace ShootCounter.Services
         private static async Task<FileResult?> GetPhotoAsync(ScanTarget target)
         {
             var options = MediaPicker.Default.IsCaptureSupported ? new[] { TakePhoto, PickPhoto } : new[] { PickPhoto };
-            string title = target == ScanTarget.Ordnance25m
-                ? "Ganze Scheibe gerade von vorne fotografieren"
-                : "Spiegel und Ringe bis zum 5er gerade von vorne fotografieren";
+            string title = target switch
+            {
+                ScanTarget.Ordnance25m => "Ganze Scheibe gerade von vorne fotografieren",
+                ScanTarget.Morgarten => "Ganze Figur gerade von vorne fotografieren",
+                _ => "Spiegel und Ringe bis zum 5er gerade von vorne fotografieren",
+            };
             string source = await Shell.Current.DisplayActionSheet(title, "Abbrechen", null, options);
 
             try

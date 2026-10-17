@@ -15,6 +15,8 @@ public enum ScanTarget
     CombinationB5,
     /// <summary>The same combination target scored by the rings 1-10.</summary>
     CombinationB10,
+    /// <summary>Morgarten target: cut-out green figure with ellipses, 0-5.</summary>
+    Morgarten,
 }
 
 /// <summary>Result of a scan, independent of the target type.</summary>
@@ -56,6 +58,8 @@ public static class TargetScanner
         var img = Raster.FromBitmap(bmp);
         if (target == ScanTarget.Ordnance25m)
             return (bmp, From25m(Scanner.Scan(img)));
+        if (target == ScanTarget.Morgarten)
+            return (bmp, FromMorgarten(ScannerMorgarten.Scan(img)));
 
         Raster detail;
         using (var big = Raster.LoadBitmap(new MemoryStream(bytes), DetailSize))
@@ -69,6 +73,17 @@ public static class TargetScanner
         if (res == null) return null;
         return new TargetScanResult(res.TemplateToImage, res.HoleRadiusPx, new SKRect(-245, -400, 245, 400), res.Hits,
             p => res.HitAt(p).Score);
+    }
+
+    static TargetScanResult? FromMorgarten(ScanResultMorgarten? res)
+    {
+        if (res == null) return null;
+        var inv = res.TemplateToImage.Inverse();
+        // the shapes are only known to a few mm, so line shots are flagged generously
+        double tolMm = Math.Max(2, 1.5 / res.PxPerMm);
+        var hits = res.Hits.Select(h => h with { Borderline = TargetMorgarten.LineDistance(h.Template.X, h.Template.Y) < tolMm }).ToList();
+        return new TargetScanResult(res.TemplateToImage, res.HoleRadiusPx, TargetMorgarten.Bounds, hits,
+            p => { var t = inv.Map(p); return TargetMorgarten.Score(t.X, t.Y); });
     }
 
     static TargetScanResult? From50m(ScanResult50m? res, ScanTarget target)
