@@ -3,28 +3,49 @@ using SkiaSharp;
 namespace ShootCounter.TargetScan;
 
 /// <summary>
-/// Geometry of the Swiss 50m P10/P4 pistol target (1 x 1 m), in millimetres, origin at the centre.
-/// Concentric circles every 50 mm: the 10 has a radius of 50 mm, the black disc is the 9 (radius 100 mm),
-/// the 1 has a radius of 500 mm (measured from a reference image).
-/// The P4 values are printed on the same target: 9-10 count 4, 8 counts 3, 5-7 count 2, 1-4 count 1.
+/// The printed faces with equally spaced ring circles that the 50m scanner handles. All are described in
+/// "template units" of the 1 x 1 m P10 target (rings every 50 units); the PP10 target is the same pattern
+/// at half the size, so for it one template unit is half a millimetre.
 /// </summary>
-/// <summary>The two printed faces of the 1 x 1 m 50m target; both have the same ring circles.</summary>
 public enum Face50m
 {
     /// <summary>P10/P4: white with a black disc (the 9, radius 100 mm).</summary>
     Precision,
     /// <summary>B5/B10: dark green figure with a dark centre disc (radius 75 mm) and a light green ring around it.</summary>
     Combination,
+    /// <summary>25m PP10 (ISSF precision target, 50 x 50 cm): rings every 25 mm, black disc 7-10 (radius 100 mm).</summary>
+    PrecisionPP10,
 }
 
+/// <summary>
+/// Geometry of the Swiss 50m P10/P4 pistol target (1 x 1 m), in millimetres, origin at the centre.
+/// Concentric circles every 50 mm: the 10 has a radius of 50 mm, the black disc is the 9 (radius 100 mm),
+/// the 1 has a radius of 500 mm (measured from a reference image).
+/// The P4 values are printed on the same target: 9-10 count 4, 8 counts 3, 5-7 count 2, 1-4 count 1.
+/// </summary>
 public static class Target50m
 {
     public const double Size = 1000;
     public const double BlackRadius = 100;
     public const double CaliberMm = 9.0;
 
-    /// <summary>Radius of the dark, round centre disc used to find the target.</summary>
-    public static double DiscRadius(Face50m face) => face == Face50m.Precision ? BlackRadius : TargetB.CentreRadius;
+    /// <summary>Template units per millimetre of the real target.</summary>
+    public static double UnitsPerMm(Face50m face) => face == Face50m.PrecisionPP10 ? 2 : 1;
+
+    /// <summary>Radius of the dark, round centre disc used to find the target, in template units.</summary>
+    public static double DiscRadius(Face50m face) => face switch
+    {
+        Face50m.Precision => BlackRadius,
+        Face50m.PrecisionPP10 => 200,
+        _ => TargetB.CentreRadius,
+    };
+
+    /// <summary>True if (x, y) in template units is on a dark printed ring line (outside the dark disc).</summary>
+    public static bool IsNearDarkLine(Face50m face, double x, double y, double tolerance = 2.5)
+    {
+        double d = Math.Sqrt(x * x + y * y);
+        return d > Math.Max(120, DiscRadius(face) + 20) && Math.Abs(d - 50 * Math.Round(d / 50)) < tolerance;
+    }
 
     /// <summary>
     /// True if (x, y) lies on the dark print (black disc, or the dark parts of the figure), grown by margin mm.
@@ -33,7 +54,7 @@ public static class Target50m
     public static bool IsDarkPrint(Face50m face, double x, double y, double margin = 0)
     {
         double d = Math.Sqrt(x * x + y * y);
-        if (face == Face50m.Precision) return d <= BlackRadius + margin;
+        if (face != Face50m.Combination) return d <= DiscRadius(face) + margin;
         return d <= TargetB.CentreRadius + margin
             || (TargetB.FigureDistance(x, y) <= margin && d >= TargetB.LightRingRadius - margin);
     }

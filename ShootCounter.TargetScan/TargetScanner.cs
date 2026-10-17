@@ -17,6 +17,10 @@ public enum ScanTarget
     CombinationB10,
     /// <summary>Morgarten target: cut-out green figure with ellipses, 0-5.</summary>
     Morgarten,
+    /// <summary>25m rapid-fire target (ISSF): black disc with white rings, 5-10.</summary>
+    RapidFire,
+    /// <summary>25m precision target PP10 (ISSF): rings 1-10, black disc 7-10.</summary>
+    PrecisionPP10,
 }
 
 /// <summary>Result of a scan, independent of the target type.</summary>
@@ -56,16 +60,44 @@ public static class TargetScanner
 
         var bmp = Raster.LoadBitmap(new MemoryStream(bytes), AnalysisSize);
         var img = Raster.FromBitmap(bmp);
-        if (target == ScanTarget.Ordnance25m)
-            return (bmp, From25m(Scanner.Scan(img)));
-        if (target == ScanTarget.Morgarten)
-            return (bmp, FromMorgarten(ScannerMorgarten.Scan(img)));
+        // only the scanners for targets with holes on light paper need the detail image
+        bool needsDetail = target is not (ScanTarget.Ordnance25m or ScanTarget.Morgarten or ScanTarget.RapidFire);
+        if (!needsDetail)
+            return (bmp, ScanRaster(img, img, target));
 
         Raster detail;
         using (var big = Raster.LoadBitmap(new MemoryStream(bytes), DetailSize))
             detail = Raster.FromBitmap(big);
-        var face = target is ScanTarget.CombinationB5 or ScanTarget.CombinationB10 ? Face50m.Combination : Face50m.Precision;
-        return (bmp, From50m(Scanner50m.Scan(img, detail, face), target));
+        return (bmp, ScanRaster(img, detail, target));
+    }
+
+    /// <summary>Scans an already decoded photo (analysis size) with its detail image (a higher resolution of it).</summary>
+    public static TargetScanResult? ScanRaster(Raster img, Raster detail, ScanTarget target)
+    {
+        switch (target)
+        {
+            case ScanTarget.Ordnance25m: return From25m(Scanner.Scan(img));
+            case ScanTarget.Morgarten: return FromMorgarten(ScannerMorgarten.Scan(img));
+            case ScanTarget.RapidFire: return FromRapidFire(ScannerRapidFire.Scan(img));
+        }
+        var face = target switch
+        {
+            ScanTarget.CombinationB5 or ScanTarget.CombinationB10 => Face50m.Combination,
+            ScanTarget.PrecisionPP10 => Face50m.PrecisionPP10,
+            _ => Face50m.Precision,
+        };
+        return From50m(Scanner50m.Scan(img, detail, face), target);
+    }
+
+    static TargetScanResult? FromRapidFire(ScanResultRapidFire? res)
+    {
+        if (res == null) return null;
+        var inv = res.TemplateToImage.Inverse();
+        static double Distance(SKPoint t) => Math.Sqrt(t.X * t.X + t.Y * t.Y);
+        double tolMm = Math.Max(0.8, 1.5 / res.PxPerMm);
+        var hits = res.Hits.Select(h => h with { Borderline = TargetRapidFire.LineDistance(Distance(h.Template)) < tolMm }).ToList();
+        return new TargetScanResult(res.TemplateToImage, res.HoleRadiusPx, new SKRect(-260, -260, 260, 260), hits,
+            p => TargetRapidFire.Score(Distance(inv.Map(p))));
     }
 
     static TargetScanResult? From25m(ScanResult? res)
@@ -91,15 +123,19 @@ public static class TargetScanner
         if (res == null) return null;
         var inv = res.TemplateToImage.Inverse();
         static double Distance(SKPoint t) => Math.Sqrt(t.X * t.X + t.Y * t.Y);
+        // on the half-size PP10 face the 9 mm hole is 18 template units wide: 4.5 units more radius
+        // than the P10 functions assume
         int Score(SKPoint t) => target switch
         {
             ScanTarget.PrecisionP4 => Target50m.P10ToP4(Target50m.ScoreP10(Distance(t))),
             ScanTarget.CombinationB5 => TargetB.ScoreB5(t.X, t.Y),
+            ScanTarget.PrecisionPP10 => Target50m.ScoreP10(Distance(t) - Target50m.CaliberMm / 2),
             _ => Target50m.ScoreP10(Distance(t)),
         };
         double LineDistance(SKPoint t) => target switch
         {
             ScanTarget.PrecisionP4 => Target50m.LineDistanceP4(Distance(t)),
+            ScanTarget.PrecisionPP10 => Target50m.LineDistance(Distance(t) - Target50m.CaliberMm / 2),
             // the figure outline is only known to a few mm, so its line shots are flagged generously
             ScanTarget.CombinationB5 => Math.Min(TargetB.LineDistanceB5(t.X, t.Y),
                 Math.Abs(TargetB.FigureDistance(t.X, t.Y) - Target50m.CaliberMm / 2) - 3),

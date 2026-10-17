@@ -18,6 +18,8 @@ namespace ShootCounter.Services
             TargetType.CombinationTargetB5 => ScanTarget.CombinationB5,
             TargetType.CombinationTargetB10 => ScanTarget.CombinationB10,
             TargetType.Morgarten => ScanTarget.Morgarten,
+            TargetType.RapidFire => ScanTarget.RapidFire,
+            TargetType.PrecisionTargetPP10 => ScanTarget.PrecisionPP10,
             _ => null,
         };
 
@@ -55,7 +57,7 @@ namespace ShootCounter.Services
             var options = MediaPicker.Default.IsCaptureSupported ? new[] { TakePhoto, PickPhoto } : new[] { PickPhoto };
             string title = target switch
             {
-                ScanTarget.Ordnance25m => "Ganze Scheibe gerade von vorne fotografieren",
+                ScanTarget.Ordnance25m or ScanTarget.RapidFire => "Ganze Scheibe gerade von vorne fotografieren",
                 ScanTarget.Morgarten => "Ganze Figur gerade von vorne fotografieren",
                 _ => "Spiegel und Ringe bis zum 5er gerade von vorne fotografieren",
             };

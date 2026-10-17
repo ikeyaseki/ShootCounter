@@ -416,7 +416,7 @@ public static class Scanner
     }
 
     /// <summary>True if the bright pixels around (cx, cy) have the warm beige tone of the printed lines and digits.</summary>
-    static bool IsBeige(Raster img, int cx, int cy, int r)
+    internal static bool IsBeige(Raster img, int cx, int cy, int r)
     {
         long sr = 0, sg = 0, sb = 0; int n = 0;
         for (int y = cy - r; y <= cy + r; y++)

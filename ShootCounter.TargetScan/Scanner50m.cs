@@ -6,8 +6,10 @@ public sealed record ScanResult50m(Homography TemplateToImage, double FitScore, 
 {
     public bool IsDarkPrint(SKPoint template, double margin = 0) => Target50m.IsDarkPrint(Face, template.X, template.Y, margin);
 
+    /// <summary>Image pixels per template unit (per mm, except on the half-size PP10 face) near the centre.</summary>
     public double PxPerMm => SKPoint.Distance(TemplateToImage.Map(0, 0), TemplateToImage.Map(100, 0)) / 100;
-    public double HoleRadiusPx => PxPerMm * Target50m.CaliberMm / 2;
+    public double HoleRadiusPx => PxPerMm * Target50m.CaliberMm / 2 * Target50m.UnitsPerMm(Face);
+    public bool IsNearDarkLine(SKPoint template) => Target50m.IsNearDarkLine(Face, template.X, template.Y);
 }
 
 /// <summary>Finds the round 50m target (P10/P4 or B5/B10 face) in a photo and detects the new bullet holes.</summary>
@@ -31,7 +33,8 @@ public static class Scanner50m
 
         var ridges = TemplateFitting.FindRidges(img, brightLines: false);
         var nearest = TemplateFitting.NearestMap(ridges, w, h);
-        var lines = Target50m.LinePoints(4);
+        // the dark ring lines outside the disc (inside it they are printed white)
+        var lines = Target50m.LinePoints(4).Where(p => Math.Sqrt(p.X * p.X + p.Y * p.Y) > Target50m.DiscRadius(face) + 5).ToList();
         // start: the disc outline as an axis-aligned ellipse (the photo is often taken from below)
         double R = Target50m.DiscRadius(face);
         var H = Homography.FromPoints(
@@ -96,7 +99,7 @@ public static class Scanner50m
             if (!((b.Peak > 215 && b.R - b.B > 10) || (b.Peak > 170 && b.R - b.B > 45))) continue;
             // really surrounded by dark print (the printed shapes are only known to a few mm),
             // and a hole-sized spot, not part of a printed white digit or line
-            if (DarkSurround(img, b.Image, holeR * 2.2) < 0.7 || BrightExtent(img, b.Image, holeR) > 2.6 * holeR) continue;
+            if (DarkSurround(img, b.Image, holeR * 2.2, inv, res) < 0.7 || BrightExtent(img, b.Image, holeR) > 2.6 * holeR) continue;
             Add(b.Image, b.Response, verify: false);
         }
         foreach (var c in Texture50m.Find(img, res, 400))
@@ -104,8 +107,11 @@ public static class Scanner50m
         return hits;
     }
 
-    /// <summary>Fraction of dark pixels on a circle around a spot.</summary>
-    static double DarkSurround(Raster img, SKPoint p, double r)
+    /// <summary>
+    /// Fraction of dark pixels on a circle around a spot. Points that the template places outside the
+    /// dark print (a hole close to its edge) are left out.
+    /// </summary>
+    static double DarkSurround(Raster img, SKPoint p, double r, Homography imgToTpl, ScanResult50m res)
     {
         int dark = 0, n = 0;
         for (int k = 0; k < 48; k++)
@@ -113,10 +119,12 @@ public static class Scanner50m
             double a = k * Math.PI / 24;
             int x = (int)(p.X + r * Math.Cos(a)), y = (int)(p.Y + r * Math.Sin(a));
             if (x < 0 || y < 0 || x >= img.Width || y >= img.Height) continue;
+            if (!res.IsDarkPrint(imgToTpl.Map(x, y), -3)) continue;
             n++;
             if (img.Gray(y * img.Width + x) < 110) dark++;
         }
-        return n == 0 ? 0 : (double)dark / n;
+        // too close to the edge to judge: the template already places the spot on the dark print
+        return n < 12 ? 1 : (double)dark / n;
     }
 
     /// <summary>
@@ -167,7 +175,7 @@ public static class Scanner50m
             {
                 var t = imgToTpl.Map(x, y);
                 double d = Math.Sqrt(t.X * t.X + t.Y * t.Y);
-                if (res.IsDarkPrint(t, 3) || (d > 120 && Math.Abs(d - 50 * Math.Round(d / 50)) < 2.5)) continue;
+                if (res.IsDarkPrint(t, 3) || res.IsNearDarkLine(t)) continue;
                 n++;
                 if (img.Gray(y * w + x) < 75) dark++;
             }
@@ -192,7 +200,7 @@ public static class Scanner50m
             {
                 var t = imgToTpl.Map(x, y);
                 double d = Math.Sqrt(t.X * t.X + t.Y * t.Y);
-                if (res.IsDarkPrint(t, 2) || (d > 120 && Math.Abs(d - 50 * Math.Round(d / 50)) < 2.5)) continue;
+                if (res.IsDarkPrint(t, 2) || res.IsNearDarkLine(t)) continue;
                 n++;
                 if (img.Gray(y * w + x) < paper - 70) dark++;
             }
@@ -232,7 +240,7 @@ public static class Scanner50m
             {
                 var t = imgToTpl.Map(x / s, y / s);
                 double d = Math.Sqrt(t.X * t.X + t.Y * t.Y);
-                if (res.IsDarkPrint(t, 2) || d > 120 && Math.Abs(d - 50 * Math.Round(d / 50)) < 2.5) continue;
+                if (res.IsDarkPrint(t, 2) || res.IsNearDarkLine(t)) continue;
                 int i = y * w + x, g = detail.Gray(i);
                 double rel = Math.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) / hr;
                 if (rel < 0.9)
@@ -257,7 +265,7 @@ public static class Scanner50m
                 if (Math.Abs(detail.Gray(y * w + x) - paperLevel) < 25) continue;
                 var t = imgToTpl.Map(x / s, y / s);
                 double d = Math.Sqrt(t.X * t.X + t.Y * t.Y);
-                if (res.IsDarkPrint(t, 2) || d > 120 && Math.Abs(d - 50 * Math.Round(d / 50)) < 2.5) continue;
+                if (res.IsDarkPrint(t, 2) || res.IsNearDarkLine(t)) continue;
                 n++; mx += x; my += y; sxx += x * (double)x; syy += y * (double)y; sxy += x * (double)y;
             }
         double elong = 0;
@@ -373,8 +381,7 @@ public static class Texture50m
             for (int x = 0; x < w; x++)
             {
                 var t = inv.Map(x, y);
-                double d = Math.Sqrt(t.X * t.X + t.Y * t.Y), nearestLine = Math.Abs(d - 50 * Math.Round(d / 50));
-                if (d > 120 && nearestLine < 2.5) lines[y * w + x] = true;
+                if (res.IsNearDarkLine(t)) lines[y * w + x] = true;
             }
         });
         // integral images of count, sum and square sum over non-line pixels
@@ -417,7 +424,7 @@ public static class Texture50m
                 if (tex < 8) continue;
                 var t = inv.Map(x, y);
                 double d = Math.Sqrt(t.X * t.X + t.Y * t.Y);
-                if (res.IsDarkPrint(t, Target50m.CaliberMm) || d > 505) continue;
+                if (res.IsDarkPrint(t, Target50m.CaliberMm * Target50m.UnitsPerMm(res.Face)) || d > 505) continue;
                 cands.Add((tex, x, y, a.m - mRing));
             }
         });

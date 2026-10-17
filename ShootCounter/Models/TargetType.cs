@@ -16,5 +16,7 @@ namespace ShootCounter.Models
         CombinationTargetB10 = 4,
         Morgarten = 5,
         PrecisionTargetP4 = 6,
+        RapidFire = 7,
+        PrecisionTargetPP10 = 8,
     }
 }

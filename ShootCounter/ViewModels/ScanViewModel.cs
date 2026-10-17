@@ -92,7 +92,7 @@ namespace ShootCounter.ViewModels
                 {
                     StatusText = _target switch
                     {
-                        ScanTarget.Ordnance25m => "Keine Scheibe erkannt. Fotografiere die ganze Scheibe möglichst gerade von vorne.",
+                        ScanTarget.Ordnance25m or ScanTarget.RapidFire => "Keine Scheibe erkannt. Fotografiere die ganze Scheibe möglichst gerade von vorne.",
                         ScanTarget.Morgarten => "Keine Figur erkannt. Fotografiere die ganze grüne Figur möglichst gerade von vorne.",
                         _ => "Keine Scheibe erkannt. Der dunkle Spiegel und die Ringe darum müssen gut sichtbar sein.",
                     };
