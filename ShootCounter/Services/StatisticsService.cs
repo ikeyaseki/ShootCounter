@@ -46,6 +46,11 @@ namespace ShootCounter.Services
         double? CompetitionPercentage,
         int Shots);
 
+    // average result of one weapon on one day (or in one month), trainings and competitions together
+    public record ResultPoint(DateTime Day, double Percentage);
+
+    public record WeaponTrend(string WeaponName, IReadOnlyList<ResultPoint> Points);
+
     public record StatisticsResult(
         int TrainingShots,
         int CompetitionShots,
@@ -56,7 +61,8 @@ namespace ShootCounter.Services
         IReadOnlyList<ShotsBucket> Buckets,
         bool BucketsPerMonth,
         IReadOnlyList<ShotsBucket> Days,
-        IReadOnlyList<WeaponResult> Weapons)
+        IReadOnlyList<WeaponResult> Weapons,
+        IReadOnlyList<WeaponTrend> Trends)
     {
         public int TotalShots => TrainingShots + CompetitionShots;
     }
@@ -204,6 +210,22 @@ namespace ShootCounter.Services
                 .ThenByDescending(n => n.Shots)
                 .ToList();
 
+            // same order as the weapon table, per day or (like the shots chart) per month for long periods;
+            // days or months without a result are left out
+            var trends = weapons
+                .Select(w => new WeaponTrend(
+                    w.WeaponName,
+                    entries
+                        .Where(e => e.WeaponName == w.WeaponName)
+                        .GroupBy(e => perMonth ? new DateTime(e.Date.Year, e.Date.Month, 1) : e.Date.Date)
+                        .Select(d => (Day: d.Key, Percentage: Percentage(d)))
+                        .Where(d => d.Percentage.HasValue)
+                        .Select(d => new ResultPoint(d.Day, d.Percentage!.Value))
+                        .OrderBy(d => d.Day)
+                        .ToList()))
+                .Where(n => n.Points.Count > 0)
+                .ToList();
+
             return new StatisticsResult(
                 trainings.Sum(n => n.Shots),
                 competitions.Sum(n => n.Shots),
@@ -214,7 +236,8 @@ namespace ShootCounter.Services
                 buckets,
                 perMonth,
                 days,
-                weapons);
+                weapons,
+                trends);
         }
 
         // weighted: all points divided by all possible points, a long training counts more than a short one

@@ -90,6 +90,19 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- results over time -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasTrend}">
+                    <VerticalStackLayout>
+                        <Label Style="{StaticResource TableHeader}" Text="Resultate im Verlauf" />
+                        <Label Style="{StaticResource Legend}" Text="{Binding TrendLegend}" />
+                        <lvc:CartesianChart HeightRequest="280"
+                                            Series="{Binding TrendSeries}"
+                                            XAxes="{Binding TrendXAxes}"
+                                            YAxes="{Binding TrendYAxes}"
+                                            LegendPosition="Bottom" />
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- results per weapon -->
                 <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="8">
