@@ -35,6 +35,11 @@ namespace ShootCounter.ViewModels
             }
         }
 
+        // the points start at 0, the columns of the runs are comparable
+
+        public Axis[] YAxes { get; } = [ChartTheme.Apply(new Axis { MinLimit = 0 })];
+
+
         public Axis[] XAxes
         {
             get => _xAxes;

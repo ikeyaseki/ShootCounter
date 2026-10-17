@@ -8,25 +8,22 @@ namespace ShootCounter.Helpers
     {
         public static IReadOnlyList<LegendItem> Training { get; } =
         [
+            new("Rechts oben: erreichte Punkte in Prozent, darunter erreichte und maximal mögliche Punkte"),
             new("Dauer", IconFont.ClockTimeNineOutline),
             new("Distanz", IconFont.MapMarkerDistance),
             new("Scheibe", IconFont.Bullseye),
-            new("Waffe", IconFont.Pistol),
             new("Schüsse pro Passe", IconFont.Ammunition),
+            new("Waffe", IconFont.Pistol),
             new("Geschossene Schüsse total", IconFont.ArrowAll, IconFont.Ammunition),
-            new("Maximal mögliche Punkte", IconFont.ArrowAll, IconFont.GiftOutline),
-            new("Erreichte Punkte in Prozent", IconFont.Account, IconFont.PercentBoxOutline),
-            new("Erreichte Punkte", IconFont.Account, IconFont.GiftOutline),
-            new("Schüsse mit 0 Punkten", IconFont.ArrowDownBoldOutline, IconFont.Ammunition),
             new("Schüsse mit der höchsten Wertung", IconFont.ArrowUpBoldOutline, IconFont.Ammunition),
+            new("Schüsse mit 0 Punkten", IconFont.ArrowDownBoldOutline, IconFont.Ammunition),
         ];
 
         public static IReadOnlyList<LegendItem> Competition { get; } =
         [
+            new("Rechts oben: erreichte Punkte, darunter die maximal möglichen Punkte"),
             new("Dauer", IconFont.ClockTimeNineOutline),
             new("Waffe", IconFont.Pistol),
-            new("Maximal mögliche Punkte", IconFont.ArrowAll, IconFont.GiftOutline),
-            new("Erreichte Punkte", IconFont.Account, IconFont.GiftOutline),
         ];
     }
 }

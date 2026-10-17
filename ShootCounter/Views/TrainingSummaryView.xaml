@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.TrainingSummaryView"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
+             xmlns:model="clr-namespace:ShootCounter.Models"
+             xmlns:icons="clr-namespace:ShootCounter.Services"
+             x:DataType="model:Shooting">
+
+    <ContentView.Resources>
+        <converter:DistanceTypeToStringConverter x:Key="DistanceTypeConverter" />
+        <converter:DurationToStringConverter x:Key="DurationConverter" />
+    </ContentView.Resources>
+
+    <!-- summary of a training, used in the list and on the detail page -->
+    <VerticalStackLayout Spacing="10">
+
+        <!-- location and time, the result on the right -->
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <VerticalStackLayout Spacing="2">
+                <Label Style="{StaticResource CardTitle}" Text="{Binding Location}" LineBreakMode="TailTruncation" />
+                <HorizontalStackLayout Spacing="4">
+                    <Label Style="{StaticResource SecondaryText}" Text="{Binding StartTime, StringFormat='{0:dd.MM.yyyy HH:mm}'}" />
+                    <Label Style="{StaticResource SecondaryText}" Text="·" />
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.ClockTimeNineOutline}" FontSize="14" Margin="0" />
+                    <Label Style="{StaticResource SecondaryText}" Text="{Binding Duration, Converter={StaticResource DurationConverter}}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                <Label Text="{Binding TotalPercentage, StringFormat='{0:0} %'}"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="End"
+                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                <Label Style="{StaticResource SecondaryText}" HorizontalTextAlignment="End">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="{Binding TotalPoints}" />
+                            <Span Text=" / " />
+                            <Span Text="{Binding MaxPoints}" />
+                            <Span Text=" Pkt." />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- settings of the training -->
+        <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="Start">
+            <Border Style="{StaticResource Chip}" Margin="0,0,6,6">
+                <HorizontalStackLayout>
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.MapMarkerDistance}" FontSize="14" />
+                    <Label Style="{StaticResource TableContent}" FontSize="14" Text="{Binding DistanceType, Converter={StaticResource DistanceTypeConverter}}" />
+                </HorizontalStackLayout>
+            </Border>
+            <Border Style="{StaticResource Chip}" Margin="0,0,6,6">
+                <HorizontalStackLayout>
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.Bullseye}" FontSize="14" />
+                    <Label Style="{StaticResource TableContent}" FontSize="14" Text="{Binding TargetProperties.Name}" />
+                </HorizontalStackLayout>
+            </Border>
+            <Border Style="{StaticResource Chip}" Margin="0,0,6,6">
+                <HorizontalStackLayout>
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.Ammunition}" FontSize="14" />
+                    <Label Style="{StaticResource TableContent}" FontSize="14" Text="{Binding BulletsPerRun, StringFormat='{0} pro Passe'}" />
+                </HorizontalStackLayout>
+            </Border>
+            <Border Style="{StaticResource Chip}" Margin="0,0,6,6">
+                <HorizontalStackLayout>
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.Pistol}" FontSize="14" />
+                    <Label Style="{StaticResource TableContent}" FontSize="14" Text="{Binding Weapon}" LineBreakMode="TailTruncation" MaximumWidthRequest="240" />
+                </HorizontalStackLayout>
+            </Border>
+        </FlexLayout>
+
+        <BoxView Style="{StaticResource Separator}" Margin="0" />
+
+        <!-- shot counts -->
+        <Grid ColumnDefinitions="*,*,*">
+            <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.ArrowAll}" Margin="0" />
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.Ammunition}" Margin="0" />
+                </HorizontalStackLayout>
+                <Label Style="{StaticResource TableContent}" Text="{Binding TotalBullets}" FontAttributes="Bold" HorizontalOptions="Center" />
+                <Label Style="{StaticResource SecondaryText}" Text="Schüsse" FontSize="12" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.ArrowUpBoldOutline}" Margin="0" />
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.Ammunition}" Margin="0" />
+                </HorizontalStackLayout>
+                <Label Style="{StaticResource TableContent}" Text="{Binding BulletsMaxPoints}" FontAttributes="Bold" HorizontalOptions="Center" />
+                <Label Style="{StaticResource SecondaryText}" Text="Höchstwertung" FontSize="12" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="2">
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.ArrowDownBoldOutline}" Margin="0" />
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.Ammunition}" Margin="0" />
+                </HorizontalStackLayout>
+                <Label Style="{StaticResource TableContent}" Text="{Binding BulletsZeroPoints}" FontAttributes="Bold" HorizontalOptions="Center" />
+                <Label Style="{StaticResource SecondaryText}" Text="0 Punkte" FontSize="12" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </VerticalStackLayout>
+</ContentView>

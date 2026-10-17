@@ -10,7 +10,7 @@
                IsVisible="False"
                FontSize="16"
                FontAttributes="Bold"
-               TextColor="{StaticResource Primary}"
+               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                HorizontalOptions="End"
                Margin="0,5,15,0" />
 
@@ -22,7 +22,7 @@
                 <DataTemplate>
                     <VerticalStackLayout Padding="0,10"
                                          WidthRequest="{Binding Source={x:Reference Root}, Path=ColumnWidth}">
-                        <Label FontSize="16" Text="{Binding BulletNumber}" HorizontalOptions="Center" />
+                        <Label Style="{StaticResource SecondaryText}" FontSize="15" FontAttributes="Bold" Text="{Binding BulletNumber}" HorizontalOptions="Center" />
                         <!-- the radio buttons share this parent, so only one value per bullet can be checked -->
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Valuations}" HorizontalOptions="Center">
                             <BindableLayout.ItemTemplate>

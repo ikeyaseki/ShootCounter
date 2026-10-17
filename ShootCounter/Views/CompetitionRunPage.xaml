@@ -4,6 +4,7 @@
              x:Class="ShootCounter.Views.CompetitionRunPage"
              xmlns:views="clr-namespace:ShootCounter.Views"
              xmlns:converter="clr-namespace:ShootCounter.Converter"
+             xmlns:icons="clr-namespace:ShootCounter.Services"
              Title="{Binding Title}">
 
     <Shell.BackButtonBehavior>
@@ -14,117 +15,112 @@
         <converter:CompetitionStateToStringConverter x:Key="CompetitionStateConverter" />
         <converter:WarningStateToBackgroundColorConverter x:Key="WarningStateConverter" />
         <converter:CompetitionTypeToInfoStringConverter x:Key="CompetitonTypeConverter" />
+        <Style x:Key="StepText" TargetType="Label">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+            <Setter Property="LineBreakMode" Value="WordWrap" />
+        </Style>
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding StopCommand}" Text="Abbruch" />
     </ContentPage.ToolbarItems>
-    
 
-    <ScrollView Orientation="Vertical">
-        <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <ScrollView>
+        <VerticalStackLayout Padding="0,6,0,20">
 
-            <VerticalStackLayout IsVisible="True" Grid.Row="0">
-                <Label Text="{Binding Shooting.CompetitionProperties.Name}" 
-                       FontSize="Medium"
-                       FontAttributes="Bold"
-                       Margin="15,0,15,0"/>
-                <HorizontalStackLayout>
-                    <Label Text="{Binding PasseString}"
-                           FontSize="Medium"
-                           Margin="15,0,0,0" />
-                    <Label Text="{Binding SingleShootString}"
-                           FontSize="Medium"
-                           Margin="15,0,15,0" />
-                </HorizontalStackLayout>
-                <Label Text="{Binding CompetitionState, Converter={StaticResource CompetitionStateConverter}}"
-                       FontSize="Medium"
-                       Margin="15,15,0,0" 
-                       FontAttributes="Bold"/>
-            </VerticalStackLayout>
-
-            <VerticalStackLayout IsVisible="{Binding IsEnabledInfo}" Grid.Row="1">
-                <Label Text="{Binding Shooting.CompetitionType, Converter={StaticResource CompetitonTypeConverter}}"
-                       LineBreakMode="WordWrap"
-                       FontSize="Medium"
-                       FontAttributes="None"
-                       Margin="15,20,0,0" />
-                <Label Text="Guet Schuss"
-                       FontSize="Medium"
-                       FontAttributes="Bold"
-                       HorizontalTextAlignment="Center"
-                       Margin="0,20,0,20"/>
-            </VerticalStackLayout>
-
-            <VerticalStackLayout IsVisible="{Binding IsEnabledTrialShots}" Grid.Row="1">
-                <Label Text="Schiesse deine Probeschüsse."
-                       FontSize="Medium"
-                       FontAttributes="None"
-                       Margin="15,20,15,0" />
-                <Label Text="Schaue dir die Resultate an, die Punkte werden aber nicht geschrieben."
-                       FontSize="Medium"
-                       FontAttributes="None"
-                       Margin="15,20,15,20" />
-                <Label Margin="15,20,15,20"
-                       FontSize="Medium">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="Klicke auf " />
-                            <Span Text="Weiter" FontAttributes="Bold" />
-                            <Span Text=" um die 1. Passe zu starten." />
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-            </VerticalStackLayout>
-
-            <VerticalStackLayout IsVisible="{Binding IsEnabledPrepare}" Grid.Row="1">
-                <Label Text="{Binding PrepareLoadingString}"
-                       FontSize="Medium"
-                       FontAttributes="Bold"
-                       Margin="15,20,15,0" />
-                <Label Text="{Binding PrepareCommandString}"
-                       FontSize="Medium"
-                       FontAttributes="None"
-                       Margin="15,20,15,0" />
-                <Label Margin="15,20,15,20"
-                       FontSize="Medium">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="Klicke auf " />
-                            <Span Text="Weiter" FontAttributes="Bold" />
-                            <Span Text=" wenn du bereit bist." />
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-            </VerticalStackLayout>
-
-            <VerticalStackLayout IsVisible="{Binding IsEnabledShooting}" Grid.Row="1">
-                <Border  Margin="5,10,5,10"
-                         BackgroundColor="{Binding WarningState, Converter={StaticResource WarningStateConverter}}">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10" />
-                    </Border.StrokeShape>
-                    <Label Text="{Binding SecondsTimer}"
-                           FontSize="200"
+            <!-- competition, run and current step -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="{x:Static icons:IconFont.Bullseye}" Style="{StaticResource CardTitleIcon}" />
+                        <Label Text="{Binding Shooting.CompetitionProperties.Name}" Style="{StaticResource CardTitle}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="15">
+                        <Label Text="{Binding PasseString}" Style="{StaticResource SecondaryText}" FontSize="15" />
+                        <Label Text="{Binding SingleShootString}" Style="{StaticResource SecondaryText}" FontSize="15" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding CompetitionState, Converter={StaticResource CompetitionStateConverter}}"
+                           Style="{StaticResource AccentText}"
+                           FontSize="17"
                            FontAttributes="Bold"
-                           HorizontalTextAlignment="Center"/>
+                           Margin="0,6,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- rules of the competition -->
+            <VerticalStackLayout IsVisible="{Binding IsEnabledInfo}">
+                <Border Style="{StaticResource NoticeCard}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Text="{x:Static icons:IconFont.InformationOutline}" Style="{StaticResource CardTitleIcon}" FontSize="24" VerticalOptions="Start" />
+                        <Label Grid.Column="1" Text="{Binding Shooting.CompetitionType, Converter={StaticResource CompetitonTypeConverter}}" Style="{StaticResource StepText}" FontSize="15" />
+                    </Grid>
                 </Border>
+                <Label Text="Guet Schuss"
+                       Style="{StaticResource CardTitle}"
+                       FontSize="22"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,20" />
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}" Grid.Row="1">
-                <views:BulletScoringView ValuationChanged="BulletScoring_ValuationChanged" />
-                <Button Text="Scheibe scannen" Command="{Binding ScanCommand}" IsVisible="{Binding IsScanAvailable}" Margin="5" />
+            <Border Style="{StaticResource Card}" IsVisible="{Binding IsEnabledTrialShots}">
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="Schiesse deine Probeschüsse." Style="{StaticResource StepText}" FontAttributes="Bold" />
+                    <Label Text="Schaue dir die Resultate an, die Punkte werden aber nicht geschrieben." Style="{StaticResource StepText}" />
+                    <Label Style="{StaticResource StepText}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Klicke auf " />
+                                <Span Text="Weiter" FontAttributes="Bold" />
+                                <Span Text=" um die 1. Passe zu starten." />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}" IsVisible="{Binding IsEnabledPrepare}">
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="{Binding PrepareLoadingString}" Style="{StaticResource StepText}" FontAttributes="Bold" />
+                    <Label Text="{Binding PrepareCommandString}" Style="{StaticResource StepText}" />
+                    <Label Style="{StaticResource StepText}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Klicke auf " />
+                                <Span Text="Weiter" FontAttributes="Bold" />
+                                <Span Text=" wenn du bereit bist." />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- countdown, green while there is time, red at the end -->
+            <Border Style="{StaticResource Card}"
+                    Stroke="Transparent"
+                    Padding="0"
+                    IsVisible="{Binding IsEnabledShooting}"
+                    BackgroundColor="{Binding WarningState, Converter={StaticResource WarningStateConverter}}">
+                <Label Text="{Binding SecondsTimer}"
+                       FontSize="200"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalTextAlignment="Center"/>
+            </Border>
+
+            <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}">
+                <Border Style="{StaticResource Card}" Padding="4,4,4,10">
+                    <views:BulletScoringView ValuationChanged="BulletScoring_ValuationChanged" />
+                </Border>
+                <Button Text="Scheibe scannen" Command="{Binding ScanCommand}" IsVisible="{Binding IsScanAvailable}" Style="{StaticResource SecondaryButton}" Margin="12,6" />
             </VerticalStackLayout>
 
-            <VerticalStackLayout IsVisible="{Binding IsEnabledResult}" Grid.Row="1">
-                <Label Text="{Binding ResultString}"
-                       FontSize="Medium"
-                       FontAttributes="None"
-                       Margin="15,20,15,20" />
-            </VerticalStackLayout>
+            <Border Style="{StaticResource Card}" IsVisible="{Binding IsEnabledResult}">
+                <Label Text="{Binding ResultString}" Style="{StaticResource StepText}" />
+            </Border>
 
-            <Button Text="Weiter" Command="{Binding ContinueCommand}" Margin="5,5,5,20" Grid.Row="3" />
+            <Button Text="Weiter" Command="{Binding ContinueCommand}" Style="{StaticResource PrimaryButton}" Margin="12,10,12,0" />
 
-        </Grid>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

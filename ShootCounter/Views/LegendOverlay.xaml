@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:ShootCounter.Services"
              x:Class="ShootCounter.Views.LegendOverlay"
              x:Name="Root"
              IsVisible="False">
@@ -11,41 +12,49 @@
             <TapGestureRecognizer Tapped="Close_Tapped" />
         </Grid.GestureRecognizers>
 
-        <Border Margin="20"
-                Padding="15"
-                BackgroundColor="White"
-                Stroke="DarkGray"
-                StrokeThickness="2"
+        <Border Style="{StaticResource Card}"
+                Margin="20"
+                Padding="20"
                 VerticalOptions="Center">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="10" />
-            </Border.StrokeShape>
             <!-- swallows taps on the legend itself, so only a tap next to it closes -->
             <Border.GestureRecognizers>
                 <TapGestureRecognizer />
             </Border.GestureRecognizers>
 
-            <VerticalStackLayout Spacing="8">
-                <Label Style="{StaticResource TableHeader}" Text="Legende" TextColor="Black" />
+            <VerticalStackLayout Spacing="10">
+                <HorizontalStackLayout Spacing="10">
+                    <Label Text="{x:Static icons:IconFont.InformationOutline}" Style="{StaticResource CardTitleIcon}" />
+                    <Label Text="Legende" Style="{StaticResource CardTitle}" />
+                </HorizontalStackLayout>
 
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Source={x:Reference Root}, Path=Items}" Spacing="6">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Source={x:Reference Root}, Path=Items}" Spacing="8">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
-                            <Grid ColumnDefinitions="60,*">
-                                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Icons}">
+                            <Grid ColumnDefinitions="56,*">
+                                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Icons}" VerticalOptions="Center">
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate>
-                                            <Label Style="{StaticResource TableContentIcon}" Text="{Binding .}" TextColor="Black" />
+                                            <Label Style="{StaticResource TableContentIcon}" Text="{Binding .}" Margin="0,0,2,0" />
                                         </DataTemplate>
                                     </BindableLayout.ItemTemplate>
                                 </HorizontalStackLayout>
-                                <Label Grid.Column="1" Style="{StaticResource TableContent}" Text="{Binding Text}" TextColor="Black" />
+                                <Label Grid.Column="1" Style="{StaticResource TableContent}" Text="{Binding Text}">
+                                    <!-- an explanation without icons uses the whole width -->
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Icons.Length}" Value="0">
+                                            <Setter Property="Grid.Column" Value="0" />
+                                            <Setter Property="Grid.ColumnSpan" Value="2" />
+                                            <Setter Property="FontAttributes" Value="Italic" />
+                                            <Setter Property="Margin" Value="0,0,0,4" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
                             </Grid>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
 
-                <Button Text="Schliessen" Clicked="Close_Tapped" Margin="0,10,0,0" />
+                <Button Text="Schliessen" Clicked="Close_Tapped" Style="{StaticResource PrimaryButton}" Margin="0,10,0,0" />
             </VerticalStackLayout>
         </Border>
     </Grid>

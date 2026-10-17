@@ -5,52 +5,13 @@
     xmlns:icons="clr-namespace:ShootCounter.Services"
     x:Class="ShootCounter.Views.AboutPage"
     Title="AboutPage"
-    Shell.NavBarIsVisible="False"
-    BackgroundColor="{StaticResource Gray100}">
-
-    <ContentPage.Resources>
-        <!-- white card with rounded corners for each section -->
-        <Style x:Key="Card" TargetType="Border">
-            <Setter Property="BackgroundColor" Value="White" />
-            <Setter Property="Stroke" Value="{StaticResource Gray200}" />
-            <Setter Property="StrokeThickness" Value="1" />
-            <Setter Property="StrokeShape" Value="RoundRectangle 12" />
-            <Setter Property="Padding" Value="16" />
-            <Setter Property="Margin" Value="12,6" />
-        </Style>
-        <Style x:Key="CardTitleIcon" TargetType="Label">
-            <Setter Property="FontFamily" Value="IconFont" />
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="TextColor" Value="{StaticResource Primary}" />
-            <Setter Property="VerticalOptions" Value="Center" />
-        </Style>
-        <Style x:Key="CardTitle" TargetType="Label">
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="TextColor" Value="{StaticResource Gray900}" />
-            <Setter Property="VerticalOptions" Value="Center" />
-        </Style>
-        <Style x:Key="RowName" TargetType="Label">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="TextColor" Value="{StaticResource Gray500}" />
-        </Style>
-        <Style x:Key="RowValue" TargetType="Label">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="TextColor" Value="{StaticResource Gray900}" />
-            <Setter Property="HorizontalTextAlignment" Value="End" />
-        </Style>
-        <Style x:Key="Separator" TargetType="BoxView">
-            <Setter Property="HeightRequest" Value="1" />
-            <Setter Property="Color" Value="{StaticResource Gray100}" />
-            <Setter Property="Margin" Value="0,10" />
-        </Style>
-    </ContentPage.Resources>
+    Shell.NavBarIsVisible="False">
 
     <ScrollView>
         <VerticalStackLayout Padding="0,0,0,20">
 
             <!-- header -->
-            <Grid BackgroundColor="{StaticResource Primary}" Padding="20,36,20,28" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+            <Grid BackgroundColor="{AppThemeBinding Light={StaticResource HeaderBackgroundLight}, Dark={StaticResource HeaderBackgroundDark}}" Padding="20,36,20,28" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
                 <Label Grid.Row="0"
                        Text="{x:Static icons:IconFont.Bullseye}"
                        FontFamily="IconFont"
@@ -67,15 +28,13 @@
                 <Label Grid.Row="2"
                        Text="{Binding AppVersionText}"
                        FontSize="15"
-                       TextColor="{StaticResource Secondary}"
+                       TextColor="{StaticResource Secondary}" Opacity="0.9"
                        HorizontalOptions="Center" />
             </Grid>
 
             <!-- disclaimer -->
-            <Border Style="{StaticResource Card}"
-                    Margin="12,16,12,6"
-                    BackgroundColor="{StaticResource Secondary}"
-                    Stroke="{StaticResource Primary}">
+            <Border Style="{StaticResource NoticeCard}"
+                    Margin="12,16,12,6">
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                     <Label Grid.Column="0"
                            Text="{x:Static icons:IconFont.Account}"
@@ -86,7 +45,7 @@
                         <Label Text="Nutzung" Style="{StaticResource CardTitle}" />
                         <Label Text="Diese App darf ausschliesslich von Mitgliedern des Schiessvereins PS Hergiswil benutzt werden."
                                FontSize="15"
-                               TextColor="{StaticResource Gray900}" />
+                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
                     </VerticalStackLayout>
                 </Grid>
             </Border>
@@ -113,7 +72,7 @@
                         <Label Grid.Column="1"
                                Text="GitHub öffnen"
                                Style="{StaticResource RowValue}"
-                               TextColor="{StaticResource Primary}"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                                TextDecorations="Underline">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer
@@ -157,15 +116,11 @@
                         <Label Text="Daten" Style="{StaticResource CardTitle}" />
                     </HorizontalStackLayout>
                     <Label Text="Sichere alle Trainings, Wettkämpfe und Waffen in eine Datei, z. B. vor einer Neuinstallation, und spiele sie bei Bedarf wieder ein."
-                           FontSize="15"
-                           TextColor="{StaticResource Gray600}" />
+                           Style="{StaticResource BodyText}" />
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,4,0,0">
-                        <Button Grid.Column="0" Text="Exportieren" Command="{Binding ExportCommand}" />
+                        <Button Grid.Column="0" Text="Exportieren" Command="{Binding ExportCommand}" Style="{StaticResource PrimaryButton}" />
                         <Button Grid.Column="1" Text="Importieren" Command="{Binding ImportCommand}"
-                                BackgroundColor="White"
-                                TextColor="{StaticResource Primary}"
-                                BorderColor="{StaticResource Primary}"
-                                BorderWidth="1" />
+                                Style="{StaticResource SecondaryButton}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -178,9 +133,8 @@
                         <Label Text="Feedback" Style="{StaticResource CardTitle}" />
                     </HorizontalStackLayout>
                     <Label Text="Fehler gefunden, eine Idee oder eine Scheibe, die fehlt? Schreib uns eine E-Mail."
-                           FontSize="15"
-                           TextColor="{StaticResource Gray600}" />
-                    <Button Text="E-Mail schreiben" Command="{Binding FeedbackCommand}" Margin="0,4,0,0" />
+                           Style="{StaticResource BodyText}" />
+                    <Button Text="E-Mail schreiben" Command="{Binding FeedbackCommand}" Style="{StaticResource PrimaryButton}" Margin="0,4,0,0" />
                 </VerticalStackLayout>
             </Border>
 

@@ -1,6 +1,7 @@
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using ShootCounter.Helpers;
 using SkiaSharp;
 using System.Diagnostics;
 
@@ -39,6 +40,8 @@ namespace ShootCounter.ViewModels
         private bool _hasData;
         private ISeries[] _shotSeries = [];
         private Axis[] _xAxes = [];
+        private Axis[] _yAxes = [];
+        private SolidColorPaint _legendTextPaint = ChartTheme.LegendText;
         private string _chartTitle = string.Empty;
         private IReadOnlyList<ShotsBucket> _days = [];
         private IReadOnlyList<WeaponResultRow> _weaponResults = [];
@@ -47,12 +50,6 @@ namespace ShootCounter.ViewModels
         private Axis[] _trendYAxes = [];
         private string _trendLegend = string.Empty;
         private bool _hasTrend;
-
-        // line colours of the weapons, in the order of the weapon table
-        private static readonly SKColor[] TrendColors =
-        [
-            SKColors.BlueViolet, SKColors.Orange, SKColors.SeaGreen, SKColors.Crimson, SKColors.DodgerBlue, SKColors.Goldenrod, SKColors.Gray,
-        ];
 
         private const string NoValue = "–";
 
@@ -157,8 +154,10 @@ namespace ShootCounter.ViewModels
         public ISeries[] ShotSeries { get => _shotSeries; set => SetProperty(ref _shotSeries, value); }
         public Axis[] XAxes { get => _xAxes; set => SetProperty(ref _xAxes, value); }
 
-        // the axis starts at 0, otherwise a single day looks like a big difference
-        public Axis[] YAxes { get; } = [new Axis { MinLimit = 0, TextSize = 11 }];
+        public Axis[] YAxes { get => _yAxes; set => SetProperty(ref _yAxes, value); }
+
+        // the legends follow the light or dark look
+        public SolidColorPaint LegendTextPaint { get => _legendTextPaint; set => SetProperty(ref _legendTextPaint, value); }
 
         // results over time: one line per weapon, the x axis has one step per day with results
         public ISeries[] TrendSeries { get => _trendSeries; set => SetProperty(ref _trendSeries, value); }
@@ -282,11 +281,11 @@ namespace ShootCounter.ViewModels
 
             // the axis starts at the next lower ten below the weakest result, so the differences are visible
             double lowest = trends.SelectMany(n => n.Points).Select(n => n.Percentage).DefaultIfEmpty(0).Min();
-            TrendYAxes = [new Axis { MinLimit = Math.Max(0, Math.Floor((lowest - 5) / 10) * 10), MaxLimit = 100, TextSize = 11, Labeler = v => $"{v:0} %" }];
+            TrendYAxes = [ChartTheme.Apply(new Axis { MinLimit = Math.Max(0, Math.Floor((lowest - 5) / 10) * 10), MaxLimit = 100, TextSize = 11, Labeler = v => $"{v:0} %" })];
 
             TrendXAxes =
             [
-                new Axis
+                ChartTheme.Apply(new Axis
                 {
                     Labeler = v => v >= 0 && v < labels.Count && Math.Abs(v - Math.Round(v)) < 0.01 ? labels[(int)Math.Round(v)] : string.Empty,
                     // about a dozen labels at most, a whole year of training days would be unreadable
@@ -296,7 +295,7 @@ namespace ShootCounter.ViewModels
                     MaxLimit = Math.Max(days.Count - 0.5, 0.5),
                     LabelsRotation = days.Count > 7 ? 60 : 0,
                     TextSize = 11,
-                }
+                })
             ];
 
             // a weapon keeps its colour whatever is filtered: the colours follow the order of all weapons by shots
@@ -306,18 +305,19 @@ namespace ShootCounter.ViewModels
                 .ThenByDescending(n => n.Sum(e => e.Shots))
                 .Select((n, i) => (n.Key, i))
                 .ToDictionary(n => n.Key, n => n.i);
+            var colors = ChartTheme.Series;
 
             TrendSeries = trends
                 .Select(trend =>
                 {
-                    var color = TrendColors[colorIndex.GetValueOrDefault(trend.WeaponName) % TrendColors.Length];
+                    var color = colors[colorIndex.GetValueOrDefault(trend.WeaponName) % colors.Length];
                     return (ISeries)new LineSeries<LiveChartsCore.Defaults.ObservablePoint>
                     {
                         Name = trend.WeaponName,
                         Values = trend.Points.Select(p => new LiveChartsCore.Defaults.ObservablePoint(index[p.Day], p.Percentage)).ToList(),
                         Stroke = new SolidColorPaint(color, 3),
                         GeometryStroke = new SolidColorPaint(color, 3),
-                        GeometryFill = new SolidColorPaint(SKColors.White),
+                        GeometryFill = new SolidColorPaint(ChartTheme.CardBackground),
                         GeometrySize = 9,
                         Fill = null,
                         LineSmoothness = 0,
@@ -331,14 +331,19 @@ namespace ShootCounter.ViewModels
 
         private void CreateChart(IReadOnlyList<ShotsBucket> buckets)
         {
+            LegendTextPaint = ChartTheme.LegendText;
+
+            // the axis starts at 0, otherwise a single day looks like a big difference
+            YAxes = [ChartTheme.Apply(new Axis { MinLimit = 0, TextSize = 11 })];
+
             XAxes =
             [
-                new Axis
+                ChartTheme.Apply(new Axis
                 {
                     Labels = buckets.Select(n => n.Label).ToList(),
                     LabelsRotation = buckets.Count > 7 ? 60 : 0,
                     TextSize = 11,
-                }
+                })
             ];
 
             ShotSeries =
@@ -347,13 +352,13 @@ namespace ShootCounter.ViewModels
                 {
                     Name = "Training",
                     Values = buckets.Select(n => n.TrainingShots).ToList(),
-                    Fill = new SolidColorPaint(SKColors.BlueViolet),
+                    Fill = new SolidColorPaint(ChartTheme.Accent),
                 },
                 new StackedColumnSeries<int>
                 {
                     Name = "Wettkampf",
                     Values = buckets.Select(n => n.CompetitionShots).ToList(),
-                    Fill = new SolidColorPaint(SKColors.Orange),
+                    Fill = new SolidColorPaint(ChartTheme.Accent2),
                 },
             ];
         }

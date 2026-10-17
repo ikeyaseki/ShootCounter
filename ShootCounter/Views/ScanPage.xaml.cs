@@ -1,3 +1,4 @@
+using ShootCounter.Helpers;
 using ShootCounter.TargetScan;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
@@ -31,7 +32,7 @@ public partial class ScanPage : ContentPage
     private void Canvas_PaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
-        canvas.Clear(SKColors.Black);
+        canvas.Clear(ChartTheme.PageBackground);
 
         var photo = _viewModel.Photo;
         if (photo == null)
