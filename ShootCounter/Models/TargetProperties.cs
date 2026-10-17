@@ -14,5 +14,9 @@ namespace ShootCounter.Models
         public TargetType TargetType { get; set; }
         public string? Name { get; set; }
         public IEnumerable<int>? Valuations { get; set; }
+        // the distance the target is shot at
+        public DistanceType Distance { get; set; }
+        // small picture of the target for the selection
+        public string? Image { get; set; }
     }
 }

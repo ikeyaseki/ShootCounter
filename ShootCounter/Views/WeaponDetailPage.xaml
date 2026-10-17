@@ -10,39 +10,44 @@
     </ContentPage.ToolbarItems>
 
     <ScrollView>
-        <Border Margin="5,10,5,10"
-                VerticalOptions="Start"
-                Stroke="DarkGray"
-                StrokeThickness="2">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="10" />
-            </Border.StrokeShape>
+        <VerticalStackLayout Padding="0,6,0,20">
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout>
+                    <Label Style="{StaticResource FieldLabel}" Text="Hersteller" Margin="0" />
+                    <Picker Title="Hersteller wählen" FontSize="16" ItemsSource="{Binding ManufacturerOptions}" SelectedItem="{Binding SelectedManufacturer}" />
+                    <Entry FontSize="16" Text="{Binding Manufacturer, Mode=TwoWay}" Placeholder="Name des Herstellers" Keyboard="Text" IsVisible="{Binding IsOtherManufacturer}" />
+                    <Label Style="{StaticResource FieldLabel}" Text="Modell" />
+                    <Entry FontSize="16" Text="{Binding Model, Mode=TwoWay}" Keyboard="Text" />
+                    <Label Style="{StaticResource FieldLabel}" Text="Kaliber" />
+                    <Picker Title="Kaliber wählen" FontSize="16" ItemsSource="{Binding CaliberOptions}" SelectedItem="{Binding Caliber}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <VerticalStackLayout Padding="5">
-                <Label FontSize="Medium" Text="Hersteller" />
-                <Picker Title="Hersteller wählen" FontSize="Medium" ItemsSource="{Binding ManufacturerOptions}" SelectedItem="{Binding SelectedManufacturer}" />
-                <Entry FontSize="Medium" Text="{Binding Manufacturer, Mode=TwoWay}" Placeholder="Name des Herstellers" Keyboard="Text" IsVisible="{Binding IsOtherManufacturer}" />
-                <Label FontSize="Medium" Text="Modell" />
-                <Entry FontSize="Medium" Text="{Binding Model, Mode=TwoWay}" Keyboard="Text" />
-                <Label FontSize="Medium" Text="Kaliber" />
-                <Picker Title="Kaliber wählen" FontSize="Medium" ItemsSource="{Binding CaliberOptions}" SelectedItem="{Binding Caliber}" />
-                <HorizontalStackLayout>
-                    <CheckBox IsChecked="{Binding HasPurchaseDate, Mode=TwoWay}" VerticalOptions="Center" />
-                    <Label FontSize="Medium" Text="Kaufdatum bekannt" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-                <DatePicker FontSize="Medium"
-                            Date="{Binding PurchaseDate, Mode=TwoWay}"
-                            Format="dd.MM.yyyy"
-                            IsEnabled="{Binding HasPurchaseDate}" />
-                <Label FontSize="Medium" Text="Notizen" />
-                <Editor FontSize="Medium" Text="{Binding Notes, Mode=TwoWay}" AutoSize="TextChanges" MinimumHeightRequest="100" />
-                <Button Text="Endgültig löschen"
-                        Command="{Binding DeleteCommand}"
-                        IsVisible="{Binding CanDelete}"
-                        BackgroundColor="DarkRed"
-                        TextColor="White"
-                        Margin="0,20,0,5" />
-            </VerticalStackLayout>
-        </Border>
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Style="{StaticResource RowValue}" Text="Kaufdatum bekannt" HorizontalTextAlignment="Start" />
+                        <Switch Grid.Column="1" IsToggled="{Binding HasPurchaseDate, Mode=TwoWay}" />
+                    </Grid>
+                    <DatePicker FontSize="16"
+                                Date="{Binding PurchaseDate, Mode=TwoWay}"
+                                Format="dd.MM.yyyy"
+                                IsVisible="{Binding HasPurchaseDate}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout>
+                    <Label Style="{StaticResource FieldLabel}" Text="Notizen" Margin="0" />
+                    <Editor FontSize="16" Text="{Binding Notes, Mode=TwoWay}" AutoSize="TextChanges" MinimumHeightRequest="100" Placeholder="z. B. Seriennummer, Visierung, Wartung" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Endgültig löschen"
+                    Command="{Binding DeleteCommand}"
+                    IsVisible="{Binding CanDelete}"
+                    Style="{StaticResource DangerButton}"
+                    Margin="12,14,12,0" />
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

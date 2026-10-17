@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShootCounter.Views.CompetitionSummaryView"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
+             xmlns:model="clr-namespace:ShootCounter.Models"
+             xmlns:icons="clr-namespace:ShootCounter.Services"
+             x:DataType="model:ShootingCompetition">
+
+    <ContentView.Resources>
+        <converter:DurationToStringConverter x:Key="DurationConverter" />
+    </ContentView.Resources>
+
+    <!-- summary of a competition, used in the list and on the detail page -->
+    <VerticalStackLayout Spacing="10">
+
+        <!-- competition, location and time, the result on the right -->
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <VerticalStackLayout Spacing="2">
+                <Label Style="{StaticResource CardTitle}" Text="{Binding CompetitionProperties.Name}" LineBreakMode="TailTruncation" />
+                <Label Style="{StaticResource SecondaryText}" Text="{Binding Location}" LineBreakMode="TailTruncation" />
+                <Label Style="{StaticResource SecondaryText}" Text="{Binding StartTime, StringFormat='{0:dd.MM.yyyy HH:mm}'}" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                <Label Text="{Binding Result}"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="End"
+                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                <Label Style="{StaticResource SecondaryText}" HorizontalTextAlignment="End"
+                       Text="{Binding CompetitionProperties.MaxPoints, StringFormat='von {0} Pkt.'}" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- duration and weapon -->
+        <FlexLayout Wrap="Wrap" AlignItems="Start" JustifyContent="Start">
+            <Border Style="{StaticResource Chip}" Margin="0,0,6,6">
+                <HorizontalStackLayout>
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.ClockTimeNineOutline}" FontSize="14" />
+                    <Label Style="{StaticResource TableContent}" FontSize="14" Text="{Binding Duration, Converter={StaticResource DurationConverter}}" />
+                </HorizontalStackLayout>
+            </Border>
+            <Border Style="{StaticResource Chip}" Margin="0,0,6,6">
+                <HorizontalStackLayout>
+                    <Label Style="{StaticResource TableContentIcon}" Text="{x:Static icons:IconFont.Pistol}" FontSize="14" />
+                    <Label Style="{StaticResource TableContent}" FontSize="14" Text="{Binding Weapon}" LineBreakMode="TailTruncation" MaximumWidthRequest="240" />
+                </HorizontalStackLayout>
+            </Border>
+        </FlexLayout>
+    </VerticalStackLayout>
+</ContentView>

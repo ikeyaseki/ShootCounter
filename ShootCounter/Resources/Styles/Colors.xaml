@@ -28,6 +28,29 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
 
+    <!-- colours of the app's look, each with a light and a dark variant for AppThemeBinding -->
+    <Color x:Key="PageBackgroundLight">#F2F1F6</Color>
+    <Color x:Key="PageBackgroundDark">#121212</Color>
+    <Color x:Key="CardBackgroundLight">White</Color>
+    <Color x:Key="CardBackgroundDark">#1E1E22</Color>
+    <Color x:Key="CardStrokeLight">#E2E0EA</Color>
+    <Color x:Key="CardStrokeDark">#303036</Color>
+    <Color x:Key="SeparatorLight">#EDEBF2</Color>
+    <Color x:Key="SeparatorDark">#2A2A30</Color>
+    <Color x:Key="TextPrimaryLight">#212121</Color>
+    <Color x:Key="TextPrimaryDark">#ECECEC</Color>
+    <Color x:Key="TextSecondaryLight">#6E6E6E</Color>
+    <Color x:Key="TextSecondaryDark">#A0A0A8</Color>
+    <Color x:Key="NoticeBackgroundLight">#ECE7FB</Color>
+    <Color x:Key="NoticeBackgroundDark">#2A2442</Color>
+    <Color x:Key="HeaderBackgroundLight">#512BD4</Color>
+    <Color x:Key="HeaderBackgroundDark">#2E1A7A</Color>
+    <Color x:Key="ChipBackgroundLight">#ECEAF2</Color>
+    <Color x:Key="ChipBackgroundDark">#2C2C33</Color>
+    <Color x:Key="DangerLight">#B3261E</Color>
+    <Color x:Key="DangerDark">#F2B8B5</Color>
+    <Color x:Key="BarBackgroundDark">#1A1A1E</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>

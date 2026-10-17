@@ -20,11 +20,11 @@ namespace ShootCounter.Helpers
 
             xAxes =
             [
-                new Axis
+                ChartTheme.Apply(new Axis
                 {
                     Name = "Passen",
                     Labels = Enumerable.Range(1, runResults.Count).Select(x => x.ToString()).ToList(),
-                }
+                })
             ];
 
             var maxLength = runResults.Max(n => n.Count);
@@ -34,7 +34,7 @@ namespace ShootCounter.Helpers
                 {
                     Name = i >= maxLength ? "Platzhalter" : $"Schuss {i + 1}",
                     Values = runResults.Select(results => i < results.Count ? results[i] : 0).ToList(),
-                    Fill = new SolidColorPaint(SKColors.BlueViolet),
+                    Fill = new SolidColorPaint(ChartTheme.Accent),
                 })
                 .ToList<ISeries>();
 

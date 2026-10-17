@@ -18,42 +18,75 @@
         <ToolbarItem Command="{Binding SaveCommand}" Text="Weiter" />
     </ContentPage.ToolbarItems>
     
-    <VerticalStackLayout>
-        <Border Margin="5,10,5,10" 
-        Stroke="DarkGray"
-        StrokeThickness="2">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="10" />
-            </Border.StrokeShape>
-
-            <StackLayout Padding="5">
-                <Label FontSize="Medium" Text="Ort" />
-                <Entry FontSize="Medium" 
+    <ScrollView>
+        <VerticalStackLayout Padding="0,6,0,20">
+        <Border Style="{StaticResource Card}">
+            <VerticalStackLayout>
+                <Label Style="{StaticResource FieldLabel}" Text="Ort" Margin="0" />
+                <Entry FontSize="16" 
                Text="{Binding Location, Mode=TwoWay}" 
                Keyboard="Text"/>
-                <Label FontSize="Medium" Text="Distanz" />
-                <Picker Title="Distanz wählen"
+                <Label Style="{StaticResource FieldLabel}" Text="Distanz" />
+                <Picker FontSize="16" Title="Distanz wählen"
                 ItemsSource="{Binding Distances}"
                 ItemDisplayBinding="{Binding ., Converter={StaticResource DistanceTypeConverter}}"
                 SelectedItem="{Binding SelectedDistance}" />
-                <Label FontSize="Medium" Text="Scheibe" />
-                <Picker Title="Scheibe wählen"
-                ItemsSource="{Binding Targets}"
-                ItemDisplayBinding="{Binding Name}"
-                SelectedItem="{Binding SelectedTarget}" />
-                <Label FontSize="Medium" Text="Waffe" />
-                <Picker Title="Waffe wählen"
+                <Label Style="{StaticResource FieldLabel}" Text="Scheibe" />
+                <!-- the targets of the selected distance with a small picture, scrolls horizontally if they do not fit -->
+                <CollectionView ItemsSource="{Binding Targets}"
+                                SelectedItem="{Binding SelectedTarget, Mode=TwoWay}"
+                                SelectionMode="Single"
+                                ItemsLayout="HorizontalList"
+                                HeightRequest="150"
+                                Margin="0,5,0,5">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- the selection is shown on the card, not as the platform's highlight of the whole item -->
+                            <Grid Padding="3" BackgroundColor="Transparent">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal" />
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="Transparent" />
+                                                <Setter TargetName="Card" Property="Border.Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                                <Setter TargetName="Card" Property="Border.BackgroundColor" Value="{AppThemeBinding Light={StaticResource NoticeBackgroundLight}, Dark={StaticResource NoticeBackgroundDark}}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border x:Name="Card"
+                                        Padding="6"
+                                        WidthRequest="110"
+                                        Stroke="{AppThemeBinding Light={StaticResource CardStrokeLight}, Dark={StaticResource CardStrokeDark}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundLight}, Dark={StaticResource ChipBackgroundDark}}"
+                                        StrokeThickness="2">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="4">
+                                        <Image Source="{Binding Image}" HeightRequest="95" Aspect="AspectFit" />
+                                        <Label Text="{Binding Name}" Style="{StaticResource TableContent}" FontSize="13" HorizontalOptions="Center" LineBreakMode="NoWrap" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label Style="{StaticResource FieldLabel}" Text="Waffe" />
+                <Picker FontSize="16" Title="Waffe wählen"
                         ItemsSource="{Binding Weapons}"
                         ItemDisplayBinding="{Binding DisplayName}"
                         SelectedItem="{Binding SelectedWeapon}" />
                 <Label Text="Keine aktive Waffe vorhanden. Lege sie zuerst im Tab &quot;Waffen&quot; an."
                        IsVisible="{Binding HasNoWeapons}"
-                       TextColor="{StaticResource Primary}" />
-                <Label FontSize="Medium" Text="Schüsse pro Passe" />
-                <Entry FontSize="Medium" 
+                       Style="{StaticResource AccentText}" />
+                <Label Style="{StaticResource FieldLabel}" Text="Schüsse pro Passe" />
+                <Entry FontSize="16" 
                Text="{Binding BulletsPerRun, Mode=TwoWay}"
                Keyboard="Numeric"/>
-            </StackLayout>
+            </VerticalStackLayout>
         </Border>
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

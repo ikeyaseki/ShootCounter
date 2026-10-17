@@ -3,25 +3,44 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShootCounter.Views.RunPage"
              xmlns:views="clr-namespace:ShootCounter.Views"
+             xmlns:converter="clr-namespace:ShootCounter.Converter"
              Title="{Binding Title}">
 
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
 
+    <ContentPage.Resources>
+        <converter:IsNotNullConverter x:Key="IsNotNullConverter" />
+    </ContentPage.Resources>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding AddBulletCommand}" Text="Schuss +" />
         <ToolbarItem Command="{Binding RemoveBulletCommand}" Text="Schuss -" />
     </ContentPage.ToolbarItems>
 
-    <ScrollView Orientation="Vertical">
-        <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
-            <views:BulletScoringView ValuationChanged="BulletScoring_ValuationChanged" Grid.Row="0" />
+    <ScrollView>
+        <VerticalStackLayout Padding="0,6,0,20">
+            <Border Style="{StaticResource Card}" Padding="4,4,4,10">
+                <views:BulletScoringView ValuationChanged="BulletScoring_ValuationChanged" />
+            </Border>
 
-            <Label FontSize="30" Text="{Binding Result}" HorizontalOptions="Center" Grid.Row="1"/>
-            <Label FontSize="30" Text="{Binding Percent}" HorizontalOptions="Center" Grid.Row="2"/>
-            <Button Text="Nächste Passe" Command="{Binding SaveCommand}" Grid.Row="3" Margin="5"/>
-            <Button Text="Training beenden" Command="{Binding StopCommand}" Grid.Row="5" Margin="5,5,5,20"/>
-        </Grid>
+            <Button Text="Scheibe scannen" Command="{Binding ScanCommand}" IsVisible="{Binding IsScanAvailable}" Style="{StaticResource SecondaryButton}" Margin="12,6" />
+
+            <!-- result of the run, shown once a shot is scored -->
+            <Border Style="{StaticResource Card}" IsVisible="{Binding Percent, Converter={StaticResource IsNotNullConverter}}">
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                    <Label Text="{Binding Percent}"
+                           FontSize="40"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    <Label Text="{Binding Result}" Style="{StaticResource BodyText}" FontSize="17" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Nächste Passe" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Margin="12,10,12,6" />
+            <Button Text="Training beenden" Command="{Binding StopCommand}" Style="{StaticResource SecondaryButton}" Margin="12,6" />
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

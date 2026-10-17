@@ -16,8 +16,8 @@ namespace ShootCounter.Converter
             {
                 return warningState switch
                 {
-                    WarningState.Ok => Colors.Green,
-                    WarningState.Warning => Colors.Red,
+                    WarningState.Ok => Color.FromArgb("#2E7D32"),
+                    WarningState.Warning => Color.FromArgb("#C62828"),
                     _ => throw new ArgumentException("unknown WarningState")
                 };
             }

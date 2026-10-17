@@ -8,6 +8,7 @@ namespace ShootCounter.ViewModels
     public class CompetitionRunViewModel : BaseViewModel
     {
         private readonly IDataStore<ShootingCompetition> _competitionDataStore;
+        private readonly TargetScanService _targetScanService;
         private string _shootingId = string.Empty;
         private ShootingCompetition _shooting = new();
         private IEnumerable<BulletTemplate> _bullets = [];
@@ -30,9 +31,11 @@ namespace ShootCounter.ViewModels
         private string _prepareCommandString = string.Empty;
         private string _resultString = string.Empty;
         private bool _isContinuing;
+        private bool _isScanAvailable;
 
         public Command StopCommand { get; }
         public Command ContinueCommand { get; }
+        public Command ScanCommand { get; }
 
         public WarningState WarningState 
         {
@@ -183,6 +186,11 @@ namespace ShootCounter.ViewModels
             get => _shootingId;
             set
             {
+                // Shell applies the query again when the page reappears (e.g. after the scan page),
+                // reloading would restart the competition
+                if (value == _shootingId)
+                    return;
+
                 _shootingId = value;
                 LoadItemId(value);
             }
@@ -207,14 +215,45 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public CompetitionRunViewModel(IDataStore<ShootingCompetition> competitionDataStore)
+        // the hits of the run can be read from a photo of the target
+        public bool IsScanAvailable
+        {
+            get => _isScanAvailable;
+            set => SetProperty(ref _isScanAvailable, value);
+        }
+
+        public CompetitionRunViewModel(IDataStore<ShootingCompetition> competitionDataStore, TargetScanService targetScanService)
         {
             _competitionDataStore = competitionDataStore;
+            _targetScanService = targetScanService;
             Title = "Wettkampf";
             CompetitionState = CompetitionState.Info;
             IsEnabledChange();
             StopCommand = new Command(OnStop, CanExecuteStop);
             ContinueCommand = new Command(OnContinue, CanExecuteContinue);
+            ScanCommand = new Command(OnScan);
+        }
+
+        private async void OnScan()
+        {
+            // the number of bullets of a competition run is fixed
+            int bulletCount = Bullets.Count();
+            var scores = await _targetScanService.ScanAsync(Shooting.TargetProperties!, bulletCount, allowMoreShots: false);
+            if (scores == null)
+                return;
+
+            bool missingAsZero = false;
+            if (scores.Count < bulletCount)
+            {
+                missingAsZero = await Shell.Current.DisplayAlert(
+                    "Fehlende Schüsse",
+                    $"Es wurden {scores.Count} Treffer erkannt, die Passe hat {bulletCount} Schuss. Sollen die fehlenden Schüsse als 0 gewertet werden?",
+                    "Ja, als 0",
+                    "Nein, selbst werten");
+            }
+
+            Bullets = BulletTemplate.FromScores(scores, bulletCount, Shooting.TargetProperties, missingAsZero);
+            ContinueCommand.ChangeCanExecute();
         }
 
         private bool CanExecuteContinue()
@@ -533,9 +572,14 @@ namespace ShootCounter.ViewModels
 
         private async void OnStop(object obj)
         {
+            // a competition without a finished run is not kept
+            bool hasRuns = Shooting.Runs?.Any() == true;
+
             bool confirm = await Shell.Current.DisplayAlert(
                 "Stopp Wettkampf",
-                "Willst du den Wettkampf stoppen?",
+                hasRuns
+                    ? "Willst du den Wettkampf stoppen?"
+                    : "Es wurde noch keine Passe abgeschlossen, der Wettkampf wird nicht gespeichert. Willst du ihn stoppen?",
                 "Ja",
                 "Nein");
 
@@ -545,9 +589,15 @@ namespace ShootCounter.ViewModels
                 _timer?.Dispose();
                 _timer = null;
 
-                Shooting.EndTime = DateTime.Now;
-
-                await _competitionDataStore.UpdateItemAsync(Shooting);
+                if (hasRuns)
+                {
+                    Shooting.EndTime = DateTime.Now;
+                    await _competitionDataStore.UpdateItemAsync(Shooting);
+                }
+                else
+                {
+                    await _competitionDataStore.DeleteItemAsync(Shooting.Id);
+                }
 
                 await Shell.Current.GoToAsync($"//{nameof(CompetitionsPage)}", true);
             }
@@ -657,8 +707,12 @@ namespace ShootCounter.ViewModels
         private void GenerateRunTemplate()
         {
             List<BulletTemplate> bullets = new List<BulletTemplate>();
+            bool einzelgezeigt = Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt;
 
-            if (Shooting.CompetitionProperties.CompetitionRuns.First(n => n.RunNumber == RunNumber).Einzelgezeigt)
+            // a single shown shot is quicker to enter by hand, the photo would also show the earlier shots
+            IsScanAvailable = !einzelgezeigt && TargetScanService.IsSupported(Shooting.TargetProperties?.TargetType ?? TargetType.Unknown);
+
+            if (einzelgezeigt)
             {
                 bullets.Add(new BulletTemplate { BulletNumber = SingleShoot, Valuations = GenerateValuationTemplates() });
             }

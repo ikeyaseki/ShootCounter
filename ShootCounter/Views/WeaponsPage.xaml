@@ -5,6 +5,7 @@
              xmlns:model="clr-namespace:ShootCounter.Models"
              xmlns:vm="clr-namespace:ShootCounter.ViewModels"
              xmlns:converter="clr-namespace:ShootCounter.Converter"
+             xmlns:icons="clr-namespace:ShootCounter.Services"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
@@ -16,26 +17,26 @@
     </ContentPage.ToolbarItems>
 
     <RefreshView Command="{Binding LoadWeaponsCommand}" IsRefreshing="{Binding IsBusy}">
-        <CollectionView ItemsSource="{Binding Weapons}" SelectionMode="None">
+        <CollectionView Margin="0,6,0,0" ItemsSource="{Binding Weapons}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="5,10,5,10"
-                            Stroke="DarkGray"
-                            StrokeThickness="2">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10" />
-                        </Border.StrokeShape>
-                        <VerticalStackLayout Padding="10" x:DataType="model:Weapon">
-                            <Label Style="{StaticResource TableHeader}" Text="{Binding DisplayName}" />
-                            <Label Style="{StaticResource TableContent}"
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="2" x:DataType="model:Weapon">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Label Text="{x:Static icons:IconFont.Pistol}" Style="{StaticResource CardTitleIcon}" />
+                                <Label Grid.Column="1" Text="{Binding DisplayName}" Style="{StaticResource CardTitle}" LineBreakMode="TailTruncation" />
+                            </Grid>
+                            <Label Style="{StaticResource SecondaryText}"
                                    Text="Ausgemustert"
                                    FontAttributes="Italic"
-                                   TextColor="Gray"
+                                   Margin="0,4,0,0"
                                    IsVisible="{Binding IsRetired}" />
-                            <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource SecondaryText}"
+                                   Margin="0,4,0,0"
                                    Text="{Binding PurchaseDate, StringFormat='Gekauft am {0:dd.MM.yyyy}'}"
                                    IsVisible="{Binding PurchaseDate, Converter={StaticResource IsNotNullConverter}}" />
-                            <Label Style="{StaticResource TableContent}"
+                            <Label Style="{StaticResource BodyText}"
+                                   Margin="0,4,0,0"
                                    Text="{Binding Notes}"
                                    MaxLines="2"
                                    LineBreakMode="TailTruncation"
@@ -52,7 +53,7 @@
             <CollectionView.EmptyView>
                 <ContentView>
                     <VerticalStackLayout>
-                        <Label Text="Noch keine Waffen erfasst. Tippe auf &quot;Neu&quot;, um eine zu erfassen." Margin="15" HorizontalTextAlignment="Center" />
+                        <Label Text="Noch keine Waffen erfasst. Tippe auf &quot;Neu&quot;, um eine zu erfassen." Margin="30,40" HorizontalTextAlignment="Center" Style="{StaticResource BodyText}" />
                     </VerticalStackLayout>
                 </ContentView>
             </CollectionView.EmptyView>

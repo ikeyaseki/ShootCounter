@@ -7,6 +7,8 @@ namespace ShootCounter.ViewModels
         private readonly IDataStore<Shooting> _trainingDataStore;
         private string _location = string.Empty;
         private TargetProperties? _selectedTarget = null;
+        private DistanceType _selectedDistance;
+        private List<TargetProperties> _targets = [];
         private int? _bulletsPerRun = null;
         private readonly IDataStore<Weapon> _weaponDataStore;
         private Weapon? _selectedWeapon;
@@ -16,7 +18,12 @@ namespace ShootCounter.ViewModels
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
 
-        public IEnumerable<TargetProperties> Targets { get; } = Models.Targets.TargetProperties;
+        // the targets shot at the selected distance
+        public List<TargetProperties> Targets
+        {
+            get => _targets;
+            private set => SetProperty(ref _targets, value);
+        }
 
         public TargetProperties? SelectedTarget
         {
@@ -39,7 +46,27 @@ namespace ShootCounter.ViewModels
         }
 
         public List<DistanceType> Distances { get; set; } = new List<DistanceType>() { DistanceType.Distance25m, DistanceType.Distance50m };
-        public DistanceType SelectedDistance { get; set; }
+        public DistanceType SelectedDistance
+        {
+            get => _selectedDistance;
+            set
+            {
+                SetProperty(ref _selectedDistance, value);
+                UpdateTargets();
+            }
+        }
+
+        private void UpdateTargets()
+        {
+            // a target of the other distance can not stay selected, a single one needs no choice
+            var targets = Models.Targets.TargetProperties.Where(n => n.Distance == SelectedDistance).ToList();
+            if (SelectedTarget == null || !targets.Contains(SelectedTarget))
+                SelectedTarget = targets.Count == 1 ? targets[0] : null;
+
+            // a new list instead of changing the old one: the list view then creates new item views,
+            // reused ones could keep the selection highlight of the previous distance
+            Targets = targets;
+        }
 
         public string Location
         {
@@ -77,6 +104,8 @@ namespace ShootCounter.ViewModels
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             Title = "Neues Training";
+            Location = LastLocation.Value;
+            UpdateTargets();
             LoadWeaponsAsync();
         }
 
@@ -147,6 +176,7 @@ namespace ShootCounter.ViewModels
             };
 
             await _trainingDataStore.AddItemAsync(shooting);
+            LastLocation.Value = Location;
 
             await Shell.Current.GoToAsync($"{nameof(RunPage)}?{nameof(RunViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }
