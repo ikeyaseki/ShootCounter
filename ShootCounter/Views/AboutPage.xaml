@@ -1,50 +1,189 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage 
+<ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:icons="clr-namespace:ShootCounter.Services"
     x:Class="ShootCounter.Views.AboutPage"
     Title="AboutPage"
-    Shell.NavBarIsVisible="False">
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{StaticResource Gray100}">
+
+    <ContentPage.Resources>
+        <!-- white card with rounded corners for each section -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="Stroke" Value="{StaticResource Gray200}" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="12,6" />
+        </Style>
+        <Style x:Key="CardTitleIcon" TargetType="Label">
+            <Setter Property="FontFamily" Value="IconFont" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="TextColor" Value="{StaticResource Primary}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style x:Key="CardTitle" TargetType="Label">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="{StaticResource Gray900}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style x:Key="RowName" TargetType="Label">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextColor" Value="{StaticResource Gray500}" />
+        </Style>
+        <Style x:Key="RowValue" TargetType="Label">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextColor" Value="{StaticResource Gray900}" />
+            <Setter Property="HorizontalTextAlignment" Value="End" />
+        </Style>
+        <Style x:Key="Separator" TargetType="BoxView">
+            <Setter Property="HeightRequest" Value="1" />
+            <Setter Property="Color" Value="{StaticResource Gray100}" />
+            <Setter Property="Margin" Value="0,10" />
+        </Style>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Margin="10, 0, 10, 0">
-            <Label Style="{StaticResource Info}" Text="App info" />
-            <Label Style="{StaticResource Legend}" Text="Name" />
-            <Label Style="{StaticResource Info}" Text="{Binding AppName}" />
-            <Label Style="{StaticResource Legend}" Text="Version" />
-            <Label Style="{StaticResource Info}" Text="{Binding AppVersion}" />
-            <Label Style="{StaticResource Legend}" Text="Build" />
-            <Label Style="{StaticResource Info}" Text="{Binding AppBuild}" />
-            <Label Style="{StaticResource Legend}" Text="Developer" />
-            <Label Style="{StaticResource Info}" Text="Thomas Baumgartner&#10;Montanstrasse 5&#10;6052 Hergiswil&#10;thomasbaumgartner@gmx.ch" />
-            <Label Style="{StaticResource Legend}" Text="Git" />
-            <Label Style="{StaticResource Info}" Text="https://github.com/ikeyaseki/ShootCounter.git" >
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer
-                        Command="{Binding OpenLinkCommand}"
-                        CommandParameter="https://github.com/ikeyaseki/ShootCounter.git" />
-                </Label.GestureRecognizers>
-            </Label>
-    
-            <Label Margin="0, 20, 0,0" />
-            <Label Style="{StaticResource Info}" Text="Device info" />
-            <Label Style="{StaticResource Legend}" Text="Name" />
-            <Label Style="{StaticResource Info}" Text="{Binding DeviceName}" />
-            
-            <Label Style="{StaticResource Legend}" Text="Platform" />
-            <Label Style="{StaticResource Info}" Text="{Binding Platform}" />
-            
-            <Label Style="{StaticResource Legend}" Text="Version" />
-            <Label Style="{StaticResource Info}" Text="{Binding Version}" />
-    
-            <Label Style="{StaticResource Legend}" Text="Device Type" />
-            <Label Style="{StaticResource Info}" Text="{Binding DeviceType}" />
-    
-            <Label Margin="0, 20, 0,0" />
-            <Label Style="{StaticResource Info}" Text="Daten" />
-            <Label Style="{StaticResource Legend}" Text="Sichere alle Trainings, Wettkämpfe und Waffen in eine Datei, z. B. vor einer Neuinstallation, und spiele sie bei Bedarf wieder ein." />
-            <Button Text="Daten exportieren" Command="{Binding ExportCommand}" Margin="0,10,0,0" />
-            <Button Text="Daten importieren" Command="{Binding ImportCommand}" Margin="0,10,0,20" />
+        <VerticalStackLayout Padding="0,0,0,20">
+
+            <!-- header -->
+            <Grid BackgroundColor="{StaticResource Primary}" Padding="20,36,20,28" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+                <Label Grid.Row="0"
+                       Text="{x:Static icons:IconFont.Bullseye}"
+                       FontFamily="IconFont"
+                       FontSize="56"
+                       TextColor="White"
+                       HorizontalOptions="Center" />
+                <Label Grid.Row="1"
+                       Text="{Binding AppName}"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       Margin="0,8,0,0" />
+                <Label Grid.Row="2"
+                       Text="{Binding AppVersionText}"
+                       FontSize="15"
+                       TextColor="{StaticResource Secondary}"
+                       HorizontalOptions="Center" />
+            </Grid>
+
+            <!-- disclaimer -->
+            <Border Style="{StaticResource Card}"
+                    Margin="12,16,12,6"
+                    BackgroundColor="{StaticResource Secondary}"
+                    Stroke="{StaticResource Primary}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Label Grid.Column="0"
+                           Text="{x:Static icons:IconFont.Account}"
+                           Style="{StaticResource CardTitleIcon}"
+                           FontSize="26"
+                           VerticalOptions="Start" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="Nutzung" Style="{StaticResource CardTitle}" />
+                        <Label Text="Diese App darf ausschliesslich von Mitgliedern des Schiessvereins PS Hergiswil benutzt werden."
+                               FontSize="15"
+                               TextColor="{StaticResource Gray900}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- app -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout>
+                    <HorizontalStackLayout Spacing="10" Margin="0,0,0,8">
+                        <Label Text="{x:Static icons:IconFont.Bullseye}" Style="{StaticResource CardTitleIcon}" />
+                        <Label Text="App" Style="{StaticResource CardTitle}" />
+                    </HorizontalStackLayout>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Version" Style="{StaticResource RowName}" />
+                        <Label Grid.Column="1" Text="{Binding AppVersion}" Style="{StaticResource RowValue}" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Separator}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Build" Style="{StaticResource RowName}" />
+                        <Label Grid.Column="1" Text="{Binding AppBuild}" Style="{StaticResource RowValue}" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Separator}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Quellcode" Style="{StaticResource RowName}" />
+                        <Label Grid.Column="1"
+                               Text="GitHub öffnen"
+                               Style="{StaticResource RowValue}"
+                               TextColor="{StaticResource Primary}"
+                               TextDecorations="Underline">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding OpenLinkCommand}"
+                                    CommandParameter="https://github.com/ikeyaseki/ShootCounter.git" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- device -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout>
+                    <HorizontalStackLayout Spacing="10" Margin="0,0,0,8">
+                        <Label Text="{x:Static icons:IconFont.InformationOutline}" Style="{StaticResource CardTitleIcon}" />
+                        <Label Text="Gerät" Style="{StaticResource CardTitle}" />
+                    </HorizontalStackLayout>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Name" Style="{StaticResource RowName}" />
+                        <Label Grid.Column="1" Text="{Binding DeviceName}" Style="{StaticResource RowValue}" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Separator}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Plattform" Style="{StaticResource RowName}" />
+                        <Label Grid.Column="1" Text="{Binding PlatformText}" Style="{StaticResource RowValue}" />
+                    </Grid>
+                    <BoxView Style="{StaticResource Separator}" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Gerätetyp" Style="{StaticResource RowName}" />
+                        <Label Grid.Column="1" Text="{Binding DeviceTypeText}" Style="{StaticResource RowValue}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- data -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="{x:Static icons:IconFont.ContentSaveOutline}" Style="{StaticResource CardTitleIcon}" />
+                        <Label Text="Daten" Style="{StaticResource CardTitle}" />
+                    </HorizontalStackLayout>
+                    <Label Text="Sichere alle Trainings, Wettkämpfe und Waffen in eine Datei, z. B. vor einer Neuinstallation, und spiele sie bei Bedarf wieder ein."
+                           FontSize="15"
+                           TextColor="{StaticResource Gray600}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,4,0,0">
+                        <Button Grid.Column="0" Text="Exportieren" Command="{Binding ExportCommand}" />
+                        <Button Grid.Column="1" Text="Importieren" Command="{Binding ImportCommand}"
+                                BackgroundColor="White"
+                                TextColor="{StaticResource Primary}"
+                                BorderColor="{StaticResource Primary}"
+                                BorderWidth="1" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- feedback -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="{x:Static icons:IconFont.ArrowUpBoldOutline}" Style="{StaticResource CardTitleIcon}" />
+                        <Label Text="Feedback" Style="{StaticResource CardTitle}" />
+                    </HorizontalStackLayout>
+                    <Label Text="Fehler gefunden, eine Idee oder eine Scheibe, die fehlt? Schreib uns eine E-Mail."
+                           FontSize="15"
+                           TextColor="{StaticResource Gray600}" />
+                    <Button Text="E-Mail schreiben" Command="{Binding FeedbackCommand}" Margin="0,4,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

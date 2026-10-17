@@ -14,6 +14,14 @@ namespace ShootCounter.ViewModels
         public string AppVersion { get; } = AppInfo.Version.ToString();
         public string AppBuild { get; } = AppInfo.BuildString;
         public string AppName { get; } = AppInfo.Name;
+        public string AppVersionText { get; } = $"Version {AppInfo.VersionString}";
+        public string PlatformText { get; } = $"{DeviceInfo.Platform} {DeviceInfo.VersionString}";
+        public string DeviceTypeText { get; } = DeviceInfo.DeviceType switch
+        {
+            Microsoft.Maui.Devices.DeviceType.Physical => "Physisch",
+            Microsoft.Maui.Devices.DeviceType.Virtual => "Emulator",
+            _ => "Unbekannt",
+        };
 
         public ICommand OpenLinkCommand => new Command<string>(async (url) =>
         {
@@ -23,6 +31,9 @@ namespace ShootCounter.ViewModels
 
         public Command ExportCommand { get; }
         public Command ImportCommand { get; }
+        public Command FeedbackCommand { get; }
+
+        private const string FeedbackAddress = "beammeup@gmx.ch";
 
         public AboutViewModel(IDatabaseService db)
         {
@@ -30,6 +41,38 @@ namespace ShootCounter.ViewModels
             Title = "About";
             ExportCommand = new Command(OnExport, () => !IsBusy);
             ImportCommand = new Command(OnImport, () => !IsBusy);
+            FeedbackCommand = new Command(OnFeedback);
+        }
+
+        // opens the mail app with the address, a subject and the app and device version for bug reports
+        private async void OnFeedback()
+        {
+            string body = $"\n\n---\n{AppName} {AppInfo.VersionString} ({AppBuild})\n{PlatformText}, {DeviceInfo.Manufacturer} {DeviceInfo.Model}";
+            try
+            {
+                if (Email.Default.IsComposeSupported)
+                {
+                    await Email.Default.ComposeAsync(new EmailMessage
+                    {
+                        Subject = $"Feedback {AppName}",
+                        Body = body,
+                        To = [FeedbackAddress],
+                    });
+                    return;
+                }
+
+                // no mail app known to the system: a mailto link may still be handled by e.g. a webmail app
+                var uri = $"mailto:{FeedbackAddress}?subject={Uri.EscapeDataString($"Feedback {AppName}")}&body={Uri.EscapeDataString(body)}";
+                if (await Launcher.Default.TryOpenAsync(uri))
+                    return;
+
+                await Shell.Current.DisplayAlert("Keine E-Mail-App", $"Es ist keine E-Mail-App eingerichtet. Schreib dein Feedback bitte an {FeedbackAddress}.", "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlert("Fehler", $"Die E-Mail konnte nicht geöffnet werden. Schreib dein Feedback bitte an {FeedbackAddress}.", "OK");
+            }
         }
 
         // the backup is shared, so it can be saved to the files app, a cloud drive or sent by mail
