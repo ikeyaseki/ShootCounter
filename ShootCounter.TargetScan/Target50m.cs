@@ -8,11 +8,35 @@ namespace ShootCounter.TargetScan;
 /// the 1 has a radius of 500 mm (measured from a reference image).
 /// The P4 values are printed on the same target: 9-10 count 4, 8 counts 3, 5-7 count 2, 1-4 count 1.
 /// </summary>
+/// <summary>The two printed faces of the 1 x 1 m 50m target; both have the same ring circles.</summary>
+public enum Face50m
+{
+    /// <summary>P10/P4: white with a black disc (the 9, radius 100 mm).</summary>
+    Precision,
+    /// <summary>B5/B10: dark green figure with a dark centre disc (radius 75 mm) and a light green ring around it.</summary>
+    Combination,
+}
+
 public static class Target50m
 {
     public const double Size = 1000;
     public const double BlackRadius = 100;
     public const double CaliberMm = 9.0;
+
+    /// <summary>Radius of the dark, round centre disc used to find the target.</summary>
+    public static double DiscRadius(Face50m face) => face == Face50m.Precision ? BlackRadius : TargetB.CentreRadius;
+
+    /// <summary>
+    /// True if (x, y) lies on the dark print (black disc, or the dark parts of the figure), grown by margin mm.
+    /// Holes show there as bright spots; on the light paper they are found by their texture.
+    /// </summary>
+    public static bool IsDarkPrint(Face50m face, double x, double y, double margin = 0)
+    {
+        double d = Math.Sqrt(x * x + y * y);
+        if (face == Face50m.Precision) return d <= BlackRadius + margin;
+        return d <= TargetB.CentreRadius + margin
+            || (TargetB.FigureDistance(x, y) <= margin && d >= TargetB.LightRingRadius - margin);
+    }
 
     /// <summary>Outer radius of the ring with the given P10 value (1-10).</summary>
     public static double Radius(int value) => 50.0 * (11 - value);

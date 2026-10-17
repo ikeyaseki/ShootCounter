@@ -15,6 +15,8 @@ namespace ShootCounter.Services
             TargetType.OrderlyRapidFire => ScanTarget.Ordnance25m,
             TargetType.PrecisionTargetP10 => ScanTarget.PrecisionP10,
             TargetType.PrecisionTargetP4 => ScanTarget.PrecisionP4,
+            TargetType.CombinationTargetB5 => ScanTarget.CombinationB5,
+            TargetType.CombinationTargetB10 => ScanTarget.CombinationB10,
             _ => null,
         };
 

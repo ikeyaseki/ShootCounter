@@ -6,7 +6,7 @@ static class Scan50
 {
     public static void Run(string dir, string outDir, string? filter)
     {
-        var files = Directory.GetFiles(dir, "*.jpg").OrderBy(f => f).Take(10).Where(f => filter == null || f.Contains(filter)).ToArray();
+        var files = Directory.GetFiles(dir, "PXL_*.jpg").OrderBy(f => f).Take(10).Where(f => filter == null || f.Contains(filter)).ToArray();
         var tiles = new List<SKBitmap>();
         foreach (var f in files)
         {
