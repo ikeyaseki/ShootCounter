@@ -114,17 +114,28 @@ namespace ShootCounter.ViewModels
 
         private async void OnStop(object obj)
         {
+            // a training without a finished run is not kept
+            bool hasRuns = _shooting.Runs?.Any() == true;
+
             bool confirm = await Shell.Current.DisplayAlert(
                 "Stopp Training",
-                "Willst du das Training stoppen?",
+                hasRuns
+                    ? "Willst du das Training stoppen?"
+                    : "Es wurde noch keine Passe abgeschlossen, das Training wird nicht gespeichert. Willst du es stoppen?",
                 "Ja",
                 "Nein");
 
             if (confirm)
             {
-                _shooting.EndTime = DateTime.Now;
-
-                await _trainingDataStore.UpdateItemAsync(_shooting);
+                if (hasRuns)
+                {
+                    _shooting.EndTime = DateTime.Now;
+                    await _trainingDataStore.UpdateItemAsync(_shooting);
+                }
+                else
+                {
+                    await _trainingDataStore.DeleteItemAsync(_shooting.Id);
+                }
 
                 await Shell.Current.GoToAsync($"//{nameof(TrainingsPage)}", true);
             }

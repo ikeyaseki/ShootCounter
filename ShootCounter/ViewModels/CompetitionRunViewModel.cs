@@ -572,9 +572,14 @@ namespace ShootCounter.ViewModels
 
         private async void OnStop(object obj)
         {
+            // a competition without a finished run is not kept
+            bool hasRuns = Shooting.Runs?.Any() == true;
+
             bool confirm = await Shell.Current.DisplayAlert(
                 "Stopp Wettkampf",
-                "Willst du den Wettkampf stoppen?",
+                hasRuns
+                    ? "Willst du den Wettkampf stoppen?"
+                    : "Es wurde noch keine Passe abgeschlossen, der Wettkampf wird nicht gespeichert. Willst du ihn stoppen?",
                 "Ja",
                 "Nein");
 
@@ -584,9 +589,15 @@ namespace ShootCounter.ViewModels
                 _timer?.Dispose();
                 _timer = null;
 
-                Shooting.EndTime = DateTime.Now;
-
-                await _competitionDataStore.UpdateItemAsync(Shooting);
+                if (hasRuns)
+                {
+                    Shooting.EndTime = DateTime.Now;
+                    await _competitionDataStore.UpdateItemAsync(Shooting);
+                }
+                else
+                {
+                    await _competitionDataStore.DeleteItemAsync(Shooting.Id);
+                }
 
                 await Shell.Current.GoToAsync($"//{nameof(CompetitionsPage)}", true);
             }
