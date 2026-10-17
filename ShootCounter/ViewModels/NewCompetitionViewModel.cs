@@ -71,6 +71,7 @@ namespace ShootCounter.ViewModels
             Title = "Neuer Wettkampf";
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
+            Location = LastLocation.Value;
             LoadWeaponsAsync();
         }
 
@@ -139,6 +140,7 @@ namespace ShootCounter.ViewModels
             };
 
             await _competitionDataStore.AddItemAsync(competition);
+            LastLocation.Value = Location;
 
             await Shell.Current.GoToAsync($"{nameof(CompetitionRunPage)}?{nameof(CompetitionRunViewModel.ShootingId)}={competition.Id.ToString()}", true);
         }

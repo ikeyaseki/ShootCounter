@@ -104,6 +104,7 @@ namespace ShootCounter.ViewModels
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
             Title = "Neues Training";
+            Location = LastLocation.Value;
             UpdateTargets();
             LoadWeaponsAsync();
         }
@@ -175,6 +176,7 @@ namespace ShootCounter.ViewModels
             };
 
             await _trainingDataStore.AddItemAsync(shooting);
+            LastLocation.Value = Location;
 
             await Shell.Current.GoToAsync($"{nameof(RunPage)}?{nameof(RunViewModel.ShootingId)}={shooting.Id.ToString()}", true);
         }
