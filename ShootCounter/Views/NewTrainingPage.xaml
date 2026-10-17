@@ -37,10 +37,46 @@
                 ItemDisplayBinding="{Binding ., Converter={StaticResource DistanceTypeConverter}}"
                 SelectedItem="{Binding SelectedDistance}" />
                 <Label FontSize="Medium" Text="Scheibe" />
-                <Picker Title="Scheibe wählen"
-                ItemsSource="{Binding Targets}"
-                ItemDisplayBinding="{Binding Name}"
-                SelectedItem="{Binding SelectedTarget}" />
+                <!-- the targets of the selected distance with a small picture, scrolls horizontally if they do not fit -->
+                <CollectionView ItemsSource="{Binding Targets}"
+                                SelectedItem="{Binding SelectedTarget, Mode=TwoWay}"
+                                SelectionMode="Single"
+                                ItemsLayout="HorizontalList"
+                                HeightRequest="150"
+                                Margin="0,5,0,5">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- the selection is shown on the card, not as the platform's highlight of the whole item -->
+                            <Grid Padding="3" BackgroundColor="Transparent">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal" />
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="Transparent" />
+                                                <Setter TargetName="Card" Property="Border.Stroke" Value="{StaticResource Primary}" />
+                                                <Setter TargetName="Card" Property="Border.BackgroundColor" Value="{StaticResource Secondary}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border x:Name="Card"
+                                        Padding="6"
+                                        WidthRequest="110"
+                                        Stroke="{StaticResource Gray300}"
+                                        StrokeThickness="2">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="4">
+                                        <Image Source="{Binding Image}" HeightRequest="95" Aspect="AspectFit" />
+                                        <Label Text="{Binding Name}" FontSize="Small" HorizontalOptions="Center" LineBreakMode="NoWrap" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
                 <Label FontSize="Medium" Text="Waffe" />
                 <Picker Title="Waffe wählen"
                         ItemsSource="{Binding Weapons}"
