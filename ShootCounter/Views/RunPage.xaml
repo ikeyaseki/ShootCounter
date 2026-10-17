@@ -15,13 +15,14 @@
     </ContentPage.ToolbarItems>
 
     <ScrollView Orientation="Vertical">
-        <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
             <views:BulletScoringView ValuationChanged="BulletScoring_ValuationChanged" Grid.Row="0" />
 
-            <Label FontSize="30" Text="{Binding Result}" HorizontalOptions="Center" Grid.Row="1"/>
-            <Label FontSize="30" Text="{Binding Percent}" HorizontalOptions="Center" Grid.Row="2"/>
-            <Button Text="Nächste Passe" Command="{Binding SaveCommand}" Grid.Row="3" Margin="5"/>
-            <Button Text="Training beenden" Command="{Binding StopCommand}" Grid.Row="5" Margin="5,5,5,20"/>
+            <Button Text="Scheibe scannen" Command="{Binding ScanCommand}" IsVisible="{Binding IsScanAvailable}" Grid.Row="1" Margin="5"/>
+            <Label FontSize="30" Text="{Binding Result}" HorizontalOptions="Center" Grid.Row="2"/>
+            <Label FontSize="30" Text="{Binding Percent}" HorizontalOptions="Center" Grid.Row="3"/>
+            <Button Text="Nächste Passe" Command="{Binding SaveCommand}" Grid.Row="4" Margin="5"/>
+            <Button Text="Training beenden" Command="{Binding StopCommand}" Grid.Row="6" Margin="5,5,5,20"/>
         </Grid>
     </ScrollView>
 </ContentPage>

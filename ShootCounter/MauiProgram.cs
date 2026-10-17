@@ -34,6 +34,7 @@ namespace ShootCounter
             builder.Services.AddSingleton<IDataStore<ShootingCompetition>, CompetitionDataStore>();
             builder.Services.AddSingleton<IDataStore<Weapon>, WeaponDataStore>();
             builder.Services.AddSingleton<StatisticsService>();
+            builder.Services.AddSingleton<TargetScanService>();
 
             // register our pages
             builder.Services.AddSingleton<TrainingsPage>();

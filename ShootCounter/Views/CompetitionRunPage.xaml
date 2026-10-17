@@ -113,6 +113,7 @@
 
             <VerticalStackLayout IsVisible="{Binding IsEnabledCountPoints}" Grid.Row="1">
                 <views:BulletScoringView ValuationChanged="BulletScoring_ValuationChanged" />
+                <Button Text="Scheibe scannen" Command="{Binding ScanCommand}" IsVisible="{Binding IsScanAvailable}" Margin="5" />
             </VerticalStackLayout>
 
             <VerticalStackLayout IsVisible="{Binding IsEnabledResult}" Grid.Row="1">

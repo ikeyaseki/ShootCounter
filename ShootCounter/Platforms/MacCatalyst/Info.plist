@@ -32,6 +32,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Die Kamera wird verwendet, um die Scheibe zu fotografieren und die Treffer zu erkennen.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Fotos der Scheibe werden verwendet, um die Treffer zu erkennen.</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 </dict>

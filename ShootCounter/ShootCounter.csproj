@@ -64,6 +64,11 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../ShootCounter.TargetScan/ShootCounter.TargetScan.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

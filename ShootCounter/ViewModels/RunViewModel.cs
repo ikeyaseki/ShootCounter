@@ -6,6 +6,7 @@ namespace ShootCounter.ViewModels
     public class RunViewModel : BaseViewModel
     {
         private readonly IDataStore<Shooting> _trainingDataStore;
+        private readonly TargetScanService _targetScanService;
         private string _shootingId = string.Empty;
         private Shooting _shooting = new();
         private IEnumerable<BulletTemplate> _bullets = [];
@@ -13,17 +14,31 @@ namespace ShootCounter.ViewModels
         private string _result = string.Empty;
         private string _percent = string.Empty;
         private bool _isSaving;
+        private bool _isScanAvailable;
 
         public Command SaveCommand { get; }
         public Command AddBulletCommand { get; }
         public Command RemoveBulletCommand { get; }
         public Command StopCommand { get; }
+        public Command ScanCommand { get; }
+
+        // the hits can be read from a photo of the target
+        public bool IsScanAvailable
+        {
+            get => _isScanAvailable;
+            set => SetProperty(ref _isScanAvailable, value);
+        }
 
         public string ShootingId
         {
             get => _shootingId;
             set
             {
+                // Shell applies the query again when the page reappears (e.g. after the scan page),
+                // reloading would start a new run and drop the entered values
+                if (value == _shootingId)
+                    return;
+
                 _shootingId = value;
                 LoadItemId(value);
             }
@@ -57,14 +72,39 @@ namespace ShootCounter.ViewModels
             }
         }
 
-        public RunViewModel(IDataStore<Shooting> trainingDataStore)
+        public RunViewModel(IDataStore<Shooting> trainingDataStore, TargetScanService targetScanService)
         {
             _trainingDataStore = trainingDataStore;
+            _targetScanService = targetScanService;
             RunNumber = 0;
             SaveCommand = new Command(OnSave, CanExecuteSave);
             AddBulletCommand = new Command(OnAddBullet);
             RemoveBulletCommand = new Command(OnRemoveBullet, CanExecuteRemove);
             StopCommand = new Command(OnStop, CanExecuteStop);
+            ScanCommand = new Command(OnScan);
+        }
+
+        private async void OnScan()
+        {
+            // a training run can take more bullets than planned
+            var scores = await _targetScanService.ScanAsync(Bullets.Count(), allowMoreShots: true);
+            if (scores == null)
+                return;
+
+            int bulletCount = Math.Max(Bullets.Count(), scores.Count);
+            bool missingAsZero = false;
+            if (scores.Count < bulletCount)
+            {
+                missingAsZero = await Shell.Current.DisplayAlert(
+                    "Fehlende Schüsse",
+                    $"Es wurden {scores.Count} Treffer erkannt, die Passe hat {bulletCount} Schuss. Sollen die fehlenden Schüsse als 0 gewertet werden?",
+                    "Ja, als 0",
+                    "Nein, selbst werten");
+            }
+
+            Bullets = BulletTemplate.FromScores(scores, bulletCount, _shooting.TargetProperties, missingAsZero);
+            SaveCommand.ChangeCanExecute();
+            StopCommand.ChangeCanExecute();
         }
 
         private bool CanExecuteStop(object arg)
@@ -263,6 +303,7 @@ namespace ShootCounter.ViewModels
             {
                 IsBusy = true;
                 _shooting = await _trainingDataStore.GetItemAsync(Guid.Parse(itemId));
+                IsScanAvailable = TargetScanService.IsSupported(_shooting.TargetType);
                 GenerateRunTemplate();
                 IsBusy = false;
             }
